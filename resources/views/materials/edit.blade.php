@@ -470,59 +470,7 @@
     <div class="layout">
 
         <!-- SIDEBAR -->
-        <aside class="sidebar" id="sidebar">
-            <div class="sidebar-logo">
-                <img src="{{ asset('images/logo-pln.png') }}" alt="Logo PLN" class="sidebar-logo-image">
-                <div class="sidebar-logo-text">
-                    <h1>STOK ATK</h1>
-                    <p>PLN Asam-Asam</p>
-                </div>
-            </div>
-
-            <div class="sidebar-user">
-                <div class="sidebar-avatar">
-                    {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
-                </div>
-                <div class="sidebar-user-info">
-                    <div class="sidebar-user-name">{{ Auth::user()->name }}</div>
-                    <div class="sidebar-user-role">{{ Auth::user()->role }}</div>
-                </div>
-            </div>
-
-            <nav class="sidebar-nav">
-                <div class="nav-section-title">Menu Utama</div>
-
-                <a href="{{ route('dashboard') }}" class="nav-item">
-                    <span class="material-symbols-outlined">speed</span>
-                    Dashboard
-                </a>
-
-                <a href="{{ route('materials.index') }}" class="nav-item active">
-                    <span class="material-symbols-outlined">inventory_2</span>
-                    Data Material
-                </a>
-
-                <a href="#" class="nav-item" onclick="alert('Halaman Riwayat Stok belum tersedia.')">
-                    <span class="material-symbols-outlined">history</span>
-                    Riwayat Stok
-                </a>
-
-                <a href="#" class="nav-item" onclick="alert('Halaman Laporan belum tersedia.')">
-                    <span class="material-symbols-outlined">bar_chart</span>
-                    Laporan
-                </a>
-            </nav>
-
-            <div class="sidebar-footer">
-                <form action="{{ route('logout') }}" method="POST">
-                    @csrf
-                    <button type="submit" class="btn-logout">
-                        <span class="material-symbols-outlined">logout</span>
-                        Keluar (Logout)
-                    </button>
-                </form>
-            </div>
-        </aside>
+        @include('partials.sidebar')
 
         <!-- MAIN -->
         <main class="main">

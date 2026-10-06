@@ -64,32 +64,8 @@
 
 <body>
     <div class="layout">
-        <aside class="sidebar">
-            <div class="sidebar-logo">
-                <img src="{{ asset('images/logo-pln.png') }}" alt="Logo PLN" class="sidebar-logo-image">
-                <div class="sidebar-logo-text">
-                    <h1>STOK ATK</h1>
-                    <p>PLN Asam-Asam</p>
-                </div>
-            </div>
-            <div class="sidebar-user">
-                <div class="sidebar-avatar">{{ strtoupper(substr(Auth::user()->name, 0, 1)) }}</div>
-                <div class="sidebar-user-info">
-                    <div class="sidebar-user-name">{{ Auth::user()->name }}</div>
-                    <div class="sidebar-user-role">{{ Auth::user()->role }}</div>
-                </div>
-            </div>
-            <nav class="sidebar-nav">
-                <a href="{{ route('dashboard') }}" class="nav-item">
-                    <span class="material-symbols-outlined">speed</span>
-                    Dashboard
-                </a>
-                <a href="{{ route('materials.index') }}" class="nav-item active">
-                    <span class="material-symbols-outlined">inventory_2</span>
-                    Data Material
-                </a>
-            </nav>
-        </aside>
+        <!-- SIDEBAR -->
+        @include('partials.sidebar')
 
         <main class="main">
             <header class="topbar">

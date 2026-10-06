@@ -1046,82 +1046,8 @@
     <div class="layout">
 
 
-        <!-- ============================================================
-             SIDEBAR (Sama untuk Admin, Umum, dan Keuangan)
-        ============================================================ -->
-        <aside class="sidebar" id="sidebar">
-
-<!-- Logo -->
-<div class="sidebar-logo">
-    <img 
-        src="{{ asset('images/logo-pln.png') }}" 
-        alt="Logo PLN"
-        class="sidebar-logo-image"
-    >
-
-    <div class="sidebar-logo-text">
-        <h1>STOK ATK</h1>
-        <p>PLN Asam-Asam</p>
-    </div>
-</div>
-
-            <!-- User Card: Dinamis berdasarkan user login -->
-            <div class="sidebar-user">
-                <div class="sidebar-avatar">
-                    {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
-                </div>
-                <div class="sidebar-user-info">
-                    <div class="sidebar-user-name">{{ Auth::user()->name }}</div>
-                    <div class="sidebar-user-role">{{ Auth::user()->role }}</div>
-                </div>
-            </div>
-
-            <!-- Navigation Menu: SAMA untuk ketiga user, tanpa pembatasan berdasarkan role -->
-            <nav class="sidebar-nav">
-
-                <div class="nav-section-title">Menu Utama</div>
-
-                <a href="{{ route('dashboard') }}" class="nav-item active">
-                    <span class="material-symbols-outlined">speed</span>
-                    Dashboard
-                </a>
-
-                <a href="{{ route('materials.index') }}" class="nav-item">
-                    <span class="material-symbols-outlined">inventory_2</span>
-                    Data Material
-                </a>
-
-                <a href="#" class="nav-item">
-                    <span class="material-symbols-outlined">history</span>
-                    Riwayat Stok
-                </a>
-
-                <a href="#" class="nav-item">
-                    <span class="material-symbols-outlined">bar_chart</span>
-                    Laporan
-                </a>
-
-                <div class="nav-section-title" style="margin-top:8px;">Akun</div>
-
-                <a href="#" class="nav-item">
-                    <span class="material-symbols-outlined">account_circle</span>
-                    Profile
-                </a>
-
-            </nav>
-
-            <!-- Logout -->
-            <div class="sidebar-footer">
-                <form action="{{ route('logout') }}" method="POST">
-                    @csrf
-                    <button type="submit" class="btn-logout">
-                        <span class="material-symbols-outlined">logout</span>
-                        Keluar (Logout)
-                    </button>
-                </form>
-            </div>
-
-        </aside>
+        <!-- SIDEBAR -->
+        @include('partials.sidebar')
 
 
         <!-- ============================================================
