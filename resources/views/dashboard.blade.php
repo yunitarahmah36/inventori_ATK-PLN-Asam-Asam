@@ -1086,27 +1086,10 @@
                     Dashboard
                 </a>
 
-                <div>
-                    <a href="#" class="nav-item" onclick="toggleSubmenu(event, 'submenu-material')">
-                        <span class="material-symbols-outlined">inventory_2</span>
-                        Data Material
-                        <span class="material-symbols-outlined" style="margin-left:auto;font-size:18px;" id="arrow-material">expand_more</span>
-                    </a>
-                    <div class="nav-submenu" id="submenu-material">
-                        <a href="#" class="nav-sub-item">
-                            <span class="material-symbols-outlined">list_alt</span>
-                            Semua Material
-                        </a>
-                        <a href="#" class="nav-sub-item">
-                            <span class="material-symbols-outlined">upload_file</span>
-                            Import Excel
-                        </a>
-                        <a href="#" class="nav-sub-item">
-                            <span class="material-symbols-outlined">download</span>
-                            Export Excel
-                        </a>
-                    </div>
-                </div>
+                <a href="{{ route('materials.index') }}" class="nav-item">
+                    <span class="material-symbols-outlined">inventory_2</span>
+                    Data Material
+                </a>
 
                 <a href="#" class="nav-item">
                     <span class="material-symbols-outlined">history</span>
@@ -1222,19 +1205,19 @@
                 <p class="section-label">Aksi Cepat</p>
                 <div class="quick-actions" style="margin-bottom:22px;">
 
-                    <button class="action-btn action-btn-primary" type="button" onclick="alert('Halaman Tambah Material belum tersedia.')">
+                    <a href="{{ route('materials.create') }}" class="action-btn action-btn-primary">
                         <div class="action-icon">
                             <span class="material-symbols-outlined">add_box</span>
                         </div>
                         + Tambah
-                    </button>
+                    </a>
 
-                    <button class="action-btn action-btn-yellow" type="button" onclick="alert('Halaman Import Excel belum tersedia.')">
+                    <a href="{{ route('materials.import') }}" class="action-btn action-btn-yellow">
                         <div class="action-icon">
                             <span class="material-symbols-outlined">upload_file</span>
                         </div>
                         Import Excel
-                    </button>
+                    </a>
 
                     <button class="action-btn action-btn-white" type="button" onclick="alert('Halaman Laporan belum tersedia.')">
                         <div class="action-icon">
@@ -1328,10 +1311,10 @@
                                 <span class="material-symbols-outlined">assignment_turned_in</span>
                                 Material Terbaru
                             </div>
-                            <button class="btn-lihat-semua" type="button" onclick="alert('Halaman Semua Material belum tersedia.')">
+                            <a href="{{ route('materials.index') }}" class="btn-lihat-semua">
                                 Lihat Semua
                                 <span class="material-symbols-outlined">arrow_forward</span>
-                            </button>
+                            </a>
                         </div>
 
                         @if ($latestMaterials->count() > 0)
@@ -1458,7 +1441,7 @@
                 Dashboard
             </a>
 
-            <a href="#" class="bottom-nav-item">
+            <a href="{{ route('materials.index') }}" class="bottom-nav-item">
                 <span class="material-symbols-outlined">inventory_2</span>
                 Material
             </a>
