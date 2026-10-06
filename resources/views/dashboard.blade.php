@@ -1068,11 +1068,11 @@
             <!-- User Card: Dinamis berdasarkan user login -->
             <div class="sidebar-user">
                 <div class="sidebar-avatar">
-                    {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                    {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
                 </div>
                 <div class="sidebar-user-info">
-                    <div class="sidebar-user-name">{{ auth()->user()->name }}</div>
-                    <div class="sidebar-user-role">{{ auth()->user()->role }}</div>
+                    <div class="sidebar-user-name">{{ Auth::user()->name }}</div>
+                    <div class="sidebar-user-role">{{ Auth::user()->role }}</div>
                 </div>
             </div>
 
@@ -1164,12 +1164,12 @@
                 <!-- Profile: Dinamis sesuai user yang sedang login -->
                 <div class="topbar-user">
                     <div class="topbar-user-detail">
-                        <div class="topbar-user-name">{{ auth()->user()->name }}</div>
-                        <div class="topbar-user-email">{{ auth()->user()->email }}</div>
-                        <span class="badge-role">{{ auth()->user()->role }}</span>
+                        <div class="topbar-user-name">{{ Auth::user()->name }}</div>
+                        <div class="topbar-user-email">{{ Auth::user()->email }}</div>
+                        <span class="badge-role">{{ Auth::user()->role }}</span>
                     </div>
                     <div class="topbar-avatar">
-                        {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                        {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
                     </div>
                 </div>
 
@@ -1198,7 +1198,7 @@
                             {{ $hariIni }}
                         </div>
 
-                        <h2>Selamat Datang Kembali, {{ auth()->user()->name }}!</h2>
+                        <h2>Selamat Datang Kembali, {{ Auth::user()->name }}</h2>
 
                         <p>Sistem Manajemen Stok Material ATK PLN Asam-Asam</p>
 
@@ -1211,7 +1211,7 @@
 
                     <!-- Badge Role: Dinamis (Admin / Umum / Keuangan) -->
                     <div class="welcome-role-badge">
-                        {{ strtoupper(auth()->user()->role) }}
+                        {{ Auth::user()->role }}
                     </div>
                 </div>
 
@@ -1414,11 +1414,13 @@
                                             <div>
                                                 <div class="activity-desc">
                                                     <strong>{{ $act->user->name ?? 'Pengguna' }}</strong>
-                                                    <span style="color:var(--text-muted);font-size:11px;">({{ $act->user->role ?? '-' }})</span>
                                                     {{ $verb }}
                                                     <strong style="color:var(--text-dark);">{{ $act->material->name ?? 'Material' }}</strong>
+                                                    @if(!empty($act->description))
+                                                        <div style="color:var(--text-muted);font-size:11.5px;margin-top:2px;">{{ $act->description }}</div>
+                                                    @endif
                                                 </div>
-                                                <div class="activity-time">{{ $act->created_at->diffForHumans() }}</div>
+                                                <div class="activity-time" style="margin-top:3px;">{{ $act->created_at->diffForHumans() }}</div>
                                             </div>
                                             <span class="activity-badge {{ $badgeClass }}">{{ $act->activity }}</span>
                                         </div>
