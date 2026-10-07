@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Riwayat Stok - STOK ATK PLN Asam-Asam</title>
+    <link rel="icon" type="image/png" href="{{ asset('images/pln_bulat.png') }}">
 
     <!-- Material Symbols -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
