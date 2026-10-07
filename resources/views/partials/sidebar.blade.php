@@ -693,26 +693,42 @@
                 }
 
                 // 2. Ganti konten main
-                currentMain.innerHTML = newMain.innerHTML;
+currentMain.innerHTML = newMain.innerHTML;
 
-                // 3. Update judul tab browser
-                document.title = newDoc.title;
+// 3. Jalankan ulang script halaman baru
+currentMain.querySelectorAll('script').forEach(oldScript => {
 
-                // 4. Update address bar URL
-                if (push) {
-                    history.pushState({ url: url }, newDoc.title, url);
-                }
+    const newScript = document.createElement('script');
 
-                // 5. Update menu aktif di sidebar (sidebar TIDAK DI-RELOAD, hanya highlight berganti)
-                updateSidebarActiveMenu(url);
+    // Salin semua atribut script
+    Array.from(oldScript.attributes).forEach(attribute => {
+        newScript.setAttribute(
+            attribute.name,
+            attribute.value
+        );
+    });
 
-                // 6. Jalankan ulang script halaman baru jika ada
-                newMain.querySelectorAll('script').forEach(s => {
-                    const sc = document.createElement('script');
-                    Array.from(s.attributes).forEach(a => sc.setAttribute(a.name, a.value));
-                    sc.textContent = s.textContent;
-                    currentMain.appendChild(sc);
-                });
+    // Salin isi JavaScript
+    newScript.textContent = oldScript.textContent;
+
+    // Replace script lama dengan script baru
+    oldScript.replaceWith(newScript);
+});
+
+// 4. Update judul tab browser
+document.title = newDoc.title;
+
+// 5. Update address bar URL
+if (push) {
+    history.pushState(
+        { url: url },
+        newDoc.title,
+        url
+    );
+}
+
+// 6. Update menu aktif di sidebar
+updateSidebarActiveMenu(url);
 
                 // 7. Scroll ke paling atas
                 window.scrollTo({ top: 0, behavior: 'instant' });
@@ -822,8 +838,49 @@
             targetUrl.search = searchParams.toString();
             navigatePage(targetUrl.toString(), true);
         } else {
-            // POST form (simpan data, hapus data, logout)
-            window.YouTubeProgress.start();
-        }
+    // DELETE form → proses tanpa hard reload
+    const methodInput = form.querySelector('input[name="_method"]');
+
+    if (methodInput && methodInput.value.toUpperCase() === 'DELETE') {
+        e.preventDefault();
+
+        if (form.dataset.submitting === '1') return;
+        form.dataset.submitting = '1';
+
+        window.YouTubeProgress.start();
+
+        const formData = new FormData(form);
+
+        fetch(form.action, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'text/html'
+            }
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Gagal menghapus data');
+            }
+
+            // Laravel sudah melakukan redirect + flash message.
+            // Setelah itu refresh isi halaman melalui SPA.
+            return navigatePage(window.location.pathname + window.location.search, false);
+        })
+        .catch(error => {
+            console.error(error);
+            window.location.reload();
+        })
+        .finally(() => {
+            form.dataset.submitting = '0';
+        });
+
+        return;
+    }
+
+    // POST form biasa (simpan data, logout, dll.)
+    window.YouTubeProgress.start();
+}
     });
 </script>

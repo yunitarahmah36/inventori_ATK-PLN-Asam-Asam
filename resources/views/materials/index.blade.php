@@ -520,6 +520,7 @@
             gap: 6px;
         }
 
+       
         /* Empty State */
         .empty-state {
             padding: 56px 20px;
@@ -550,6 +551,42 @@
             margin-bottom: 18px;
             line-height: 1.5;
         }
+
+        .empty-actions {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin-top: 4px;
+}
+
+.empty-actions .btn {
+    min-width: 170px;
+    height: 42px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 0 18px;
+    border-radius: 9px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.empty-actions .material-symbols-outlined {
+    font-size: 20px !important;
+    line-height: 1;
+    margin: 0 !important;
+}
+
+.empty-actions .btn-primary .material-symbols-outlined {
+    color: #fff;
+}
+
+.empty-actions .btn-yellow .material-symbols-outlined {
+    color: var(--blue-dark);
+}
 
         /* ============================================================
            PAGINATION & FOOTER
@@ -727,6 +764,115 @@
                 display: block;
             }
         }
+
+        /* ============================================================
+   POPUP KONFIRMASI HAPUS
+============================================================ */
+
+.delete-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.48);
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 99999;
+    padding: 20px;
+}
+
+.delete-modal.show {
+    display: flex;
+}
+
+.delete-modal-box {
+    width: 100%;
+    max-width: 420px;
+    background: #fff;
+    border-radius: 14px;
+    padding: 26px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.20);
+    text-align: center;
+    animation: deleteModalIn 0.2s ease-out;
+}
+
+.delete-modal-icon {
+    width: 56px;
+    height: 56px;
+    margin: 0 auto 16px;
+    border-radius: 50%;
+    background: var(--red-light);
+    color: var(--red);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.delete-modal-icon .material-symbols-outlined {
+    font-size: 28px;
+}
+
+.delete-modal-box h3 {
+    margin: 0 0 8px;
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--text-dark);
+}
+
+.delete-modal-box p {
+    margin: 0 auto 22px;
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--text-muted);
+}
+
+.delete-modal-actions {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.delete-modal-actions button {
+    min-width: 110px;
+    height: 40px;
+    border-radius: 8px;
+    border: none;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.delete-modal-cancel {
+    background: #F1F5F9;
+    color: var(--text-mid);
+}
+
+.delete-modal-cancel:hover {
+    background: #E2E8F0;
+}
+
+.delete-modal-confirm {
+    background: var(--red);
+    color: #fff;
+}
+
+.delete-modal-confirm:hover {
+    background: #B91C1C;
+}
+
+@keyframes deleteModalIn {
+    from {
+        opacity: 0;
+        transform: translateY(8px) scale(0.97);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
     </style>
 </head>
 
@@ -903,18 +1049,13 @@
                                                     </a>
 
                                                     <!-- Tombol Hapus -->
-                                                    <form action="{{ route('materials.destroy', $mat->id) }}"
-                                                        method="POST"
-                                                        onsubmit="return confirm('Apakah Anda yakin ingin menghapus material {{ $mat->name }} ({{ $mat->material_number }})?');"
-                                                        style="display: inline;">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                        <button type="submit" class="btn btn-icon-only btn-delete"
-                                                            title="Hapus Material">
-                                                            <span class="material-symbols-outlined"
-                                                                style="font-size: 18px;">delete</span>
-                                                        </button>
-                                                    </form>
+                                                    <button type="button"
+                                                            class="btn btn-icon-only btn-delete btn-open-delete-modal"
+                                                            title="Hapus Material"
+                                                            data-action="{{ route('materials.destroy', $mat->id) }}"
+                                                            data-name="{{ addslashes($mat->name) }}">
+                                                        <span class="material-symbols-outlined" style="font-size: 18px;">delete</span>
+                                                    </button>
                                                 </div>
                                             </td>
                                         </tr>
@@ -996,25 +1137,170 @@
                             <span class="material-symbols-outlined">inventory_2</span>
                             <h3>Belum ada data material</h3>
                             <p>Silakan tambahkan material baru atau import data melalui Excel.</p>
-                            <div style="display:flex;gap:10px;">
-                                <a href="{{ route('materials.create') }}" class="btn btn-primary">
-                                    <span class="material-symbols-outlined" style="font-size:18px;">add</span>
-                                    + Tambah Material
-                                </a>
-                                <a href="{{ route('materials.import') }}" class="btn btn-yellow">
-                                    <span class="material-symbols-outlined" style="font-size:18px;">upload_file</span>
-                                    Import Excel
-                                </a>
-                            </div>
+<div class="empty-actions">
+    <a href="{{ route('materials.create') }}" class="btn btn-primary">
+        <span class="material-symbols-outlined">add</span>
+        Tambah Material
+    </a>
+
+    <a href="{{ route('materials.import') }}" class="btn btn-yellow">
+        <span class="material-symbols-outlined">upload_file</span>
+        Import Excel
+    </a>
+</div>
+
                         </div>
                     @endif
                 </div>
 
             </div>
 
-        </main>
+            <!-- POPUP KONFIRMASI HAPUS -->
+            <div id="deleteModal" class="delete-modal">
+                <div class="delete-modal-box">
+                    <div class="delete-modal-icon">
+                        <span class="material-symbols-outlined">delete</span>
+                    </div>
+                    <h3>Hapus Material?</h3>
+                    <p id="deleteModalMessage">
+                        Apakah Anda yakin ingin menghapus material ini?
+                        Data yang dihapus tidak dapat dikembalikan.
+                    </p>
+                    <div class="delete-modal-actions">
+                        <button type="button" class="delete-modal-cancel" id="deleteModalCancel">Batal</button>
+                        <button type="button" class="delete-modal-confirm" id="deleteModalConfirm">Hapus</button>
+                    </div>
+                </div>
+            </div>
 
-    </div>
+            <!-- Form tersembunyi untuk submit hapus -->
+            <form id="deleteHiddenForm" method="POST" style="display:none;">
+                @csrf
+                @method('DELETE')
+            </form>
+
+            <script>
+            (function () {
+                const modal      = document.getElementById('deleteModal');
+                const cancelBtn  = document.getElementById('deleteModalCancel');
+                const confirmBtn = document.getElementById('deleteModalConfirm');
+                const msgEl      = document.getElementById('deleteModalMessage');
+                const hiddenForm = document.getElementById('deleteHiddenForm');
+
+                if (!modal || !cancelBtn || !confirmBtn || !hiddenForm) return;
+
+                let pendingAction = null;
+                let pendingRow    = null;
+
+                // Delegasi klik: tangkap tombol hapus di mana saja di dalam main
+                document.querySelector('main.main').addEventListener('click', function (e) {
+                    const btn = e.target.closest('.btn-open-delete-modal');
+                    if (!btn) return;
+
+                    e.preventDefault();
+
+                    pendingAction = btn.dataset.action;
+                    pendingRow    = btn.closest('tr') || null;
+                    const name    = btn.dataset.name || '';
+
+                    msgEl.textContent = name
+                        ? `Apakah Anda yakin ingin menghapus material "${name}"? Data yang dihapus tidak dapat dikembalikan.`
+                        : 'Apakah Anda yakin ingin menghapus material ini? Data yang dihapus tidak dapat dikembalikan.';
+
+                    modal.classList.add('show');
+                });
+
+                cancelBtn.addEventListener('click', function () {
+                    modal.classList.remove('show');
+                    pendingAction = null;
+                    pendingRow    = null;
+                });
+
+                confirmBtn.addEventListener('click', async function () {
+                    if (!pendingAction) return;
+
+                    const action = pendingAction;
+                    const row    = pendingRow;
+
+                    // Tutup modal & reset state
+                    modal.classList.remove('show');
+                    pendingAction = null;
+                    pendingRow    = null;
+
+                    // Animasi fade-out pada baris yang dihapus
+                    if (row) {
+                        row.style.transition = 'opacity 0.22s ease, transform 0.22s ease';
+                        row.style.opacity    = '0';
+                        row.style.transform  = 'translateX(-12px)';
+                    }
+
+                    // Tampilkan indikator loading
+                    confirmBtn.disabled    = true;
+                    confirmBtn.textContent = 'Menghapus...';
+
+                    try {
+                        const csrfToken = hiddenForm.querySelector('input[name="_token"]').value;
+                        const formData  = new FormData();
+                        formData.append('_token',  csrfToken);
+                        formData.append('_method', 'DELETE');
+
+                        // Kirim request hapus via fetch (tanpa full reload)
+                        await fetch(action, {
+                            method: 'POST',
+                            body:   formData,
+                            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                        });
+
+                        // Tunggu animasi selesai lalu refresh konten via SPA (smooth)
+                        setTimeout(async function () {
+                            if (typeof navigatePage === 'function') {
+                                await navigatePage(
+                                    window.location.pathname + window.location.search,
+                                    false
+                                );
+                            } else {
+                                window.location.reload();
+                            }
+                            confirmBtn.disabled    = false;
+                            confirmBtn.textContent = 'Hapus';
+                        }, 220);
+
+                    } catch (err) {
+                        console.error('Delete error:', err);
+                        // Kembalikan baris jika gagal
+                        if (row) {
+                            row.style.opacity   = '1';
+                            row.style.transform = 'translateX(0)';
+                        }
+                        confirmBtn.disabled    = false;
+                        confirmBtn.textContent = 'Hapus';
+                        alert('Gagal menghapus material. Silakan coba lagi.');
+                    }
+                });
+
+                // Klik di luar kotak modal untuk tutup
+                modal.addEventListener('click', function (e) {
+                    if (e.target === modal) {
+                        modal.classList.remove('show');
+                        pendingAction = null;
+                        pendingRow    = null;
+                    }
+                });
+
+                // Tutup dengan tombol Escape
+                document.addEventListener('keydown', function (e) {
+                    if (e.key === 'Escape' && modal.classList.contains('show')) {
+                        modal.classList.remove('show');
+                        pendingAction = null;
+                        pendingRow    = null;
+                    }
+                });
+
+            })();
+            </script>
+
+        </main>
+   
 
 </body>
 

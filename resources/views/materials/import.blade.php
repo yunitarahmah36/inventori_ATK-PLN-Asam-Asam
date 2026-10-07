@@ -662,12 +662,7 @@
 
         </div>
 
-    </main>
-
-</div>
-
-
-<script>
+        <script>
 
     function showFileName(input) {
 
@@ -714,6 +709,11 @@
         });
 
 </script>
+
+
+    </main>
+
+</div>
 
 </body>
 
