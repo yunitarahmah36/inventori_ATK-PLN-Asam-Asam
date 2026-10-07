@@ -3,45 +3,52 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Dashboard - Inventori ATK PLN Asam-Asam</title>
-<link rel="icon" type="image/png" href="{{ asset('images/pln_bulat.png') }}">
+    <link rel="icon" type="image/png" href="{{ asset('images/pln_bulat.png') }}">
     <!-- Google Fonts: Inter -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
 
     <!-- Material Symbols (Icons) -->
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+        rel="stylesheet">
 
     <style id="page-style">
         /* ============================================================
            RESET & BASE
         ============================================================ */
-        *, *::before, *::after {
+        *,
+        *::before,
+        *::after {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
         :root {
-            --blue:        #0057B8;
-            --blue-dark:   #003B73;
-            --blue-light:  #EAF3FF;
-            --yellow:      #FFC107;
-            --yellow-light:#FFF8E1;
-            --bg:          #F5F7FA;
-            --white:       #FFFFFF;
-            --text-dark:   #1F2937;
-            --text-mid:    #374151;
-            --text-muted:  #6B7280;
-            --border:      #E5E7EB;
-            --sidebar-w:   260px;
-            --header-h:    68px;
-            --radius:      12px;
-            --shadow:      0 2px 12px rgba(0,0,0,0.07);
-            --transition:  0.2s ease;
+            --blue: #0057B8;
+            --blue-dark: #003B73;
+            --blue-light: #EAF3FF;
+            --yellow: #FFC107;
+            --yellow-light: #FFF8E1;
+            --bg: #F5F7FA;
+            --white: #FFFFFF;
+            --text-dark: #1F2937;
+            --text-mid: #374151;
+            --text-muted: #6B7280;
+            --border: #E5E7EB;
+            --sidebar-w: 260px;
+            --header-h: 68px;
+            --radius: 12px;
+            --shadow: 0 2px 12px rgba(0, 0, 0, 0.07);
+            --transition: 0.2s ease;
         }
 
-        html, body {
+        html,
+        body {
             height: 100%;
             font-family: 'Inter', Arial, sans-serif;
             background: var(--bg);
@@ -49,13 +56,29 @@
             overflow-x: hidden;
         }
 
-        a { text-decoration: none; color: inherit; }
-        button { cursor: pointer; font-family: inherit; }
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        button {
+            cursor: pointer;
+            font-family: inherit;
+        }
 
         /* scrollbar tipis */
-        ::-webkit-scrollbar { width: 5px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 10px; }
+        ::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #CBD5E1;
+            border-radius: 10px;
+        }
 
 
         /* ============================================================
@@ -93,7 +116,7 @@
             align-items: center;
             justify-content: space-between;
             padding: 0 28px;
-            box-shadow: 0 1px 6px rgba(0,0,0,0.04);
+            box-shadow: 0 1px 6px rgba(0, 0, 0, 0.04);
         }
 
         .topbar-left h1 {
@@ -123,8 +146,13 @@
             transition: background var(--transition);
         }
 
-        .btn-hamburger:hover { background: var(--bg); }
-        .btn-hamburger .material-symbols-outlined { font-size: 22px; }
+        .btn-hamburger:hover {
+            background: var(--bg);
+        }
+
+        .btn-hamburger .material-symbols-outlined {
+            font-size: 22px;
+        }
 
         /* Topbar Right: user profile */
         .topbar-user {
@@ -147,7 +175,9 @@
             flex-shrink: 0;
         }
 
-        .topbar-user-detail { text-align: right; }
+        .topbar-user-detail {
+            text-align: right;
+        }
 
         .topbar-user-name {
             font-size: 13.5px;
@@ -210,7 +240,7 @@
             width: 200px;
             height: 200px;
             border-radius: 50%;
-            background: rgba(255,255,255,0.06);
+            background: rgba(255, 255, 255, 0.06);
         }
 
         .welcome-card::after {
@@ -221,21 +251,24 @@
             width: 140px;
             height: 140px;
             border-radius: 50%;
-            background: rgba(255,255,255,0.04);
+            background: rgba(255, 255, 255, 0.04);
         }
 
-        .welcome-left { position: relative; z-index: 1; }
+        .welcome-left {
+            position: relative;
+            z-index: 1;
+        }
 
         .welcome-date-badge {
             display: inline-flex;
             align-items: center;
             gap: 6px;
             padding: 4px 12px;
-            background: rgba(255,255,255,0.15);
+            background: rgba(255, 255, 255, 0.15);
             border-radius: 20px;
             font-size: 11.5px;
             font-weight: 500;
-            color: rgba(255,255,255,0.9);
+            color: rgba(255, 255, 255, 0.9);
             margin-bottom: 12px;
         }
 
@@ -252,7 +285,7 @@
 
         .welcome-card p {
             font-size: 13px;
-            color: rgba(255,255,255,0.8);
+            color: rgba(255, 255, 255, 0.8);
         }
 
         .welcome-status {
@@ -261,14 +294,16 @@
             gap: 6px;
             margin-top: 12px;
             padding: 5px 12px;
-            background: rgba(255,255,255,0.12);
+            background: rgba(255, 255, 255, 0.12);
             border-radius: 8px;
             font-size: 12px;
             font-weight: 500;
-            color: rgba(255,255,255,0.9);
+            color: rgba(255, 255, 255, 0.9);
         }
 
-        .welcome-status .material-symbols-outlined { font-size: 15px; }
+        .welcome-status .material-symbols-outlined {
+            font-size: 15px;
+        }
 
         .welcome-role-badge {
             position: relative;
@@ -324,9 +359,13 @@
             min-height: 80px;
         }
 
-        .action-btn:active { transform: scale(0.97); }
+        .action-btn:active {
+            transform: scale(0.97);
+        }
 
-        .action-btn:hover { box-shadow: 0 6px 16px rgba(0,0,0,0.12); }
+        .action-btn:hover {
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+        }
 
         .action-icon {
             width: 36px;
@@ -337,14 +376,17 @@
             justify-content: center;
         }
 
-        .action-icon .material-symbols-outlined { font-size: 20px; }
+        .action-icon .material-symbols-outlined {
+            font-size: 20px;
+        }
 
         .action-btn-primary {
             background: var(--blue);
             color: #fff;
         }
+
         .action-btn-primary .action-icon {
-            background: rgba(255,255,255,0.15);
+            background: rgba(255, 255, 255, 0.15);
             color: #fff;
         }
 
@@ -352,8 +394,9 @@
             background: var(--yellow);
             color: var(--blue-dark);
         }
+
         .action-btn-yellow .action-icon {
-            background: rgba(0,59,115,0.1);
+            background: rgba(0, 59, 115, 0.1);
             color: var(--blue-dark);
         }
 
@@ -363,6 +406,7 @@
             border: 1px solid var(--border);
             box-shadow: var(--shadow);
         }
+
         .action-btn-white .action-icon {
             background: var(--blue-light);
             color: var(--blue);
@@ -396,10 +440,21 @@
             height: 3px;
         }
 
-        .stat-card-bar.yellow { background: var(--yellow); }
-        .stat-card-bar.blue   { background: var(--blue); }
-        .stat-card-bar.teal   { background: #10B981; }
-        .stat-card-bar.orange { background: #F97316; }
+        .stat-card-bar.yellow {
+            background: var(--yellow);
+        }
+
+        .stat-card-bar.blue {
+            background: var(--blue);
+        }
+
+        .stat-card-bar.teal {
+            background: #10B981;
+        }
+
+        .stat-card-bar.orange {
+            background: #F97316;
+        }
 
         .stat-card-header {
             display: flex;
@@ -423,11 +478,29 @@
             justify-content: center;
         }
 
-        .stat-card-icon .material-symbols-outlined { font-size: 18px; }
-        .stat-icon-blue   { background: var(--blue-light); color: var(--blue); }
-        .stat-icon-yellow { background: var(--yellow-light); color: #92400E; }
-        .stat-icon-teal   { background: #D1FAE5; color: #065F46; }
-        .stat-icon-orange { background: #FFF7ED; color: #C2410C; }
+        .stat-card-icon .material-symbols-outlined {
+            font-size: 18px;
+        }
+
+        .stat-icon-blue {
+            background: var(--blue-light);
+            color: var(--blue);
+        }
+
+        .stat-icon-yellow {
+            background: var(--yellow-light);
+            color: #92400E;
+        }
+
+        .stat-icon-teal {
+            background: #D1FAE5;
+            color: #065F46;
+        }
+
+        .stat-icon-orange {
+            background: #FFF7ED;
+            color: #C2410C;
+        }
 
         .stat-card-value {
             font-size: 28px;
@@ -445,7 +518,9 @@
             color: var(--text-muted);
         }
 
-        .stat-card-sub .material-symbols-outlined { font-size: 13px; }
+        .stat-card-sub .material-symbols-outlined {
+            font-size: 13px;
+        }
 
 
         /* ============================================================
@@ -482,7 +557,10 @@
             color: var(--blue-dark);
         }
 
-        .section-card-title .material-symbols-outlined { font-size: 20px; color: var(--blue); }
+        .section-card-title .material-symbols-outlined {
+            font-size: 20px;
+            color: var(--blue);
+        }
 
         .btn-lihat-semua {
             display: flex;
@@ -498,8 +576,13 @@
             transition: background var(--transition);
         }
 
-        .btn-lihat-semua:hover { background: var(--blue-light); }
-        .btn-lihat-semua .material-symbols-outlined { font-size: 15px; }
+        .btn-lihat-semua:hover {
+            background: var(--blue-light);
+        }
+
+        .btn-lihat-semua .material-symbols-outlined {
+            font-size: 15px;
+        }
 
 
         /* Material List */
@@ -513,9 +596,13 @@
             transition: background var(--transition);
         }
 
-        .material-item:hover { background: var(--bg); }
+        .material-item:hover {
+            background: var(--bg);
+        }
 
-        .material-item:last-child { margin-bottom: 0; }
+        .material-item:last-child {
+            margin-bottom: 0;
+        }
 
         .material-item-left {
             display: flex;
@@ -569,7 +656,10 @@
             color: #92400E;
         }
 
-        .material-low-label .material-symbols-outlined { font-size: 13px; color: #F59E0B; }
+        .material-low-label .material-symbols-outlined {
+            font-size: 13px;
+            color: #F59E0B;
+        }
 
         .material-qty {
             font-size: 13px;
@@ -579,7 +669,9 @@
             flex-shrink: 0;
         }
 
-        .material-qty.low { color: #92400E; }
+        .material-qty.low {
+            color: #92400E;
+        }
 
 
         /* Activity Timeline */
@@ -604,7 +696,9 @@
             margin-bottom: 16px;
         }
 
-        .activity-item:last-child { margin-bottom: 0; }
+        .activity-item:last-child {
+            margin-bottom: 0;
+        }
 
         .activity-dot {
             position: absolute;
@@ -624,11 +718,45 @@
             border-radius: 50%;
         }
 
-        .dot-tambah  { background: #D1FAE5; } .dot-tambah  .activity-dot-inner { background: #059669; }
-        .dot-import  { background: var(--blue-light); } .dot-import  .activity-dot-inner { background: var(--blue); }
-        .dot-edit    { background: var(--yellow-light); } .dot-edit    .activity-dot-inner { background: #D97706; }
-        .dot-hapus   { background: #FEE2E2; } .dot-hapus   .activity-dot-inner { background: #DC2626; }
-        .dot-default { background: var(--bg); } .dot-default .activity-dot-inner { background: var(--text-muted); }
+        .dot-tambah {
+            background: #D1FAE5;
+        }
+
+        .dot-tambah .activity-dot-inner {
+            background: #059669;
+        }
+
+        .dot-import {
+            background: var(--blue-light);
+        }
+
+        .dot-import .activity-dot-inner {
+            background: var(--blue);
+        }
+
+        .dot-edit {
+            background: var(--yellow-light);
+        }
+
+        .dot-edit .activity-dot-inner {
+            background: #D97706;
+        }
+
+        .dot-hapus {
+            background: #FEE2E2;
+        }
+
+        .dot-hapus .activity-dot-inner {
+            background: #DC2626;
+        }
+
+        .dot-default {
+            background: var(--bg);
+        }
+
+        .dot-default .activity-dot-inner {
+            background: var(--text-muted);
+        }
 
         .activity-row {
             display: flex;
@@ -657,11 +785,30 @@
             white-space: nowrap;
         }
 
-        .badge-tambah { background: #D1FAE5; color: #065F46; }
-        .badge-import { background: var(--blue-light); color: #1D4ED8; }
-        .badge-edit   { background: var(--yellow-light); color: #92400E; }
-        .badge-hapus  { background: #FEE2E2; color: #B91C1C; }
-        .badge-other  { background: var(--bg); color: var(--text-muted); }
+        .badge-tambah {
+            background: #D1FAE5;
+            color: #065F46;
+        }
+
+        .badge-import {
+            background: var(--blue-light);
+            color: #1D4ED8;
+        }
+
+        .badge-edit {
+            background: var(--yellow-light);
+            color: #92400E;
+        }
+
+        .badge-hapus {
+            background: #FEE2E2;
+            color: #B91C1C;
+        }
+
+        .badge-other {
+            background: var(--bg);
+            color: var(--text-muted);
+        }
 
         .activity-time {
             font-size: 11.5px;
@@ -693,64 +840,14 @@
             display: none;
             position: fixed;
             inset: 0;
-            background: rgba(0,0,0,0.45);
+            background: rgba(0, 0, 0, 0.45);
             z-index: 190;
             backdrop-filter: blur(2px);
         }
 
-        .drawer-backdrop.open { display: block; }
-
-
-        /* ============================================================
-           BOTTOM NAVIGATION (Mobile)
-        ============================================================ */
-        .bottom-nav {
-            display: none;
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 62px;
-            background: var(--white);
-            border-top: 1px solid var(--border);
-            z-index: 300;
-            box-shadow: 0 -2px 10px rgba(0,0,0,0.06);
+        .drawer-backdrop.open {
+            display: block;
         }
-
-        .bottom-nav-inner {
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            height: 100%;
-            max-width: 500px;
-            margin: 0 auto;
-        }
-
-        .bottom-nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 2px;
-            min-width: 56px;
-            height: 100%;
-            font-size: 10.5px;
-            font-weight: 600;
-            color: var(--text-muted);
-            transition: color var(--transition);
-            border: none;
-            background: none;
-            text-decoration: none;
-        }
-
-        .bottom-nav-item .material-symbols-outlined { font-size: 22px; }
-
-        .bottom-nav-item.active {
-            color: var(--blue);
-        }
-
-        .bottom-nav-item:hover { color: var(--blue); }
-
 
         /* ============================================================
            RESPONSIVE BREAKPOINTS
@@ -758,8 +855,13 @@
 
         /* Tablet */
         @media (max-width: 1024px) {
-            .stats-grid { grid-template-columns: repeat(2, 1fr); }
-            .sections-row { grid-template-columns: 1fr; }
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .sections-row {
+                grid-template-columns: 1fr;
+            }
         }
 
         /* Mobile */
@@ -772,11 +874,17 @@
                 padding: 0 16px;
             }
 
-            .topbar-left h1 { font-size: 17px; }
+            .topbar-left h1 {
+                font-size: 17px;
+            }
 
-            .btn-hamburger { display: flex; }
+            .btn-hamburger {
+                display: flex;
+            }
 
-            .topbar-user-detail { display: none; }
+            .topbar-user-detail {
+                display: none;
+            }
 
             .page-content {
                 padding: 16px 16px 80px;
@@ -789,22 +897,45 @@
                 padding: 18px 18px;
             }
 
-            .welcome-card h2 { font-size: 18px; }
+            .welcome-card h2 {
+                font-size: 18px;
+            }
 
-            .welcome-role-badge { align-self: flex-start; }
+            .welcome-role-badge {
+                align-self: flex-start;
+            }
 
-            .quick-actions { grid-template-columns: repeat(3, 1fr); gap: 8px; }
-            .action-btn { padding: 14px 8px; min-height: 70px; font-size: 11.5px; }
+            .quick-actions {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 8px;
+            }
 
-            .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
-            .stat-card-value { font-size: 22px; }
+            .action-btn {
+                padding: 14px 8px;
+                min-height: 70px;
+                font-size: 11.5px;
+            }
 
-            .bottom-nav { display: block; }
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+
+            .stat-card-value {
+                font-size: 22px;
+            }
         }
 
         @media (max-width: 400px) {
-            .quick-actions { grid-template-columns: repeat(3, 1fr); gap: 6px; }
-            .action-btn { min-height: 64px; padding: 10px 4px; }
+            .quick-actions {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 6px;
+            }
+
+            .action-btn {
+                min-height: 64px;
+                padding: 10px 4px;
+            }
         }
     </style>
 </head>
@@ -866,9 +997,24 @@
                      1. WELCOME CARD
                 ================================================== -->
                 @php
-                    $namaHari  = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
-                    $namaBulan = ['','Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
-                    $hariIni   = $namaHari[date('w')] . ', ' . date('j') . ' ' . $namaBulan[(int)date('n')] . ' ' . date('Y');
+                    $namaHari = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+                    $namaBulan = [
+                        '',
+                        'Januari',
+                        'Februari',
+                        'Maret',
+                        'April',
+                        'Mei',
+                        'Juni',
+                        'Juli',
+                        'Agustus',
+                        'September',
+                        'Oktober',
+                        'November',
+                        'Desember',
+                    ];
+                    $hariIni =
+                        $namaHari[date('w')] . ', ' . date('j') . ' ' . $namaBulan[(int) date('n')] . ' ' . date('Y');
                 @endphp
 
                 <div class="welcome-card">
@@ -912,7 +1058,8 @@
                         Import Excel
                     </a>
 
-                    <button class="action-btn action-btn-white" type="button" onclick="alert('Halaman Laporan belum tersedia.')">
+                    <button class="action-btn action-btn-white" type="button"
+                        onclick="alert('Halaman Laporan belum tersedia.')">
                         <div class="action-icon">
                             <span class="material-symbols-outlined">analytics</span>
                         </div>
@@ -970,7 +1117,7 @@
                         </div>
                         <div class="stat-card-value">{{ $materialMasuk }}</div>
                         <div class="stat-card-sub">
-                            Masuk bulan {{ $namaBulan[(int)date('n')] }}
+                            Masuk bulan {{ $namaBulan[(int) date('n')] }}
                         </div>
                     </div>
 
@@ -1060,26 +1207,26 @@
                             <div class="activity-list">
                                 @foreach ($latestActivities as $act)
                                     @php
-                                        $dotClass  = match($act->activity) {
+                                        $dotClass = match ($act->activity) {
                                             'Tambah' => 'dot-tambah',
                                             'Import' => 'dot-import',
-                                            'Edit'   => 'dot-edit',
-                                            'Hapus'  => 'dot-hapus',
-                                            default  => 'dot-default',
+                                            'Edit' => 'dot-edit',
+                                            'Hapus' => 'dot-hapus',
+                                            default => 'dot-default',
                                         };
-                                        $badgeClass = match($act->activity) {
+                                        $badgeClass = match ($act->activity) {
                                             'Tambah' => 'badge-tambah',
                                             'Import' => 'badge-import',
-                                            'Edit'   => 'badge-edit',
-                                            'Hapus'  => 'badge-hapus',
-                                            default  => 'badge-other',
+                                            'Edit' => 'badge-edit',
+                                            'Hapus' => 'badge-hapus',
+                                            default => 'badge-other',
                                         };
-                                        $verb = match($act->activity) {
+                                        $verb = match ($act->activity) {
                                             'Tambah' => 'menambahkan',
                                             'Import' => 'mengimport data dari Excel untuk',
-                                            'Edit'   => 'mengubah stok',
-                                            'Hapus'  => 'menghapus',
-                                            default  => 'memperbarui',
+                                            'Edit' => 'mengubah stok',
+                                            'Hapus' => 'menghapus',
+                                            default => 'memperbarui',
                                         };
                                     @endphp
                                     <div class="activity-item">
@@ -1091,14 +1238,19 @@
                                                 <div class="activity-desc">
                                                     <strong>{{ $act->user->name ?? 'Pengguna' }}</strong>
                                                     {{ $verb }}
-                                                    <strong style="color:var(--text-dark);">{{ $act->material->name ?? 'Material' }}</strong>
-                                                    @if(!empty($act->description))
-                                                        <div style="color:var(--text-muted);font-size:11.5px;margin-top:2px;">{{ $act->description }}</div>
+                                                    <strong
+                                                        style="color:var(--text-dark);">{{ $act->material->name ?? 'Material' }}</strong>
+                                                    @if (!empty($act->description))
+                                                        <div
+                                                            style="color:var(--text-muted);font-size:11.5px;margin-top:2px;">
+                                                            {{ $act->description }}</div>
                                                     @endif
                                                 </div>
-                                                <div class="activity-time" style="margin-top:3px;">{{ $act->created_at->diffForHumans() }}</div>
+                                                <div class="activity-time" style="margin-top:3px;">
+                                                    {{ $act->created_at->diffForHumans() }}</div>
                                             </div>
-                                            <span class="activity-badge {{ $badgeClass }}">{{ $act->activity }}</span>
+                                            <span
+                                                class="activity-badge {{ $badgeClass }}">{{ $act->activity }}</span>
                                         </div>
                                     </div>
                                 @endforeach
@@ -1122,37 +1274,6 @@
     </div>
     <!-- /layout -->
 
-
-    <!-- ============================================================
-         BOTTOM NAVIGATION (Hanya tampil di Mobile)
-    ============================================================ -->
-    <nav class="bottom-nav">
-        <div class="bottom-nav-inner">
-
-            <a href="{{ route('dashboard') }}" class="bottom-nav-item active">
-                <span class="material-symbols-outlined">speed</span>
-                Dashboard
-            </a>
-
-            <a href="{{ route('materials.index') }}" class="bottom-nav-item">
-                <span class="material-symbols-outlined">inventory_2</span>
-                Material
-            </a>
-
-            <a href="#" class="bottom-nav-item">
-                <span class="material-symbols-outlined">history</span>
-                Riwayat
-            </a>
-
-            <a href="#" class="bottom-nav-item">
-                <span class="material-symbols-outlined">account_circle</span>
-                Profile
-            </a>
-
-        </div>
-    </nav>
-
-
     <!-- ============================================================
          JAVASCRIPT
     ============================================================ -->
@@ -1173,7 +1294,7 @@
         // --- Submenu toggle ---
         function toggleSubmenu(e, id) {
             e.preventDefault();
-            const menu  = document.getElementById(id);
+            const menu = document.getElementById(id);
             const arrow = document.getElementById('arrow-' + id.replace('submenu-', ''));
             const isOpen = menu.style.display === 'block';
             menu.style.display = isOpen ? 'none' : 'block';
@@ -1181,7 +1302,7 @@
         }
 
         // Tutup sidebar saat layar diperbesar ke desktop
-        window.addEventListener('resize', function () {
+        window.addEventListener('resize', function() {
             if (window.innerWidth > 768) {
                 closeSidebar();
             }
