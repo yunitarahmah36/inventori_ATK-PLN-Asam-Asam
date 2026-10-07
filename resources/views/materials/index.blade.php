@@ -3,50 +3,57 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Data Material - Inventori ATK PLN Asam-Asam</title>
     <link rel="icon" type="image/png" href="{{ asset('images/pln_bulat.png') }}">
 
     <!-- Google Fonts: Inter -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
 
     <!-- Material Symbols (Icons) -->
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+        rel="stylesheet">
 
     <style id="page-style">
         /* ============================================================
            RESET & CSS VARIABLES
         ============================================================ */
-        *, *::before, *::after {
+        *,
+        *::before,
+        *::after {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
         :root {
-            --blue:         #0057B8;
-            --blue-dark:    #003B73;
-            --blue-light:   #EAF3FF;
-            --yellow:       #FFC107;
+            --blue: #0057B8;
+            --blue-dark: #003B73;
+            --blue-light: #EAF3FF;
+            --yellow: #FFC107;
             --yellow-light: #FFF8E1;
-            --bg:           #F5F7FA;
-            --white:        #FFFFFF;
-            --text-dark:    #1F2937;
-            --text-mid:     #374151;
-            --text-muted:   #6B7280;
-            --border:       #E5E7EB;
-            --red:          #DC2626;
-            --red-light:    #FEE2E2;
-            --green:        #10B981;
-            --green-light:  #D1FAE5;
-            --sidebar-w:    260px;
-            --header-h:     68px;
-            --radius:       12px;
-            --shadow:       0 2px 12px rgba(0,0,0,0.07);
-            --transition:   0.2s ease;
+            --bg: #F5F7FA;
+            --white: #FFFFFF;
+            --text-dark: #1F2937;
+            --text-mid: #374151;
+            --text-muted: #6B7280;
+            --border: #E5E7EB;
+            --red: #DC2626;
+            --red-light: #FEE2E2;
+            --green: #10B981;
+            --green-light: #D1FAE5;
+            --sidebar-w: 260px;
+            --header-h: 68px;
+            --radius: 12px;
+            --shadow: 0 2px 12px rgba(0, 0, 0, 0.07);
+            --transition: 0.2s ease;
         }
 
-        html, body {
+        html,
+        body {
             height: 100%;
             font-family: 'Inter', Arial, sans-serif;
             background: var(--bg);
@@ -54,13 +61,31 @@
             overflow-x: hidden;
         }
 
-        a { text-decoration: none; color: inherit; }
-        button, select, input { font-family: inherit; }
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        button,
+        select,
+        input {
+            font-family: inherit;
+        }
 
         /* Scrollbar */
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 10px; }
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #CBD5E1;
+            border-radius: 10px;
+        }
 
         /* ============================================================
            LAYOUT
@@ -212,8 +237,15 @@
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-6px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(-6px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         /* Header Card */
@@ -616,47 +648,8 @@
             display: none;
             position: fixed;
             inset: 0;
-            background: rgba(0,0,0,0.5);
+            background: rgba(0, 0, 0, 0.5);
             z-index: 199;
-        }
-
-        .bottom-nav {
-            display: none;
-            position: fixed;
-            inset: auto 0 0 0;
-            height: 60px;
-            background: #fff;
-            border-top: 1px solid var(--border);
-            z-index: 100;
-            box-shadow: 0 -2px 10px rgba(0,0,0,0.06);
-        }
-
-        .bottom-nav-inner {
-            display: flex;
-            height: 100%;
-            align-items: center;
-            justify-content: space-around;
-        }
-
-        .bottom-nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 2px;
-            font-size: 10.5px;
-            font-weight: 600;
-            color: var(--text-muted);
-            padding: 6px 12px;
-            border-radius: 8px;
-            transition: color var(--transition);
-        }
-
-        .bottom-nav-item.active {
-            color: var(--blue);
-        }
-
-        .bottom-nav-item .material-symbols-outlined {
-            font-size: 22px;
         }
 
         /* ============================================================
@@ -783,7 +776,8 @@
                             <span class="material-symbols-outlined" style="font-size:20px;">check_circle</span>
                             <span>{{ session('success') }}</span>
                         </div>
-                        <button type="button" class="alert-close" onclick="document.getElementById('alertSuccess').remove()">
+                        <button type="button" class="alert-close"
+                            onclick="document.getElementById('alertSuccess').remove()">
                             <span class="material-symbols-outlined" style="font-size:18px;">close</span>
                         </button>
                     </div>
@@ -823,34 +817,19 @@
                         <!-- Input Pencarian -->
                         <div class="search-box">
                             <span class="material-symbols-outlined">search</span>
-                            <input 
-                                type="text" 
-                                name="search" 
-                                value="{{ $search }}" 
-                                placeholder="Cari no material atau nama material..."
-                                autocomplete="off"
-                            >
+                            <input type="text" name="search" value="{{ $search }}"
+                                placeholder="Cari no material atau nama material..." autocomplete="off">
                         </div>
 
                         <!-- Filter Tanggal Masuk -->
                         <div class="date-input-group">
                             <label for="start_date">Mulai:</label>
-                            <input 
-                                type="date" 
-                                id="start_date" 
-                                name="start_date" 
-                                value="{{ $startDate }}"
-                            >
+                            <input type="date" id="start_date" name="start_date" value="{{ $startDate }}">
                         </div>
 
                         <div class="date-input-group">
                             <label for="end_date">Selesai:</label>
-                            <input 
-                                type="date" 
-                                id="end_date" 
-                                name="end_date" 
-                                value="{{ $endDate }}"
-                            >
+                            <input type="date" id="end_date" name="end_date" value="{{ $endDate }}">
                         </div>
 
                         <button type="submit" class="btn btn-primary" style="padding: 8px 14px;">
@@ -859,7 +838,8 @@
                         </button>
 
                         @if (!empty($search) || !empty($startDate) || !empty($endDate))
-                            <a href="{{ route('materials.index', ['per_page' => $perPage]) }}" class="btn btn-outline" style="padding: 8px 14px;">
+                            <a href="{{ route('materials.index', ['per_page' => $perPage]) }}" class="btn btn-outline"
+                                style="padding: 8px 14px;">
                                 <span class="material-symbols-outlined" style="font-size:18px;">restart_alt</span>
                                 Reset
                             </a>
@@ -896,7 +876,8 @@
                                             <td style="font-weight: 600;">
                                                 {{ $mat->name }}
                                                 @if (!empty($mat->description))
-                                                    <div style="font-size: 11.5px; color: var(--text-muted); font-weight: normal; margin-top: 2px;">
+                                                    <div
+                                                        style="font-size: 11.5px; color: var(--text-muted); font-weight: normal; margin-top: 2px;">
                                                         {{ $mat->description }}
                                                     </div>
                                                 @endif
@@ -905,37 +886,33 @@
                                                 {{ $mat->entry_date ? $mat->entry_date->format('d/m/Y') : '-' }}
                                             </td>
                                             <td>
-                                                <span class="qty-badge">{{ number_format($mat->quantity, 0, ',', '.') }}</span>
+                                                <span
+                                                    class="qty-badge">{{ number_format($mat->quantity, 0, ',', '.') }}</span>
                                             </td>
                                             <td>
-                                                <span style="font-weight: 500; color: var(--text-mid);">{{ $mat->unit }}</span>
+                                                <span
+                                                    style="font-weight: 500; color: var(--text-mid);">{{ $mat->unit }}</span>
                                             </td>
                                             <td>
                                                 <div class="actions-cell" style="justify-content: center;">
                                                     <!-- Tombol Edit -->
-                                                    <a 
-                                                        href="{{ route('materials.edit', $mat->id) }}" 
-                                                        class="btn btn-icon-only btn-edit" 
-                                                        title="Edit Material"
-                                                    >
-                                                        <span class="material-symbols-outlined" style="font-size: 18px;">edit</span>
+                                                    <a href="{{ route('materials.edit', $mat->id) }}"
+                                                        class="btn btn-icon-only btn-edit" title="Edit Material">
+                                                        <span class="material-symbols-outlined"
+                                                            style="font-size: 18px;">edit</span>
                                                     </a>
 
                                                     <!-- Tombol Hapus -->
-                                                    <form 
-                                                        action="{{ route('materials.destroy', $mat->id) }}" 
-                                                        method="POST" 
+                                                    <form action="{{ route('materials.destroy', $mat->id) }}"
+                                                        method="POST"
                                                         onsubmit="return confirm('Apakah Anda yakin ingin menghapus material {{ $mat->name }} ({{ $mat->material_number }})?');"
-                                                        style="display: inline;"
-                                                    >
+                                                        style="display: inline;">
                                                         @csrf
                                                         @method('DELETE')
-                                                        <button 
-                                                            type="submit" 
-                                                            class="btn btn-icon-only btn-delete" 
-                                                            title="Hapus Material"
-                                                        >
-                                                            <span class="material-symbols-outlined" style="font-size: 18px;">delete</span>
+                                                        <button type="submit" class="btn btn-icon-only btn-delete"
+                                                            title="Hapus Material">
+                                                            <span class="material-symbols-outlined"
+                                                                style="font-size: 18px;">delete</span>
                                                         </button>
                                                     </form>
                                                 </div>
@@ -952,9 +929,12 @@
                                 <!-- Informasi Jumlah Data Dinamis -->
                                 <div class="data-info">
                                     @if ($perPage === 'all' || $perPage === 'Semua')
-                                        Menampilkan <strong>1–{{ $materials->total() }}</strong> dari <strong>{{ $materials->total() }}</strong> material
+                                        Menampilkan <strong>1–{{ $materials->total() }}</strong> dari
+                                        <strong>{{ $materials->total() }}</strong> material
                                     @else
-                                        Menampilkan <strong>{{ $materials->firstItem() ?? 0 }}–{{ $materials->lastItem() ?? 0 }}</strong> dari <strong>{{ $materials->total() }}</strong> material
+                                        Menampilkan
+                                        <strong>{{ $materials->firstItem() ?? 0 }}–{{ $materials->lastItem() ?? 0 }}</strong>
+                                        dari <strong>{{ $materials->total() }}</strong> material
                                     @endif
                                 </div>
 
@@ -962,12 +942,19 @@
                                 <div class="per-page-select">
                                     <label for="per_page_select">Tampilkan:</label>
                                     <select id="per_page_select" onchange="changePerPage(this.value)">
-                                        <option value="10" {{ $perPage == 10 ? 'selected' : '' }}>10 data per halaman</option>
-                                        <option value="25" {{ $perPage == 25 ? 'selected' : '' }}>25 data per halaman</option>
-                                        <option value="50" {{ $perPage == 50 ? 'selected' : '' }}>50 data per halaman</option>
-                                        <option value="100" {{ $perPage == 100 ? 'selected' : '' }}>100 data per halaman</option>
-                                        <option value="250" {{ $perPage == 250 ? 'selected' : '' }}>250 data per halaman</option>
-                                        <option value="all" {{ ($perPage === 'all' || $perPage === 'Semua') ? 'selected' : '' }}>Semua data</option>
+                                        <option value="10" {{ $perPage == 10 ? 'selected' : '' }}>10 data per
+                                            halaman</option>
+                                        <option value="25" {{ $perPage == 25 ? 'selected' : '' }}>25 data per
+                                            halaman</option>
+                                        <option value="50" {{ $perPage == 50 ? 'selected' : '' }}>50 data per
+                                            halaman</option>
+                                        <option value="100" {{ $perPage == 100 ? 'selected' : '' }}>100 data per
+                                            halaman</option>
+                                        <option value="250" {{ $perPage == 250 ? 'selected' : '' }}>250 data per
+                                            halaman</option>
+                                        <option value="all"
+                                            {{ $perPage === 'all' || $perPage === 'Semua' ? 'selected' : '' }}>Semua
+                                            data</option>
                                     </select>
                                 </div>
                             </div>
@@ -976,12 +963,14 @@
                             <div class="pagination-simple">
                                 @if ($materials->onFirstPage())
                                     <span class="btn-page disabled">
-                                        <span class="material-symbols-outlined" style="font-size:16px;">arrow_back</span>
+                                        <span class="material-symbols-outlined"
+                                            style="font-size:16px;">arrow_back</span>
                                         Sebelumnya
                                     </span>
                                 @else
                                     <a href="{{ $materials->previousPageUrl() }}" class="btn-page">
-                                        <span class="material-symbols-outlined" style="font-size:16px;">arrow_back</span>
+                                        <span class="material-symbols-outlined"
+                                            style="font-size:16px;">arrow_back</span>
                                         Sebelumnya
                                     </a>
                                 @endif
@@ -989,17 +978,18 @@
                                 @if ($materials->hasMorePages())
                                     <a href="{{ $materials->nextPageUrl() }}" class="btn-page">
                                         Berikutnya
-                                        <span class="material-symbols-outlined" style="font-size:16px;">arrow_forward</span>
+                                        <span class="material-symbols-outlined"
+                                            style="font-size:16px;">arrow_forward</span>
                                     </a>
                                 @else
                                     <span class="btn-page disabled">
                                         Berikutnya
-                                        <span class="material-symbols-outlined" style="font-size:16px;">arrow_forward</span>
+                                        <span class="material-symbols-outlined"
+                                            style="font-size:16px;">arrow_forward</span>
                                     </span>
                                 @endif
                             </div>
                         </div>
-
                     @else
                         <!-- Empty State Jika Tidak Ada Material -->
                         <div class="empty-state">
@@ -1025,29 +1015,6 @@
         </main>
 
     </div>
-
-    <!-- Bottom Nav (Mobile) -->
-    <nav class="bottom-nav">
-        <div class="bottom-nav-inner">
-            <a href="{{ route('dashboard') }}" class="bottom-nav-item">
-                <span class="material-symbols-outlined">speed</span>
-                Dashboard
-            </a>
-            <a href="{{ route('materials.index') }}" class="bottom-nav-item active">
-                <span class="material-symbols-outlined">inventory_2</span>
-                Material
-            </a>
-            <a href="#" class="bottom-nav-item" onclick="alert('Halaman Riwayat Stok belum tersedia.')">
-                <span class="material-symbols-outlined">history</span>
-                Riwayat
-            </a>
-            <a href="#" class="bottom-nav-item" onclick="alert('Halaman Profile belum tersedia.')">
-                <span class="material-symbols-outlined">account_circle</span>
-                Profile
-            </a>
-        </div>
-    </nav>
-
 
 </body>
 
