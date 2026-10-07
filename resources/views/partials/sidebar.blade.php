@@ -68,7 +68,7 @@
 
         <!-- Riwayat Stok -->
         <a href="{{ route('stock-movements.index') }}"
-           class="nav-item {{ request()->routeIs('stock-movements.index') ? 'active' : '' }}">
+           class="nav-item {{ request()->routeIs('stock-movements.*') || request()->is('stock-history*') ? 'active' : '' }}">
             <span class="material-symbols-outlined">history</span>
             <span>Riwayat Stok</span>
         </a>    
@@ -750,6 +750,8 @@
                         isActive = true;
                     } else if (itemUrl.pathname === '/materials' && path.startsWith('/materials')) {
                         isActive = true;
+                    } else if ((itemUrl.pathname === '/stock-history' || itemUrl.pathname.startsWith('/stock-movements')) && (path === '/stock-history' || path.startsWith('/stock-movements'))) {
+                        isActive = true;
                     }
 
                     if (isActive) {
@@ -773,7 +775,7 @@
             // File export download jangan di-swap
             if (url.pathname.includes('/export')) return false;
             // Hanya rute internal aplikasi
-            const validPrefixes = ['/dashboard', '/materials'];
+            const validPrefixes = ['/dashboard', '/materials', '/stock-history', '/stock-movements'];
             return validPrefixes.some(prefix => url.pathname.startsWith(prefix));
         } catch (e) {
             return false;

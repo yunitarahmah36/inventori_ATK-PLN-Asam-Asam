@@ -3,41 +3,63 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Riwayat Stok - STOK ATK PLN Asam-Asam</title>
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+
+    <title>Riwayat Stok - Inventori ATK PLN Asam-Asam</title>
+
     <link rel="icon" type="image/png" href="{{ asset('images/pln_bulat.png') }}">
 
-    <!-- Material Symbols -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    {{-- Google Fonts: Inter --}}
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
 
+    {{-- Material Symbols --}}
     <link
-        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,400,0,0"
-        rel="stylesheet"
-    >
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+        rel="stylesheet">
 
     <style id="page-style">
+        /* =========================================================
+           LAYOUT & RESET
+        ========================================================= */
+
+        .layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
         :root {
             --blue: #0057B8;
             --blue-dark: #003B73;
             --blue-light: #EAF3FF;
-            --yellow: #FFC107;
 
-            --white: #FFFFFF;
+            --yellow: #FFC107;
+            --yellow-light: #FFF8E1;
+
             --bg: #F5F7FA;
-            --border: #E5E7EB;
+            --white: #FFFFFF;
 
             --text-dark: #1F2937;
-            --text-mid: #4B5563;
+            --text-mid: #374151;
             --text-muted: #6B7280;
 
-            --green: #16A34A;
-            --green-light: #ECFDF3;
+            --border: #E5E7EB;
 
             --red: #DC2626;
-            --red-light: #FEF2F2;
+            --red-light: #FEE2E2;
+
+            --green: #10B981;
+            --green-light: #D1FAE5;
 
             --orange: #EA580C;
             --orange-light: #FFF7ED;
@@ -45,53 +67,52 @@
             --purple: #7C3AED;
             --purple-light: #F5F3FF;
 
-            --radius: 12px;
-
-            --shadow:
-                0 2px 8px rgba(0, 0, 0, 0.05);
-
+            --sidebar-w: 260px;
             --header-h: 68px;
+
+            --radius: 12px;
+            --shadow: 0 2px 12px rgba(0, 0, 0, 0.07);
+
+            --transition: 0.2s ease;
         }
-
-
-        * {
-            box-sizing: border-box;
-        }
-
 
         html {
+            height: 100%;
             overflow-y: scroll;
+            scrollbar-gutter: stable;
         }
-
 
         body {
-            margin: 0;
-            padding: 0;
-
+            min-height: 100%;
+            font-family: 'Inter', Arial, sans-serif;
             background: var(--bg);
-
             color: var(--text-dark);
-
-            font-family:
-                Inter,
-                -apple-system,
-                BlinkMacSystemFont,
-                "Segoe UI",
-                Roboto,
-                Arial,
-                sans-serif;
+            overflow-x: hidden;
         }
-
 
         a {
             text-decoration: none;
+            color: inherit;
         }
 
-
         button,
-        input,
-        select {
+        select,
+        input {
             font-family: inherit;
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #CBD5E1;
+            border-radius: 10px;
         }
 
 
@@ -100,14 +121,12 @@
         ========================================================= */
 
         .main {
-            min-height: 100vh;
-
-            margin-left: 260px;
-
+            margin-left: var(--sidebar-w);
+            flex: 1;
             display: flex;
             flex-direction: column;
-
             min-width: 0;
+            min-height: 100vh;
         }
 
 
@@ -117,9 +136,7 @@
 
         .topbar {
             height: var(--header-h);
-
             background: var(--white);
-
             border-bottom: 1px solid var(--border);
 
             display: flex;
@@ -130,159 +147,107 @@
 
             position: sticky;
             top: 0;
-
             z-index: 100;
         }
-
 
         .topbar-left-wrapper {
             display: flex;
             align-items: center;
-
             gap: 14px;
         }
 
-
-        .btn-hamburger {
-            display: none;
-
-            width: 38px;
-            height: 38px;
-
-            align-items: center;
-            justify-content: center;
-
-            background: transparent;
-
-            border: none;
-
-            color: var(--text-dark);
-
-            cursor: pointer;
-
-            border-radius: 8px;
+        .topbar-left {
+            display: flex;
+            flex-direction: column;
         }
-
-
-        .btn-hamburger:hover {
-            background: #F3F4F6;
-        }
-
 
         .topbar-left h1 {
-            margin: 0;
-
             font-size: 18px;
             font-weight: 800;
-
             color: var(--blue-dark);
-
             line-height: 1.2;
         }
 
-
         .topbar-left p {
-            margin: 2px 0 0;
-
             font-size: 12px;
-
             color: var(--text-muted);
+            margin-top: 1px;
         }
-
 
         .topbar-user {
             display: flex;
             align-items: center;
-
             gap: 12px;
         }
-
 
         .topbar-user-detail {
             text-align: right;
         }
 
-
         .topbar-user-name {
             font-size: 13px;
-
             font-weight: 700;
-
             color: var(--text-dark);
+            line-height: 1.2;
         }
-
 
         .topbar-user-email {
             font-size: 11px;
-
             color: var(--text-muted);
-
             margin-top: 1px;
         }
 
-
         .badge-role {
             display: inline-block;
-
-            margin-top: 2px;
-
-            padding: 2px 8px;
-
+            font-size: 10px;
+            font-weight: 700;
+            padding: 1px 7px;
             border-radius: 20px;
 
             background: var(--blue-light);
-
             color: var(--blue);
 
-            font-size: 9px;
-
-            font-weight: 800;
-
             text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 2px;
         }
-
 
         .topbar-avatar {
             width: 38px;
             height: 38px;
 
             border-radius: 50%;
-
             background: var(--blue);
-
-            color: #FFFFFF;
+            color: #fff;
 
             display: flex;
             align-items: center;
             justify-content: center;
 
-            font-size: 15px;
-
             font-weight: 800;
-
+            font-size: 15px;
             flex-shrink: 0;
+        }
+
+        .btn-hamburger {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--text-dark);
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 6px;
         }
 
 
         /* =========================================================
-           PAGE
+           PAGE CONTENT
+           SAMA DENGAN DATA MATERIAL
         ========================================================= */
 
-        .stock-history-page {
-            padding: 28px;
-
-            min-height: calc(100vh - var(--header-h));
-
-            background: var(--bg);
-        }
-
-
-        .page-container {
-            width: 100%;
-
-            max-width: 1500px;
-
-            margin: 0 auto;
+        .page-content {
+            padding: 24px 28px 80px;
+            flex: 1;
         }
 
 
@@ -291,36 +256,21 @@
         ========================================================= */
 
         .page-header {
-            display: flex;
-
-            align-items: flex-start;
-            justify-content: space-between;
-
-            gap: 20px;
-
             margin-bottom: 20px;
         }
 
-
-        .page-header h1 {
-            margin: 0;
-
-            color: var(--blue-dark);
-
+        .page-header h2 {
             font-size: 25px;
-
             font-weight: 800;
-
+            color: var(--blue-dark);
             line-height: 1.2;
+            letter-spacing: -0.3px;
         }
 
-
         .page-header p {
-            margin: 6px 0 0;
-
-            color: var(--text-muted);
-
             font-size: 13px;
+            color: var(--text-muted);
+            margin-top: 4px;
         }
 
 
@@ -330,18 +280,12 @@
 
         .filter-card {
             background: var(--white);
-
-            border: 1px solid var(--border);
-
             border-radius: var(--radius);
-
-            box-shadow: var(--shadow);
-
             padding: 20px;
-
+            border: 1px solid var(--border);
             margin-bottom: 20px;
+            box-shadow: var(--shadow);
         }
-
 
         .filter-form {
             display: grid;
@@ -354,170 +298,136 @@
                 auto;
 
             gap: 14px;
-
             align-items: end;
         }
-
 
         .filter-group {
             min-width: 0;
         }
 
-
         .filter-group label {
             display: block;
-
             margin-bottom: 7px;
 
             font-size: 12px;
-
             font-weight: 700;
-
             color: var(--text-mid);
         }
 
-
         .search-input {
             position: relative;
-
             width: 100%;
         }
 
-
         .search-input .material-symbols-outlined {
             position: absolute;
-
             left: 12px;
             top: 50%;
 
             transform: translateY(-50%);
 
             color: var(--text-muted);
-
             font-size: 20px;
 
             pointer-events: none;
         }
 
+.search-input input,
+.filter-group select,
+.filter-group input[type="date"] {
+    width: 100%;
+    height: 42px;
 
-        .search-input input,
-        .filter-group select,
-        .filter-group input[type="date"] {
-            width: 100%;
+    border: 1px solid #D1D5DB;
+    border-radius: 8px;
 
-            height: 42px;
+    background: #FFFFFF;
+    color: var(--text-dark);
 
-            border: 1px solid #D1D5DB;
+    font-size: 13px;
+    outline: none;
 
-            border-radius: 8px;
+    transition:
+        border-color .15s ease,
+        box-shadow .15s ease;
+}
 
-            background: #FFFFFF;
+.search-input input {
+    padding: 0 12px 0 40px;
+}
 
-            color: var(--text-dark);
+.filter-group select {
+    padding: 0 38px 0 12px;
 
-            font-size: 13px;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
 
-            outline: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23334155' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 15px 15px;
+}
 
-            transition:
-                border-color .15s ease,
-                box-shadow .15s ease;
-        }
+.filter-group input[type="date"] {
+    padding: 0 12px;
+}
 
-
-        .search-input input {
-            padding: 0 12px 0 40px;
-        }
-
-
-        .filter-group select,
-        .filter-group input[type="date"] {
-            padding: 0 12px;
-        }
-
-
-        .search-input input:focus,
-        .filter-group select:focus,
-        .filter-group input[type="date"]:focus {
-            border-color: var(--blue);
-
-            box-shadow:
-                0 0 0 3px rgba(0, 87, 184, .10);
-        }
-
+.search-input input:focus,
+.filter-group select:focus,
+.filter-group input[type="date"]:focus {
+    border-color: var(--blue);
+    box-shadow: 0 0 0 3px rgba(0, 87, 184, .10);
+}
 
         .filter-actions {
             display: flex;
-
             align-items: center;
-
             gap: 8px;
         }
-
 
         .btn-filter,
         .btn-reset {
             height: 42px;
 
             border-radius: 8px;
-
             padding: 0 16px;
 
             display: inline-flex;
-
             align-items: center;
-
             justify-content: center;
-
             gap: 6px;
 
             font-size: 13px;
-
             font-weight: 700;
 
             cursor: pointer;
-
             white-space: nowrap;
 
             transition: .15s ease;
         }
 
-
         .btn-filter {
             border: none;
-
             background: var(--blue);
-
             color: #FFFFFF;
 
-            box-shadow:
-                0 2px 6px rgba(0, 87, 184, .20);
+            box-shadow: 0 2px 6px rgba(0, 87, 184, .20);
         }
-
 
         .btn-filter:hover {
             background: var(--blue-dark);
         }
 
-
         .btn-reset {
-            border: 1px solid #D1D5DB;
-
             background: #FFFFFF;
-
             color: var(--text-mid);
+            border: 1px solid var(--border);
         }
-
 
         .btn-reset:hover {
             background: #F9FAFB;
-
-            color: var(--blue);
-        }
-
-
-        .btn-filter .material-symbols-outlined {
-            font-size: 18px;
+            border-color: #CBD5E1;
         }
 
 
@@ -527,240 +437,149 @@
 
         .table-card {
             background: var(--white);
-
-            border: 1px solid var(--border);
-
             border-radius: var(--radius);
-
+            border: 1px solid var(--border);
             box-shadow: var(--shadow);
-
             overflow: hidden;
         }
 
-
         .table-card-header {
+            padding: 22px 24px;
+
             display: flex;
-
             align-items: center;
-
             justify-content: space-between;
 
-            gap: 20px;
-
-            padding: 20px 22px;
+            gap: 16px;
 
             border-bottom: 1px solid var(--border);
         }
 
-
         .table-card-header h2 {
-            margin: 0;
-
-            color: var(--blue-dark);
-
-            font-size: 17px;
-
+            font-size: 20px;
             font-weight: 800;
+            color: var(--blue-dark);
+            letter-spacing: -0.3px;
         }
-
 
         .table-card-header p {
-            margin: 4px 0 0;
-
+            font-size: 13px;
             color: var(--text-muted);
-
-            font-size: 12px;
+            margin-top: 3px;
         }
-
-
-        /* =========================================================
-           PER PAGE
-        ========================================================= */
 
         .per-page-form {
             display: flex;
-
             align-items: center;
-
             gap: 8px;
 
-            flex-shrink: 0;
-        }
-
-
-        .per-page-form label {
             font-size: 12px;
-
-            font-weight: 600;
-
             color: var(--text-muted);
         }
 
-
         .per-page-form select {
-            height: 36px;
+            padding: 8px 10px;
 
-            min-width: 90px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
 
-            padding: 0 28px 0 10px;
-
-            border: 1px solid #D1D5DB;
-
-            border-radius: 7px;
-
-            background: #FFFFFF;
-
-            color: var(--text-dark);
+            background: #fff;
 
             font-size: 12px;
+            font-weight: 600;
 
+            color: var(--text-dark);
             outline: none;
-
             cursor: pointer;
         }
-
 
         .per-page-form select:focus {
             border-color: var(--blue);
         }
 
 
-        /* =========================================================
-           TABLE
-        ========================================================= */
+/* =========================================================
+   TABLE - LEBIH COMPACT
+========================================================= */
 
-        .table-responsive {
-            width: 100%;
+.table-responsive {
+    width: 100%;
+    overflow-x: auto;
+}
 
-            overflow-x: auto;
-        }
+table.data-table {
+    width: 100%;
+    min-width: 900px;
+    border-collapse: collapse;
+    font-size: 12px;
+    text-align: left;
+}
 
+table.data-table thead {
+    background: #F8FAFC;
+    border-bottom: 2px solid var(--border);
+}
 
-        .stock-history-table {
-            width: 100%;
+table.data-table th {
+    padding: 10px 10px;
+    font-weight: 700;
+    color: var(--text-mid);
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    white-space: nowrap;
+}
 
-            min-width: 1100px;
+table.data-table tbody tr {
+    border-bottom: 1px solid var(--border);
+    transition: background var(--transition);
+}
 
-            border-collapse: collapse;
-        }
+table.data-table tbody tr:hover {
+    background: #F9FBFF;
+}
 
-
-        .stock-history-table thead {
-            background: #F8FAFC;
-        }
-
-
-        .stock-history-table th {
-            padding: 13px 14px;
-
-            text-align: left;
-
-            border-bottom: 1px solid var(--border);
-
-            color: #475569;
-
-            font-size: 11px;
-
-            font-weight: 800;
-
-            text-transform: uppercase;
-
-            letter-spacing: .025em;
-
-            white-space: nowrap;
-        }
-
-
-        .stock-history-table td {
-            padding: 14px;
-
-            border-bottom: 1px solid #EEF0F3;
-
-            color: var(--text-mid);
-
-            font-size: 12.5px;
-
-            vertical-align: middle;
-        }
-
-
-        .stock-history-table tbody tr {
-            transition: background .12s ease;
-        }
-
-
-        .stock-history-table tbody tr:hover {
-            background: #F8FAFC;
-        }
-
-
-        .stock-history-table tbody tr:last-child td {
-            border-bottom: none;
-        }
-
-
-        .stock-history-table th:first-child,
-        .stock-history-table td:first-child {
-            width: 50px;
-
-            text-align: center;
-        }
+table.data-table td {
+    padding: 10px 10px;
+    vertical-align: middle;
+    color: var(--text-dark);
+    font-size: 12px;
+}
 
 
         /* =========================================================
            DATE
         ========================================================= */
 
-        .date-main {
-            color: var(--text-dark);
+.date-main {
+    font-weight: 700;
+    color: var(--text-dark);
+    font-size: 11.5px;
+}
 
-            font-weight: 700;
-
-            font-size: 12px;
-        }
-
-
-        .date-time {
-            color: var(--text-muted);
-
-            font-size: 11px;
-
-            margin-top: 3px;
-        }
+.date-time {
+    margin-top: 2px;
+    font-size: 10px;
+    color: var(--text-muted);
+}
 
 
         /* =========================================================
            USER
         ========================================================= */
 
-        .user-cell {
-            display: flex;
-
-            flex-direction: column;
-
-            gap: 3px;
-
-            min-width: 120px;
-        }
-
-
         .user-name {
-            color: var(--text-dark);
-
             font-weight: 700;
-
-            font-size: 12px;
+            font-size: 11.5px;
+            color: var(--text-dark);
+            text-transform: uppercase;
         }
-
 
         .user-role {
+            margin-top: 2px;
+            font-size: 9px;
             color: var(--text-muted);
-
-            font-size: 10px;
-
             text-transform: uppercase;
-
-            font-weight: 700;
         }
 
 
@@ -768,159 +587,129 @@
            MATERIAL
         ========================================================= */
 
-        .material-cell {
-            min-width: 180px;
-        }
+.material-name {
+    font-weight: 700;
+    color: var(--text-dark);
+    font-size: 11.5px;
+}
 
-
-        .material-name {
-            color: var(--text-dark);
-
-            font-size: 12px;
-
-            font-weight: 700;
-
-            line-height: 1.4;
-        }
-
-
-        .material-number {
-            display: inline-block;
-
-            margin-top: 3px;
-
-            color: var(--text-muted);
-
-            font-size: 10.5px;
-
-            font-weight: 600;
-        }
+.material-number {
+    margin-top: 2px;
+    font-size: 9.5px;
+    color: var(--text-muted);
+}
 
 
         /* =========================================================
            ACTIVITY BADGE
         ========================================================= */
 
-        .activity-badge {
-            display: inline-flex;
+.activity-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 
-            align-items: center;
+    padding: 4px 8px;
 
-            justify-content: center;
+    border-radius: 20px;
 
-            padding: 5px 9px;
-
-            border-radius: 20px;
-
-            font-size: 10.5px;
-
-            font-weight: 800;
-
-            white-space: nowrap;
-        }
-
+    font-size: 10px;
+    font-weight: 700;
+    white-space: nowrap;
+}
 
         .activity-tambah {
             background: var(--green-light);
-
-            color: var(--green);
+            color: #059669;
         }
 
-
-        .activity-kurangi,
         .activity-kurang {
             background: var(--red-light);
-
             color: var(--red);
         }
 
-
         .activity-edit {
             background: var(--blue-light);
-
             color: var(--blue);
         }
 
-
         .activity-import {
             background: var(--purple-light);
-
             color: var(--purple);
         }
 
-
         .activity-hapus {
-            background: var(--orange-light);
-
-            color: var(--orange);
+            background: var(--red-light);
+            color: var(--red);
         }
 
-
         .activity-default {
-            background: #F3F4F6;
-
-            color: #4B5563;
+            background: #F1F5F9;
+            color: var(--text-mid);
         }
 
 
         /* =========================================================
-           QUANTITY
+           STOCK NUMBERS
         ========================================================= */
 
-        .quantity-before,
-        .quantity-after {
-            color: var(--text-dark);
+.stock-number {
+    font-size: 11.5px;
+    font-weight: 700;
+    color: var(--text-dark);
+}
 
-            font-size: 12.5px;
-
-            font-weight: 700;
-
-            white-space: nowrap;
-        }
-
-
-        .quantity-change {
-            display: inline-block;
-
-            font-weight: 800;
-
-            font-size: 12.5px;
-
-            white-space: nowrap;
-        }
-
-
-        .change-positive {
-            color: var(--green);
-        }
-
-
-        .change-negative {
-            color: var(--red);
-        }
-
-
-        .change-zero {
-            color: var(--text-muted);
-        }
+.change-positive,
+.change-negative,
+.change-zero {
+    font-size: 11.5px;
+}
 
 
         /* =========================================================
            DESCRIPTION
         ========================================================= */
 
-        .description-text {
-            display: block;
+.description {
+    max-width: 130px;
+    color: var(--text-muted);
+    font-size: 10px;
+    line-height: 1.35;
+}
 
-            max-width: 220px;
+        /* =========================================================
+           EMPTY STATE
+        ========================================================= */
 
+        .empty-state {
+            padding: 60px 20px;
+
+            text-align: center;
+
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .empty-state .material-symbols-outlined {
+            font-size: 54px;
+            color: #94A3B8;
+            margin-bottom: 14px;
+        }
+
+        .empty-state h3 {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 6px;
+        }
+
+        .empty-state p {
+            font-size: 13px;
             color: var(--text-muted);
-
-            font-size: 11.5px;
-
+            max-width: 420px;
             line-height: 1.5;
-
-            white-space: normal;
         }
 
 
@@ -930,32 +719,63 @@
 
         .table-footer {
             display: flex;
-
             align-items: center;
-
             justify-content: space-between;
 
-            gap: 20px;
+            padding: 14px 20px;
 
-            padding: 15px 20px;
-
+            background: #FAFBFD;
             border-top: 1px solid var(--border);
 
-            background: #FFFFFF;
+            flex-wrap: wrap;
+            gap: 12px;
         }
 
+        .table-footer-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
 
-        .table-info {
+        .data-info {
+            font-size: 12.5px;
             color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .data-info strong {
+            color: var(--text-dark);
+            font-weight: 700;
+        }
+
+        .per-page-select {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+
+            font-size: 12.5px;
+            color: var(--text-muted);
+        }
+
+        .per-page-select select {
+            padding: 5px 8px;
+
+            border-radius: 6px;
+            border: 1px solid var(--border);
 
             font-size: 12px;
+            font-weight: 600;
+
+            color: var(--text-dark);
+            background: #fff;
+
+            cursor: pointer;
+            outline: none;
         }
 
-
-        .table-info strong {
-            color: var(--text-dark);
-
-            font-weight: 700;
+        .per-page-select select:focus {
+            border-color: var(--blue);
         }
 
 
@@ -965,123 +785,43 @@
 
         .simple-pagination {
             display: flex;
-
             align-items: center;
-
-            gap: 7px;
+            gap: 8px;
         }
 
-
-        .simple-pagination a,
-        .pagination-disabled,
-        .pagination-current {
-            min-height: 34px;
-
-            padding: 0 11px;
-
+        .pagination-btn {
             display: inline-flex;
-
             align-items: center;
-
             justify-content: center;
+            gap: 5px;
+
+            min-width: 110px;
+            padding: 7px 14px;
 
             border-radius: 7px;
 
-            font-size: 11.5px;
+            font-size: 12.5px;
+            font-weight: 600;
 
-            font-weight: 700;
-
-            white-space: nowrap;
-        }
-
-
-        .simple-pagination a {
-            border: 1px solid #D1D5DB;
-
-            color: var(--blue);
-
-            background: #FFFFFF;
-        }
-
-
-        .simple-pagination a:hover {
-            background: var(--blue-light);
-
-            border-color: #B9D5F5;
-        }
-
-
-        .pagination-current {
-            background: var(--blue);
-
-            color: #FFFFFF;
-
-            border: 1px solid var(--blue);
-        }
-
-
-        .pagination-disabled {
-            background: #F3F4F6;
-
-            color: #9CA3AF;
-
-            border: 1px solid #E5E7EB;
-        }
-
-
-        /* =========================================================
-           EMPTY STATE
-        ========================================================= */
-
-        .empty-state {
-            padding: 70px 30px;
-
-            text-align: center;
-        }
-
-
-        .empty-icon {
-            width: 64px;
-            height: 64px;
-
-            margin: 0 auto 18px;
-
-            border-radius: 50%;
-
-            background: var(--blue-light);
-
-            color: var(--blue);
-
-            display: flex;
-
-            align-items: center;
-
-            justify-content: center;
-        }
-
-
-        .empty-icon .material-symbols-outlined {
-            font-size: 32px;
-        }
-
-
-        .empty-state h3 {
-            margin: 0;
-
+            background: var(--white);
             color: var(--text-dark);
 
-            font-size: 16px;
+            border: 1px solid var(--border);
 
-            font-weight: 800;
+            transition: var(--transition);
         }
 
+        .pagination-btn:hover:not(.disabled) {
+            background: var(--blue-light);
+            border-color: #BFDBFE;
+            color: var(--blue);
+        }
 
-        .empty-state p {
-            margin: 7px 0 0;
-
-            color: var(--text-muted);
-
-            font-size: 12.5px;
+        .pagination-btn.disabled {
+            opacity: .45;
+            cursor: not-allowed;
+            pointer-events: none;
+            background: #F1F5F9;
         }
 
 
@@ -1089,241 +829,129 @@
            RESPONSIVE
         ========================================================= */
 
-        @media (max-width: 1200px) {
-
-            .filter-form {
-                grid-template-columns:
-                    minmax(220px, 1fr)
-                    minmax(160px, 1fr)
-                    minmax(160px, 1fr)
-                    minmax(160px, 1fr);
-            }
-
-            .filter-actions {
-                grid-column: 1 / -1;
-
-                justify-content: flex-end;
-            }
-
-        }
-
-
-        @media (max-width: 900px) {
-
-            .topbar {
-                padding: 0 18px;
-            }
-
-            .stock-history-page {
-                padding: 20px;
-            }
-
+        @media (max-width: 1100px) {
             .filter-form {
                 grid-template-columns: 1fr 1fr;
             }
 
             .filter-actions {
-                grid-column: 1 / -1;
+                grid-column: span 2;
             }
-
         }
-
 
         @media (max-width: 768px) {
 
             .main {
-                margin-left: 0 !important;
+                margin-left: 0;
             }
-
 
             .btn-hamburger {
                 display: flex;
             }
 
-
             .topbar {
-                height: 62px;
-
-                padding: 0 14px;
+                padding: 0 16px;
             }
 
-
-            .topbar-left h1 {
-                font-size: 16px;
+            .page-content {
+                padding: 16px 16px 80px;
             }
-
-
-            .topbar-left p {
-                display: none;
-            }
-
 
             .topbar-user-detail {
                 display: none;
             }
 
-
-            .topbar-avatar {
-                width: 35px;
-                height: 35px;
-
-                font-size: 13px;
-            }
-
-
-            .stock-history-page {
-                padding: 16px;
-            }
-
-
-            .page-header {
-                margin-bottom: 16px;
-            }
-
-
-            .page-header h1 {
+            .page-header h2 {
                 font-size: 21px;
             }
-
-
-            .page-header p {
-                font-size: 11.5px;
-
-                line-height: 1.5;
-            }
-
-
-            .filter-card {
-                padding: 15px;
-            }
-
 
             .filter-form {
                 grid-template-columns: 1fr;
             }
 
-
             .filter-actions {
                 grid-column: auto;
-
-                justify-content: stretch;
+                width: 100%;
             }
 
-
-            .btn-filter,
-            .btn-reset {
+            .filter-actions .btn-filter,
+            .filter-actions .btn-reset {
                 flex: 1;
             }
 
-
             .table-card-header {
-                align-items: flex-start;
-
+                padding: 18px 16px;
                 flex-direction: column;
-
-                padding: 16px;
+                align-items: flex-start;
             }
-
 
             .per-page-form {
                 width: 100%;
-
                 justify-content: space-between;
             }
 
-
-            .per-page-form select {
-                flex: 1;
-
-                max-width: 150px;
-            }
-
-
             .table-footer {
-                align-items: flex-start;
-
                 flex-direction: column;
-
-                padding: 14px 16px;
+                align-items: stretch;
             }
 
+            .table-footer-left {
+                justify-content: space-between;
+            }
 
             .simple-pagination {
                 width: 100%;
-
                 justify-content: space-between;
             }
 
+            .pagination-btn {
+                flex: 1;
+            }
         }
 
-
         @media (max-width: 480px) {
-
-            .page-header h1 {
+            .page-header h2 {
                 font-size: 19px;
             }
-
 
             .page-header p {
                 font-size: 11px;
             }
 
-
-            .stock-history-page {
-                padding: 12px;
-            }
-
-
             .filter-card {
-                padding: 12px;
+                padding: 14px;
             }
-
 
             .table-card-header h2 {
-                font-size: 15px;
+                font-size: 17px;
             }
-
 
             .table-card-header p {
                 font-size: 11px;
             }
-
-
-            .simple-pagination a,
-            .pagination-disabled,
-            .pagination-current {
-                padding: 0 8px;
-
-                font-size: 10.5px;
-            }
-
         }
-
     </style>
-
 </head>
 
 
 <body>
 
-    {{-- =========================================================
-         SIDEBAR
-    ========================================================== --}}
+    <div class="layout">
 
-    @include('partials.sidebar')
+        {{-- =========================================================
+             SIDEBAR
+        ========================================================== --}}
+        @include('partials.sidebar')
 
 
     {{-- =========================================================
          MAIN
     ========================================================== --}}
-
     <main class="main">
-
 
         {{-- =====================================================
              TOPBAR
         ====================================================== --}}
-
         <header class="topbar">
 
             <div class="topbar-left-wrapper">
@@ -1334,29 +962,18 @@
                     onclick="openSidebar()"
                     aria-label="Buka Menu"
                 >
-                    <span class="material-symbols-outlined">
-                        menu
-                    </span>
+                    <span class="material-symbols-outlined">menu</span>
                 </button>
 
-
                 <div class="topbar-left">
-
-                    <h1>
-                        Riwayat Stok
-                    </h1>
-
-                    <p>
-                        Inventori ATK PLN Asam-Asam
-                    </p>
-
+                    <h1>Riwayat Stok</h1>
+                    <p>Inventori ATK PLN Asam-Asam</p>
                 </div>
 
             </div>
 
 
             {{-- USER TOPBAR --}}
-
             <div class="topbar-user">
 
                 <div class="topbar-user-detail">
@@ -1375,11 +992,8 @@
 
                 </div>
 
-
                 <div class="topbar-avatar">
-
                     {{ strtoupper(substr(Auth::user()->name ?? 'U', 0, 1)) }}
-
                 </div>
 
             </div>
@@ -1390,183 +1004,129 @@
         {{-- =====================================================
              PAGE CONTENT
         ====================================================== --}}
-
-        <div class="stock-history-page">
-
-            <div class="page-container">
+        <div class="page-content">
 
 
-                {{-- =================================================
-                     PAGE HEADER
-                ================================================== --}}
+            {{-- =================================================
+                 FILTER
+            ================================================== --}}
+            <div class="filter-card">
 
-                <div class="page-header">
+                <form
+                    action="{{ route('stock-movements.index') }}"
+                    method="GET"
+                    class="filter-form"
+                >
 
-                    <div>
+                    {{-- SEARCH --}}
+                    <div class="filter-group">
 
-                        <h1>
-                            Riwayat Stok
-                        </h1>
+                        <label for="search">
+                            Cari Riwayat
+                        </label>
 
-                        <p>
-                            Catatan aktivitas perubahan stok material ATK PLN Asam-Asam
-                        </p>
+                        <div class="search-input">
+
+                            <span class="material-symbols-outlined">
+                                search
+                            </span>
+
+                            <input
+                                type="text"
+                                id="search"
+                                name="search"
+                                value="{{ request('search') }}"
+                                placeholder="Cari material, pengguna, atau aktivitas..."
+                                autocomplete="off"
+                            >
+
+                        </div>
 
                     </div>
 
-                </div>
+
+                    {{-- AKTIVITAS --}}
+                    <div class="filter-group">
+
+                        <label>Aktivitas</label>
+
+                        <select name="activity">
+                            <option value="">Semua Aktivitas</option>
+                            <option value="Tambah" {{ request('activity') == 'Tambah' ? 'selected' : '' }}>
+                                Tambah
+                            </option>
+                            <option value="Kurangi" {{ request('activity') == 'Kurangi' ? 'selected' : '' }}>
+                                Kurangi
+                            </option>
+                            <option value="Edit" {{ request('activity') == 'Edit' ? 'selected' : '' }}>
+                                Edit
+                            </option>
+                            <option value="Import" {{ request('activity') == 'Import' ? 'selected' : '' }}>
+                                Import
+                            </option>
+                            <option value="Hapus" {{ request('activity') == 'Hapus' ? 'selected' : '' }}>
+                                Hapus
+                            </option>
+                        </select>
+
+                    </div>
 
 
-                {{-- =================================================
-                     FILTER
-                ================================================== --}}
+                    {{-- DARI TANGGAL --}}
+                    <div class="filter-group">
 
-                <div class="filter-card">
+                        <label for="start_date">
+                            Dari Tanggal
+                        </label>
 
-                    <form
-                        action="{{ route('stock-movements.index') }}"
-                        method="GET"
-                        class="filter-form"
-                    >
+                        <input
+                            type="date"
+                            id="start_date"
+                            name="start_date"
+                            value="{{ request('start_date') }}"
+                        >
 
-
-                        {{-- SEARCH --}}
-
-                        <div class="filter-group search-group">
-
-                            <label for="search">
-                                Cari Riwayat
-                            </label>
-
-                            <div class="search-input">
-
-                                <span class="material-symbols-outlined">
-                                    search
-                                </span>
-
-                                <input
-                                    type="text"
-                                    id="search"
-                                    name="search"
-                                    value="{{ request('search') }}"
-                                    placeholder="Cari material, pengguna, atau aktivitas..."
-                                >
-
-                            </div>
-
-                        </div>
+                    </div>
 
 
-                        {{-- AKTIVITAS --}}
+                    {{-- SAMPAI TANGGAL --}}
+                    <div class="filter-group">
 
-                        <div class="filter-group">
+                        <label for="end_date">
+                            Sampai Tanggal
+                        </label>
 
-                            <label for="activity">
-                                Aktivitas
-                            </label>
+                        <input
+                            type="date"
+                            id="end_date"
+                            name="end_date"
+                            value="{{ request('end_date') }}"
+                        >
 
-                            <select
-                                name="activity"
-                                id="activity"
-                            >
-
-                                <option value="">
-                                    Semua Aktivitas
-                                </option>
-
-                                <option
-                                    value="Tambah"
-                                    {{ request('activity') === 'Tambah' ? 'selected' : '' }}
-                                >
-                                    Tambah
-                                </option>
-
-                                <option
-                                    value="Kurangi"
-                                    {{ request('activity') === 'Kurangi' ? 'selected' : '' }}
-                                >
-                                    Kurangi
-                                </option>
-
-                                <option
-                                    value="Edit"
-                                    {{ request('activity') === 'Edit' ? 'selected' : '' }}
-                                >
-                                    Edit
-                                </option>
-
-                                <option
-                                    value="Import"
-                                    {{ request('activity') === 'Import' ? 'selected' : '' }}
-                                >
-                                    Import
-                                </option>
-
-                                <option
-                                    value="Hapus"
-                                    {{ request('activity') === 'Hapus' ? 'selected' : '' }}
-                                >
-                                    Hapus
-                                </option>
-
-                            </select>
-
-                        </div>
+                    </div>
 
 
-                        {{-- TANGGAL MULAI --}}
+                    {{-- BUTTON --}}
+                    <div class="filter-actions">
 
-                        <div class="filter-group">
+                        <button
+                            type="submit"
+                            class="btn-filter"
+                        >
+                            <span class="material-symbols-outlined"
+                                style="font-size:18px;">
+                                filter_alt
+                            </span>
 
-                            <label for="start_date">
-                                Dari Tanggal
-                            </label>
+                            Filter
+                        </button>
 
-                            <input
-                                type="date"
-                                name="start_date"
-                                id="start_date"
-                                value="{{ request('start_date') }}"
-                            >
-
-                        </div>
-
-
-                        {{-- TANGGAL SELESAI --}}
-
-                        <div class="filter-group">
-
-                            <label for="end_date">
-                                Sampai Tanggal
-                            </label>
-
-                            <input
-                                type="date"
-                                name="end_date"
-                                id="end_date"
-                                value="{{ request('end_date') }}"
-                            >
-
-                        </div>
-
-
-                        {{-- BUTTON --}}
-
-                        <div class="filter-actions">
-
-                            <button
-                                type="submit"
-                                class="btn-filter"
-                            >
-
-                                <span class="material-symbols-outlined">
-                                    filter_alt
-                                </span>
-
-                                Filter
-
-                            </button>
-
+                        @if (
+                            request('search') ||
+                            request('activity') ||
+                            request('start_date') ||
+                            request('end_date')
+                        )
 
                             <a
                                 href="{{ route('stock-movements.index') }}"
@@ -1575,491 +1135,372 @@
                                 Reset
                             </a>
 
-                        </div>
+                        @endif
 
-                    </form>
+                    </div>
+
+                </form>
+
+            </div>
+
+
+            {{-- =================================================
+                 TABLE CARD
+            ================================================== --}}
+            <div class="table-card">
+
+                {{-- TABLE HEADER --}}
+                <div class="table-card-header">
+
+                    <div>
+
+                        <h2>
+                            Daftar Riwayat Stok
+                        </h2>
+
+                        <p>
+                            Riwayat aktivitas perubahan stok material
+                        </p>
+
+                    </div>
+
+
+                    {{-- PER PAGE --}}
+                    <div class="per-page-form">
+
+                        <label for="per_page_select">
+                            Tampilkan
+                        </label>
+
+                        <select
+                            id="per_page_select"
+                            onchange="changePerPage(this.value)"
+                        >
+
+                            <option
+                                value="10"
+                                {{ request('per_page', 25) == 10 ? 'selected' : '' }}
+                            >
+                                10
+                            </option>
+
+                            <option
+                                value="25"
+                                {{ request('per_page', 25) == 25 ? 'selected' : '' }}
+                            >
+                                25
+                            </option>
+
+                            <option
+                                value="50"
+                                {{ request('per_page', 25) == 50 ? 'selected' : '' }}
+                            >
+                                50
+                            </option>
+
+                            <option
+                                value="100"
+                                {{ request('per_page', 25) == 100 ? 'selected' : '' }}
+                            >
+                                100
+                            </option>
+
+                            <option
+                                value="250"
+                                {{ request('per_page', 25) == 250 ? 'selected' : '' }}
+                            >
+                                250
+                            </option>
+
+                            <option
+                                value="all"
+                                {{ request('per_page') === 'all' ? 'selected' : '' }}
+                            >
+                                Semua
+                            </option>
+
+                        </select>
+
+                    </div>
 
                 </div>
 
 
                 {{-- =================================================
-                     TABLE CARD
+                     TABLE
                 ================================================== --}}
 
-                <div class="table-card">
+                @if ($movements->count() > 0)
+
+                    <div class="table-responsive">
+
+                        <table class="data-table">
+
+<thead>
+    <tr>
+
+        <th style="width:40px;">
+            No
+        </th>
+
+        <th style="width:120px;">
+            Tanggal & Waktu
+        </th>
+
+        <th style="width:105px;">
+            Pengguna
+        </th>
+
+        <th style="min-width:150px;">
+            Material
+        </th>
+
+        <th style="width:90px;">
+            Aktivitas
+        </th>
+
+        <th style="width:90px;">
+            Stok Sebelum
+        </th>
+
+        <th style="width:80px;">
+            Perubahan
+        </th>
+
+        <th style="width:90px;">
+            Stok Sesudah
+        </th>
+
+        <th style="min-width:130px;">
+            Keterangan
+        </th>
+
+    </tr>
+</thead>
 
 
-                    {{-- TABLE HEADER --}}
+                            <tbody>
 
-                    <div class="table-card-header">
+                                @foreach ($movements as $index => $movement)
 
-                        <div>
+                                    <tr>
 
-                            <h2>
-                                Daftar Riwayat Stok
-                            </h2>
+                                        {{-- NO --}}
+                                        <td>
+                                            @if (method_exists($movements, 'firstItem'))
 
-                            <p>
-                                Riwayat aktivitas perubahan stok material
-                            </p>
+                                                {{ $movements->firstItem() + $index }}
 
-                        </div>
+                                            @else
 
+                                                {{ $index + 1 }}
 
-                        {{-- PER PAGE --}}
-
-                        <form
-                            action="{{ route('stock-movements.index') }}"
-                            method="GET"
-                            class="per-page-form"
-                        >
-
-                            @foreach(request()->except(['per_page', 'page']) as $key => $value)
-
-                                @if(is_array($value))
-
-                                    @foreach($value as $item)
-
-                                        <input
-                                            type="hidden"
-                                            name="{{ $key }}[]"
-                                            value="{{ $item }}"
-                                        >
-
-                                    @endforeach
-
-                                @else
-
-                                    <input
-                                        type="hidden"
-                                        name="{{ $key }}"
-                                        value="{{ $value }}"
-                                    >
-
-                                @endif
-
-                            @endforeach
+                                            @endif
+                                        </td>
 
 
-                            <label for="per_page">
-                                Tampilkan
-                            </label>
+                                        {{-- TANGGAL & WAKTU --}}
+                                        <td>
+
+                                            <div class="date-main">
+                                                {{ $movement->created_at
+                                                    ? $movement->created_at->format('d/m/Y')
+                                                    : '-' }}
+                                            </div>
+
+                                            <div class="date-time">
+                                                {{ $movement->created_at
+                                                    ? $movement->created_at->format('H:i') . ' WITA'
+                                                    : '-' }}
+                                            </div>
+
+                                        </td>
 
 
-                            <select
-                                name="per_page"
-                                id="per_page"
-                                onchange="this.form.submit()"
-                            >
+                                        {{-- PENGGUNA --}}
+                                        <td>
 
-                                <option
-                                    value="10"
-                                    {{ request('per_page', 25) == 10 ? 'selected' : '' }}
-                                >
-                                    10
-                                </option>
+                                            @php
+                                                $userName = $movement->user->name ?? 'Unknown';
+                                                $userEmail = $movement->user->email ?? '';
+                                                $displayUserName = $userEmail
+                                                    ? strtoupper(strstr($userEmail, '@', true))
+                                                    : strtoupper($userName);
+                                            @endphp
 
-                                <option
-                                    value="25"
-                                    {{ request('per_page', 25) == 25 ? 'selected' : '' }}
-                                >
-                                    25
-                                </option>
+                                            <div class="user-name">
+                                                {{ $displayUserName }}
+                                            </div>
 
-                                <option
-                                    value="50"
-                                    {{ request('per_page') == 50 ? 'selected' : '' }}
-                                >
-                                    50
-                                </option>
+                                            <div class="user-role">
+                                                {{ $movement->user->role ?? '-' }}
+                                            </div>
 
-                                <option
-                                    value="100"
-                                    {{ request('per_page') == 100 ? 'selected' : '' }}
-                                >
-                                    100
-                                </option>
+                                        </td>
 
-                                <option
-                                    value="250"
-                                    {{ request('per_page') == 250 ? 'selected' : '' }}
-                                >
-                                    250
-                                </option>
 
-                                <option
-                                    value="all"
-                                    {{ request('per_page') === 'all' ? 'selected' : '' }}
-                                >
-                                    Semua
-                                </option>
+                                        {{-- MATERIAL --}}
+                                        <td>
 
-                            </select>
+                                            <div class="material-name">
+                                                {{ $movement->material->name ?? '-' }}
+                                            </div>
 
-                        </form>
+                                            <div class="material-number">
+                                                No:
+                                                {{ $movement->material->material_number ?? '-' }}
+                                            </div>
+
+                                        </td>
+
+
+                                        {{-- AKTIVITAS --}}
+                                        <td>
+
+                                            @php
+                                                $activity = strtolower($movement->activity ?? '');
+
+                                                if (str_contains($activity, 'tambah')) {
+                                                    $activityClass = 'activity-tambah';
+                                                } elseif (
+                                                    str_contains($activity, 'kurang') ||
+                                                    str_contains($activity, 'keluar')
+                                                ) {
+                                                    $activityClass = 'activity-kurang';
+                                                } elseif (str_contains($activity, 'edit')) {
+                                                    $activityClass = 'activity-edit';
+                                                } elseif (str_contains($activity, 'import')) {
+                                                    $activityClass = 'activity-import';
+                                                } elseif (str_contains($activity, 'hapus')) {
+                                                    $activityClass = 'activity-hapus';
+                                                } else {
+                                                    $activityClass = 'activity-default';
+                                                }
+                                            @endphp
+
+                                            <span class="activity-badge {{ $activityClass }}">
+                                                {{ $movement->activity }}
+                                            </span>
+
+                                        </td>
+
+
+                                        {{-- STOK SEBELUM --}}
+                                        <td>
+
+                                            <span class="stock-number">
+                                                {{ number_format(
+                                                    $movement->quantity_before ?? 0,
+                                                    0,
+                                                    ',',
+                                                    '.'
+                                                ) }}
+                                            </span>
+
+                                        </td>
+
+
+                                        {{-- PERUBAHAN --}}
+                                        <td>
+
+                                            @php
+                                                $change = (int) ($movement->quantity_change ?? 0);
+                                            @endphp
+
+                                            @if ($change > 0)
+
+                                                <span class="change-positive">
+                                                    + {{ number_format($change, 0, ',', '.') }}
+                                                </span>
+
+                                            @elseif ($change < 0)
+
+                                                <span class="change-negative">
+                                                    {{ number_format($change, 0, ',', '.') }}
+                                                </span>
+
+                                            @else
+
+                                                <span class="change-zero">
+                                                    0
+                                                </span>
+
+                                            @endif
+
+                                        </td>
+
+
+                                        {{-- STOK SESUDAH --}}
+                                        <td>
+
+                                            <span class="stock-number">
+                                                {{ number_format(
+                                                    $movement->quantity_after ?? 0,
+                                                    0,
+                                                    ',',
+                                                    '.'
+                                                ) }}
+                                            </span>
+
+                                        </td>
+
+
+                                        {{-- KETERANGAN --}}
+                                        <td>
+
+                                            <div class="description">
+
+                                                {{ $movement->description ?: '-' }}
+
+                                            </div>
+
+                                        </td>
+
+                                    </tr>
+
+                                @endforeach
+
+                            </tbody>
+
+                        </table>
 
                     </div>
 
 
                     {{-- =================================================
-                         DATA ADA
+                         FOOTER TABLE
                     ================================================== --}}
+                    <div class="table-footer">
 
-                    @if($movements->count() > 0)
+                        <div class="table-footer-left">
 
-                        <div class="table-responsive">
+                            <div class="data-info">
 
-                            <table class="stock-history-table">
-
-                                <thead>
-
-                                    <tr>
-
-                                        <th>
-                                            No
-                                        </th>
-
-                                        <th>
-                                            Tanggal & Waktu
-                                        </th>
-
-                                        <th>
-                                            Pengguna
-                                        </th>
-
-                                        <th>
-                                            Material
-                                        </th>
-
-                                        <th>
-                                            Aktivitas
-                                        </th>
-
-                                        <th>
-                                            Stok Sebelum
-                                        </th>
-
-                                        <th>
-                                            Perubahan
-                                        </th>
-
-                                        <th>
-                                            Stok Sesudah
-                                        </th>
-
-                                        <th>
-                                            Keterangan
-                                        </th>
-
-                                    </tr>
-
-                                </thead>
-
-
-                                <tbody>
-
-                                    @foreach($movements as $index => $movement)
-
-                                        <tr>
-
-
-                                            {{-- NO --}}
-
-                                            <td>
-
-                                                @if(method_exists($movements, 'firstItem'))
-
-                                                    {{ $movements->firstItem() + $index }}
-
-                                                @else
-
-                                                    {{ $index + 1 }}
-
-                                                @endif
-
-                                            </td>
-
-
-                                            {{-- TANGGAL --}}
-
-                                            <td>
-
-                                                @if($movement->created_at)
-
-                                                    <div class="date-main">
-
-                                                        {{ $movement->created_at->format('d/m/Y') }}
-
-                                                    </div>
-
-                                                    <div class="date-time">
-
-                                                        {{ $movement->created_at->format('H:i') }} WITA
-
-                                                    </div>
-
-                                                @else
-
-                                                    <div class="date-main">-</div>
-                                                    <div class="date-time">-</div>
-
-                                                @endif
-
-                                            </td>
-
-
-                                            {{-- PENGGUNA --}}
-
-                                            <td>
-
-                                                @php
-
-                                                    $email = $movement->user->email ?? '';
-
-                                                    $displayUser = '';
-
-                                                    if ($email && str_contains($email, '@')) {
-
-                                                        $displayUser = strtoupper(
-                                                            strstr($email, '@', true)
-                                                        );
-
-                                                    }
-
-                                                    if (empty($displayUser)) {
-
-                                                        $displayUser = strtoupper(
-                                                            $movement->user->name ?? 'USER'
-                                                        );
-
-                                                    }
-
-                                                @endphp
-
-
-                                                <div class="user-cell">
-
-                                                    <div class="user-name">
-                                                        {{ $displayUser }}
-                                                    </div>
-
-                                                    <div class="user-role">
-                                                        {{ $movement->user->role ?? 'User' }}
-                                                    </div>
-
-                                                </div>
-
-                                            </td>
-
-
-                                            {{-- MATERIAL --}}
-
-                                            <td>
-
-                                                <div class="material-cell">
-
-<div class="material-name">
-
-    {{ $movement->material->name ?? '-' }}
-
-</div>
-
-<span class="material-number">
-
-    No:
-    {{ $movement->material->material_number ?? '-' }}
-                                                    
-</span>
-
-                                                </div>
-
-                                            </td>
-
-
-                                            {{-- AKTIVITAS --}}
-
-                                            <td>
-
-                                                @php
-
-                                                    $activity = strtolower(
-                                                        trim($movement->activity ?? '')
-                                                    );
-
-                                                    $activityClass = match ($activity) {
-
-                                                        'tambah' =>
-                                                            'activity-tambah',
-
-                                                        'kurangi',
-                                                        'kurang' =>
-                                                            'activity-kurangi',
-
-                                                        'edit' =>
-                                                            'activity-edit',
-
-                                                        'import' =>
-                                                            'activity-import',
-
-                                                        'hapus' =>
-                                                            'activity-hapus',
-
-                                                        default =>
-                                                            'activity-default',
-
-                                                    };
-
-                                                @endphp
-
-
-                                                <span class="activity-badge {{ $activityClass }}">
-
-                                                    {{ $movement->activity ?? '-' }}
-
-                                                </span>
-
-                                            </td>
-
-
-                                            {{-- STOK SEBELUM --}}
-
-                                            <td>
-
-                                                <strong class="quantity-before">
-
-                                                    {{ number_format(
-                                                        $movement->quantity_before ?? 0,
-                                                        0,
-                                                        ',',
-                                                        '.'
-                                                    ) }}
-
-                                                </strong>
-
-                                            </td>
-
-
-                                            {{-- PERUBAHAN --}}
-
-                                            <td>
-
-                                                @php
-
-                                                    $change = (int) (
-                                                        $movement->quantity_change ?? 0
-                                                    );
-
-                                                @endphp
-
-
-                                                <span
-                                                    class="quantity-change
-                                                    {{
-                                                        $change > 0
-                                                            ? 'change-positive'
-                                                            : ($change < 0
-                                                                ? 'change-negative'
-                                                                : 'change-zero')
-                                                    }}"
-                                                >
-
-                                                    {{ $change > 0 ? '+' : '' }}
-
-                                                    {{ number_format(
-                                                        $change,
-                                                        0,
-                                                        ',',
-                                                        '.'
-                                                    ) }}
-
-                                                </span>
-
-                                            </td>
-
-
-                                            {{-- STOK SESUDAH --}}
-
-                                            <td>
-
-                                                <strong class="quantity-after">
-
-                                                    {{ number_format(
-                                                        $movement->quantity_after ?? 0,
-                                                        0,
-                                                        ',',
-                                                        '.'
-                                                    ) }}
-
-                                                </strong>
-
-                                            </td>
-
-
-                                            {{-- KETERANGAN --}}
-
-                                            <td>
-
-                                                <span class="description-text">
-
-                                                    {{ $movement->description ?: '-' }}
-
-                                                </span>
-
-                                            </td>
-
-
-                                        </tr>
-
-                                    @endforeach
-
-                                </tbody>
-
-                            </table>
-
-                        </div>
-
-
-                        {{-- =================================================
-                             TABLE FOOTER
-                        ================================================== --}}
-
-                        <div class="table-footer">
-
-
-                            {{-- INFO --}}
-
-                            <div class="table-info">
-
-                                @if(method_exists($movements, 'firstItem'))
+                                @if (
+                                    request('per_page') === 'all' ||
+                                    request('per_page') === 'Semua'
+                                )
 
                                     Menampilkan
-
                                     <strong>
-                                        {{ $movements->firstItem() }}
+                                        1–{{ $movements->count() }}
                                     </strong>
-
-                                    -
-
-                                    <strong>
-                                        {{ $movements->lastItem() }}
-                                    </strong>
-
                                     dari
-
                                     <strong>
-                                        {{ $movements->total() }}
+                                        {{ $movements->count() }}
                                     </strong>
-
                                     aktivitas
 
                                 @else
 
                                     Menampilkan
-
                                     <strong>
-                                        {{ $movements->count() }}
+                                        {{ $movements->firstItem() ?? 0 }}–{{ $movements->lastItem() ?? 0 }}
                                     </strong>
-
+                                    dari
+                                    <strong>
+                                        {{ $movements->total() }}
+                                    </strong>
                                     aktivitas
 
                                 @endif
@@ -2067,99 +1508,170 @@
                             </div>
 
 
-                            {{-- PAGINATION --}}
+                            <div class="per-page-select">
 
-                            @if(method_exists($movements, 'hasPages'))
+                                <label for="per_page_footer">
+                                    Tampilkan:
+                                </label>
 
-                                @if($movements->hasPages())
+                                <select
+                                    id="per_page_footer"
+                                    onchange="changePerPage(this.value)"
+                                >
 
-                                    <div class="simple-pagination">
+                                    <option
+                                        value="10"
+                                        {{ request('per_page', 25) == 10 ? 'selected' : '' }}
+                                    >
+                                        10
+                                    </option>
 
+                                    <option
+                                        value="25"
+                                        {{ request('per_page', 25) == 25 ? 'selected' : '' }}
+                                    >
+                                        25
+                                    </option>
 
-                                        {{-- PREVIOUS --}}
+                                    <option
+                                        value="50"
+                                        {{ request('per_page', 25) == 50 ? 'selected' : '' }}
+                                    >
+                                        50
+                                    </option>
 
-                                        @if($movements->onFirstPage())
+                                    <option
+                                        value="100"
+                                        {{ request('per_page', 25) == 100 ? 'selected' : '' }}
+                                    >
+                                        100
+                                    </option>
 
-                                            <span class="pagination-disabled">
-                                                ← Sebelumnya
-                                            </span>
+                                    <option
+                                        value="250"
+                                        {{ request('per_page', 25) == 250 ? 'selected' : '' }}
+                                    >
+                                        250
+                                    </option>
 
-                                        @else
+                                    <option
+                                        value="all"
+                                        {{ request('per_page') === 'all' ? 'selected' : '' }}
+                                    >
+                                        Semua
+                                    </option>
 
-                                            <a href="{{ $movements->previousPageUrl() }}">
-                                                ← Sebelumnya
-                                            </a>
-
-                                        @endif
-
-
-                                        {{-- CURRENT --}}
-
-                                        <span class="pagination-current">
-
-                                            Halaman
-                                            {{ $movements->currentPage() }}
-
-                                        </span>
-
-
-                                        {{-- NEXT --}}
-
-                                        @if($movements->hasMorePages())
-
-                                            <a href="{{ $movements->nextPageUrl() }}">
-                                                Berikutnya →
-                                            </a>
-
-                                        @else
-
-                                            <span class="pagination-disabled">
-                                                Berikutnya →
-                                            </span>
-
-                                        @endif
-
-                                    </div>
-
-                                @endif
-
-                            @endif
-
-                        </div>
-
-
-                    {{-- =================================================
-                         EMPTY STATE
-                    ================================================== --}}
-
-                    @else
-
-                        <div class="empty-state">
-
-                            <div class="empty-icon">
-
-                                <span class="material-symbols-outlined">
-                                    history
-                                </span>
+                                </select>
 
                             </div>
 
-
-                            <h3>
-                                Belum Ada Riwayat Stok
-                            </h3>
-
-
-                            <p>
-                                Belum terdapat aktivitas perubahan stok material.
-                            </p>
-
                         </div>
 
-                    @endif
+
+                        {{-- PAGINATION --}}
+                        @if (method_exists($movements, 'hasPages'))
+
+                            <div class="simple-pagination">
+
+                                @if ($movements->onFirstPage())
+
+                                    <span class="pagination-btn disabled">
+
+                                        <span
+                                            class="material-symbols-outlined"
+                                            style="font-size:16px;"
+                                        >
+                                            arrow_back
+                                        </span>
+
+                                        Sebelumnya
+
+                                    </span>
+
+                                @else
+
+                                    <a
+                                        href="{{ $movements->previousPageUrl() }}"
+                                        class="pagination-btn"
+                                    >
+
+                                        <span
+                                            class="material-symbols-outlined"
+                                            style="font-size:16px;"
+                                        >
+                                            arrow_back
+                                        </span>
+
+                                        Sebelumnya
+
+                                    </a>
+
+                                @endif
 
 
-                </div>
+                                @if ($movements->hasMorePages())
+
+                                    <a
+                                        href="{{ $movements->nextPageUrl() }}"
+                                        class="pagination-btn"
+                                    >
+
+                                        Berikutnya
+
+                                        <span
+                                            class="material-symbols-outlined"
+                                            style="font-size:16px;"
+                                        >
+                                            arrow_forward
+                                        </span>
+
+                                    </a>
+
+                                @else
+
+                                    <span class="pagination-btn disabled">
+
+                                        Berikutnya
+
+                                        <span
+                                            class="material-symbols-outlined"
+                                            style="font-size:16px;"
+                                        >
+                                            arrow_forward
+                                        </span>
+
+                                    </span>
+
+                                @endif
+
+                            </div>
+
+                        @endif
+
+                    </div>
+
+
+                @else
+
+                    {{-- EMPTY STATE --}}
+
+                    <div class="empty-state">
+
+                        <span class="material-symbols-outlined">
+                            history
+                        </span>
+
+                        <h3>
+                            Belum Ada Riwayat Stok
+                        </h3>
+
+                        <p>
+                            Belum terdapat aktivitas perubahan stok material.
+                        </p>
+
+                    </div>
+
+                @endif
 
             </div>
 
@@ -2167,6 +1679,45 @@
 
     </main>
 
+    </div>
+
+
+    {{-- =========================================================
+         JAVASCRIPT
+    ========================================================== --}}
+
+    <script>
+
+        function changePerPage(value) {
+
+            const url = new URL(window.location.href);
+
+            url.searchParams.set('per_page', value);
+
+            url.searchParams.delete('page');
+
+            if (typeof navigatePage === 'function') {
+                navigatePage(url.toString(), true);
+            } else {
+                window.location.href = url.toString();
+            }
+
+        }
+
+
+        window.addEventListener('resize', function () {
+
+            if (window.innerWidth > 768) {
+
+                if (typeof closeSidebar === 'function') {
+                    closeSidebar();
+                }
+
+            }
+
+        });
+
+    </script>
 
 </body>
 
