@@ -120,27 +120,46 @@
         --sidebar-yellow: #FFC107;
     }
 
-    /* Top Progress Bar saat berpindah halaman */
+    /* ============================================================
+       YOUTUBE-STYLE TOP LOADING PROGRESS BAR
+    ============================================================ */
     .sidebar-progress-bar {
         position: fixed;
         top: 0;
         left: 0;
         height: 3px;
         width: 0%;
-        background: linear-gradient(90deg, #FFC107, #0057B8);
-        z-index: 10000;
+        background: linear-gradient(90deg, #FFC107 0%, #0057B8 50%, #FFC107 100%);
+        background-size: 200% 100%;
+        z-index: 999999;
         pointer-events: none;
-        transition: width 0.2s ease, opacity 0.2s ease;
         opacity: 0;
+        transition: width 0.22s cubic-bezier(0.1, 0.85, 0.25, 1), opacity 0.2s ease;
+        box-shadow: 0 0 10px rgba(255, 193, 7, 0.9), 0 0 4px rgba(0, 87, 184, 0.6);
     }
     .sidebar-progress-bar.active {
         opacity: 1;
-        width: 70%;
+        animation: ytProgressShimmer 1.4s infinite linear;
     }
     .sidebar-progress-bar.finish {
-        width: 100%;
+        width: 100% !important;
         opacity: 0;
-        transition: width 0.1s ease, opacity 0.3s ease 0.1s;
+        transition: width 0.12s ease-out, opacity 0.25s ease-out 0.12s;
+    }
+    @keyframes ytProgressShimmer {
+        0% { background-position: 100% 0; }
+        100% { background-position: -100% 0; }
+    }
+
+    /* Stabilisasi Scrollbar & Anti-Goyang Antar Halaman */
+    html {
+        overflow-y: scroll;
+        scrollbar-gutter: stable;
+    }
+
+    /* Transisi Halus Area Main (Sidebar tetap diam 100%) */
+    .main {
+        transition: opacity 0.08s ease;
     }
 
     /* Container Sidebar */
@@ -547,108 +566,180 @@
         }, 2500);
     };
 
-    // --- SEAMLESS INSTANT PAGE TRANSITION ENGINE (Micro-SPA) ---
-    // Mencegah reload layar penuh sehingga sidebar tidak kedip, tidak ngesot, dan sangat cepat
-    (function () {
-        const progressBar = document.getElementById('sidebarProgressBar');
+    // --- YOUTUBE-STYLE TOP LOADING PROGRESS BAR ENGINE ---
+    window.YouTubeProgress = (function () {
+        let progressBar = document.getElementById('sidebarProgressBar');
+        let timer = null;
+        let currentWidth = 0;
+        let isRunning = false;
 
-        function startProgress() {
-            if (progressBar) {
-                progressBar.classList.remove('finish');
-                progressBar.classList.add('active');
-            }
+        function getBar() {
+            if (!progressBar) progressBar = document.getElementById('sidebarProgressBar');
+            return progressBar;
         }
 
-        function finishProgress() {
-            if (progressBar) {
-                progressBar.classList.remove('active');
-                progressBar.classList.add('finish');
-            }
+        function setWidth(w) {
+            currentWidth = Math.min(100, Math.max(0, w));
+            const bar = getBar();
+            if (bar) bar.style.width = currentWidth + '%';
         }
 
-        // Cek apakah URL valid untuk di-swap tanpa reload
-        function isInternalNavLink(url) {
-            try {
-                const target = new URL(url, window.location.origin);
-                // Jangan swap jika bukan domain yang sama
-                if (target.origin !== window.location.origin) return false;
-                // Jangan swap file export download
-                if (target.pathname.includes('/export')) return false;
-                // Hanya swap rute dalam aplikasi
-                const allowedRoutes = ['/dashboard', '/materials'];
-                return allowedRoutes.some(r => target.pathname.startsWith(r));
-            } catch (e) {
-                return false;
-            }
+        function start() {
+            const bar = getBar();
+            if (!bar) return;
+            if (isRunning) return;
+            isRunning = true;
+
+            if (timer) clearInterval(timer);
+            bar.classList.remove('finish');
+            bar.classList.add('active');
+            setWidth(0);
+
+            // Respon secepat kilat ala YouTube (loncat ke ~25%)
+            setTimeout(function () {
+                if (!isRunning) return;
+                setWidth(25);
+            }, 25);
+
+            // Animasi trickle halus
+            timer = setInterval(function () {
+                if (!isRunning) return;
+                if (currentWidth < 55) {
+                    setWidth(currentWidth + Math.random() * 10 + 4);
+                } else if (currentWidth < 82) {
+                    setWidth(currentWidth + Math.random() * 5 + 1);
+                } else if (currentWidth < 93) {
+                    setWidth(currentWidth + 0.4);
+                }
+            }, 180);
         }
 
-        // Eksekusi perpindahan halaman instan
-        async function navigatePage(url, push = true) {
-            startProgress();
-            try {
-                const response = await fetch(url, {
-                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
-                });
+        function done() {
+            const bar = getBar();
+            if (!bar) return;
+            isRunning = false;
+            if (timer) clearInterval(timer);
+            setWidth(100);
+            bar.classList.add('finish');
+            setTimeout(function () {
+                bar.classList.remove('active');
+                setWidth(0);
+            }, 350);
+        }
 
-                if (!response.ok) {
-                    window.location.href = url;
-                    return;
+        return {
+            start: start,
+            done: done,
+            setWidth: setWidth
+        };
+    })();
+
+    // Selesaikan bar saat halaman selesai render awal
+    if (document.readyState === 'complete' || document.readyState === 'interactive') {
+        window.YouTubeProgress.done();
+    } else {
+        document.addEventListener('DOMContentLoaded', function () {
+            window.YouTubeProgress.done();
+        });
+    }
+
+    window.addEventListener('pageshow', function () {
+        window.YouTubeProgress.done();
+    });
+
+    // --- SEAMLESS INSTANT SPA PAGE ENGINE (SIDEBAR DIAM AJA) ---
+    async function navigatePage(url, push = true) {
+        window.YouTubeProgress.start();
+
+        try {
+            const response = await fetch(url, {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+
+            if (!response.ok) {
+                window.location.href = url;
+                return;
+            }
+
+            const htmlText = await response.text();
+            const parser = new DOMParser();
+            const newDoc = parser.parseFromString(htmlText, 'text/html');
+
+            const newMain = newDoc.querySelector('main.main');
+            const currentMain = document.querySelector('main.main');
+
+            if (!newMain || !currentMain) {
+                window.location.href = url;
+                return;
+            }
+
+            // Transisi halus pada area konten (sidebar tetap diam 100%)
+            currentMain.style.opacity = '0.35';
+
+            setTimeout(() => {
+                // 1. Ganti CSS Halaman secara instan
+                const newPageStyle = newDoc.getElementById('page-style');
+                let currentPageStyle = document.getElementById('page-style');
+                if (newPageStyle) {
+                    if (currentPageStyle) {
+                        currentPageStyle.textContent = newPageStyle.textContent;
+                    } else {
+                        const st = document.createElement('style');
+                        st.id = 'page-style';
+                        st.textContent = newPageStyle.textContent;
+                        document.head.appendChild(st);
+                    }
                 }
 
-                const htmlText = await response.text();
-                const parser = new DOMParser();
-                const newDoc = parser.parseFromString(htmlText, 'text/html');
+                // 2. Ganti konten main
+                currentMain.innerHTML = newMain.innerHTML;
 
-                const newMain = newDoc.querySelector('main.main');
-                const currentMain = document.querySelector('main.main');
-
-                if (!newMain || !currentMain) {
-                    window.location.href = url;
-                    return;
-                }
-
-                // Update judul tab
+                // 3. Update judul tab browser
                 document.title = newDoc.title;
 
-                // Transisi halus fade out -> swap -> fade in (hanya 60ms)
-                currentMain.style.opacity = '0';
-                setTimeout(() => {
-                    currentMain.innerHTML = newMain.innerHTML;
+                // 4. Update address bar URL
+                if (push) {
+                    history.pushState({ url: url }, newDoc.title, url);
+                }
 
-                    // Jalankan ulang tag script yang ada di dalam main jika ada
-                    newMain.querySelectorAll('script').forEach(oldScript => {
-                        const newScript = document.createElement('script');
-                        Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
-                        newScript.appendChild(document.createTextNode(oldScript.innerHTML));
-                        currentMain.appendChild(newScript);
-                    });
+                // 5. Update menu aktif di sidebar (sidebar TIDAK DI-RELOAD, hanya highlight berganti)
+                updateSidebarActiveMenu(url);
 
-                    currentMain.style.opacity = '1';
-                    finishProgress();
-                    window.scrollTo({ top: 0, behavior: 'instant' });
+                // 6. Jalankan ulang script halaman baru jika ada
+                newMain.querySelectorAll('script').forEach(s => {
+                    const sc = document.createElement('script');
+                    Array.from(s.attributes).forEach(a => sc.setAttribute(a.name, a.value));
+                    sc.textContent = s.textContent;
+                    currentMain.appendChild(sc);
+                });
 
-                    if (push) {
-                        history.pushState({ url: url }, newDoc.title, url);
-                    }
+                // 7. Scroll ke paling atas
+                window.scrollTo({ top: 0, behavior: 'instant' });
 
-                    // Perbarui status menu aktif di sidebar
-                    updateSidebarMenuState(url);
+                // 8. Tampilkan kembali konten dengan mulus
+                currentMain.style.opacity = '1';
 
-                    // Di layar HP, tutup drawer setelah klik menu
-                    if (window.innerWidth <= 768) {
-                        window.closeSidebar();
-                    }
-                }, 60);
+                // 9. Selesaikan loading bar YouTube
+                window.YouTubeProgress.done();
 
-            } catch (err) {
-                finishProgress();
-                window.location.href = url;
-            }
+                // 10. Jika di HP, tutup menu drawer
+                if (window.innerWidth <= 768) {
+                    window.closeSidebar();
+                }
+            }, 60);
+
+        } catch (err) {
+            window.location.href = url;
         }
+    }
 
-        // Perbarui highlight warna aktif di sidebar
-        function updateSidebarMenuState(currentUrl) {
-            const target = new URL(currentUrl, window.location.origin);
+    // Perbarui highlight warna aktif di sidebar
+    function updateSidebarActiveMenu(targetUrlStr) {
+        try {
+            const targetUrl = new URL(targetUrlStr, window.location.origin);
+            const path = targetUrl.pathname;
             document.querySelectorAll('.sidebar-nav .nav-item').forEach(item => {
                 const href = item.getAttribute('href');
                 if (!href || href.startsWith('javascript') || href === '#') return;
@@ -656,9 +747,9 @@
                     const itemUrl = new URL(href, window.location.origin);
                     let isActive = false;
 
-                    if (itemUrl.pathname === '/dashboard' && target.pathname === '/dashboard') {
+                    if (itemUrl.pathname === '/dashboard' && path === '/dashboard') {
                         isActive = true;
-                    } else if (itemUrl.pathname.startsWith('/materials') && target.pathname.startsWith('/materials')) {
+                    } else if (itemUrl.pathname === '/materials' && path.startsWith('/materials')) {
                         isActive = true;
                     }
 
@@ -669,28 +760,69 @@
                     }
                 } catch (e) {}
             });
+        } catch (e) {}
+    }
+
+    // Cek apakah URL valid untuk di-swap instan tanpa reload browser
+    function isInternalNavigableUrl(href, linkEl) {
+        if (!href || href === '#' || href.startsWith('javascript') || href.startsWith('#')) return false;
+        if (linkEl && (linkEl.target === '_blank' || linkEl.hasAttribute('download'))) return false;
+
+        try {
+            const url = new URL(href, window.location.origin);
+            if (url.origin !== window.location.origin) return false;
+            // File export download jangan di-swap
+            if (url.pathname.includes('/export')) return false;
+            // Hanya rute internal aplikasi
+            const validPrefixes = ['/dashboard', '/materials'];
+            return validPrefixes.some(prefix => url.pathname.startsWith(prefix));
+        } catch (e) {
+            return false;
         }
+    }
 
-        // Tangkap klik pada link menu dan tombol navigasi internal
-        document.addEventListener('click', function (e) {
-            const link = e.target.closest('a');
-            if (!link) return;
+    // Tangkap klik link navigasi (sidebar & konten)
+    document.addEventListener('click', function (e) {
+        const link = e.target.closest('a');
+        if (!link) return;
 
-            const href = link.getAttribute('href');
-            if (!href || href.startsWith('#') || href.startsWith('javascript') || 
-                link.target === '_blank' || link.hasAttribute('download')) {
-                return;
-            }
+        const href = link.getAttribute('href');
+        if (isInternalNavigableUrl(href, link)) {
+            const targetUrl = new URL(link.href, window.location.origin);
+            if (targetUrl.href === window.location.href) return;
 
-            if (isInternalNavLink(href)) {
-                e.preventDefault();
-                navigatePage(href, true);
-            }
-        });
+            e.preventDefault();
+            navigatePage(link.href, true);
+        }
+    });
 
-        // Dukung tombol Back / Forward browser
-        window.addEventListener('popstate', function () {
-            navigatePage(window.location.href, false);
-        });
-    })();
+    // Tangkap tombol browser Back / Forward
+    window.addEventListener('popstate', function (e) {
+        navigatePage(window.location.href, false);
+    });
+
+    // Dropdown jumlah baris per halaman (Data Material)
+    window.changePerPage = function (val) {
+        const url = new URL(window.location.href);
+        url.searchParams.set('per_page', val);
+        url.searchParams.delete('page');
+        navigatePage(url.toString(), true);
+    };
+
+    // Form submission
+    document.addEventListener('submit', function (e) {
+        const form = e.target;
+        if (form.method.toLowerCase() === 'get') {
+            e.preventDefault();
+            const action = form.action || window.location.href;
+            const formData = new FormData(form);
+            const searchParams = new URLSearchParams(formData);
+            const targetUrl = new URL(action, window.location.origin);
+            targetUrl.search = searchParams.toString();
+            navigatePage(targetUrl.toString(), true);
+        } else {
+            // POST form (simpan data, hapus data, logout)
+            window.YouTubeProgress.start();
+        }
+    });
 </script>

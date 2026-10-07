@@ -12,7 +12,7 @@
     <!-- Material Symbols (Icons) -->
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
 
-    <style>
+    <style id="page-style">
         *, *::before, *::after {
             margin: 0;
             padding: 0;
@@ -126,7 +126,8 @@
             background: none;
             border: none;
             color: var(--text-dark);
-            cursor: padding: 4px;
+            cursor: pointer;
+            padding: 4px;
         }
 
         /* PAGE CONTENT */

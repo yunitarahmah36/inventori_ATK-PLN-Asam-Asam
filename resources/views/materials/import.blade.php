@@ -9,7 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
 
-    <style>
+    <style id="page-style">
         *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
             --blue: #0057B8;
@@ -46,9 +46,17 @@
         .btn { display: inline-flex; align-items: center; gap: 6px; padding: 10px 20px; border-radius: 8px; font-size: 13.5px; font-weight: 600; cursor: pointer; border: none; }
         .btn-primary { background: var(--blue); color: #fff; }
         .btn-outline { background: var(--white); color: var(--text-dark); border: 1px solid var(--border); }
+        .topbar-user { display: flex; align-items: center; gap: 12px; }
+        .topbar-user-detail { text-align: right; }
+        .topbar-user-name { font-size: 13px; font-weight: 700; color: var(--text-dark); }
+        .topbar-user-email { font-size: 11px; color: var(--text-muted); }
+        .badge-role { display: inline-block; font-size: 10px; font-weight: 700; padding: 1px 7px; border-radius: 20px; background: var(--blue-light); color: var(--blue); text-transform: uppercase; }
+        .topbar-avatar { width: 38px; height: 38px; border-radius: 50%; background: var(--blue); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 15px; }
+
         @media (max-width: 768px) {
             .btn-hamburger { display: flex; }
             .topbar { padding: 0 16px; }
+            .topbar-user-detail { display: none; }
             .main { margin-left: 0; }
             .page-content { padding: 16px; }
         }
@@ -69,6 +77,17 @@
                     <div class="topbar-left">
                         <h1>Import Data Material</h1>
                         <p>Inventori ATK PLN Asam-Asam</p>
+                    </div>
+                </div>
+
+                <div class="topbar-user">
+                    <div class="topbar-user-detail">
+                        <div class="topbar-user-name">{{ Auth::user()->name }}</div>
+                        <div class="topbar-user-email">{{ Auth::user()->email }}</div>
+                        <span class="badge-role">{{ Auth::user()->role }}</span>
+                    </div>
+                    <div class="topbar-avatar">
+                        {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
                     </div>
                 </div>
             </header>
