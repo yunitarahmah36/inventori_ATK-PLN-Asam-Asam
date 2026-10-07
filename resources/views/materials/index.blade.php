@@ -798,7 +798,7 @@
                     <div class="header-actions">
                         <a href="{{ route('materials.create') }}" class="btn btn-primary">
                             <span class="material-symbols-outlined" style="font-size:19px;">add</span>
-                            + Tambah Material
+                            Tambah Material
                         </a>
 
                         <a href="{{ route('materials.import') }}" class="btn btn-yellow">

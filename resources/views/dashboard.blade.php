@@ -883,11 +883,6 @@
 
                         <p>Sistem Manajemen Stok Material ATK PLN Asam-Asam</p>
 
-                        <div class="welcome-status">
-                            <span class="material-symbols-outlined">verified</span>
-                            Status Inventaris: Terkendali
-                        </div>
-
                     </div>
 
                     <!-- Badge Role: Dinamis (Admin / Umum / Keuangan) -->
