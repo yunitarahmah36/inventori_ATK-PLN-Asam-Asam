@@ -29,19 +29,7 @@
         html, body { height: 100%; font-family: 'Inter', Arial, sans-serif; background: var(--bg); color: var(--text-dark); }
         a { text-decoration: none; color: inherit; }
         .layout { display: flex; min-height: 100vh; }
-        .sidebar { position: fixed; inset: 0 auto 0 0; width: var(--sidebar-w); background: var(--blue-dark); color: #fff; display: flex; flex-direction: column; z-index: 200; }
-        .sidebar-logo { display: flex; align-items: center; gap: 12px; padding: 22px 20px 20px; border-bottom: 1px solid rgba(255, 255, 255, 0.08); }
-        .sidebar-logo-image { width: 40px; height: 40px; object-fit: contain; }
-        .sidebar-logo-text h1 { font-size: 15px; font-weight: 700; color: #fff; }
-        .sidebar-logo-text p { font-size: 11px; color: rgba(255, 255, 255, 0.55); }
-        .sidebar-user { margin: 14px 12px 6px; padding: 12px; background: rgba(255,255,255,0.07); border-radius: 10px; display: flex; align-items: center; gap: 10px; }
-        .sidebar-avatar { width: 38px; height: 38px; border-radius: 50%; background: var(--yellow); color: var(--blue-dark); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 15px; }
-        .sidebar-user-name { font-size: 13px; font-weight: 700; color: #fff; }
-        .sidebar-user-role { font-size: 11px; color: var(--yellow); font-weight: 600; text-transform: uppercase; }
-        .sidebar-nav { flex: 1; padding: 10px 12px; }
-        .nav-item { display: flex; align-items: center; gap: 11px; padding: 10px 12px; border-radius: 9px; color: rgba(255,255,255,0.78); font-size: 13.5px; font-weight: 500; }
-        .nav-item.active { background: rgba(255,255,255,0.14); color: var(--yellow); font-weight: 700; }
-        .nav-item .material-symbols-outlined { font-size: 20px; }
+        .btn-hamburger { display: none; background: none; border: none; font-size: 24px; color: var(--text-dark); cursor: pointer; align-items: center; justify-content: center; }
         .main { margin-left: var(--sidebar-w); flex: 1; display: flex; flex-direction: column; min-width: 0; min-height: 100vh; }
         .topbar { height: var(--header-h); background: var(--white); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 28px; position: sticky; top: 0; z-index: 100; }
         .topbar-left h1 { font-size: 18px; font-weight: 800; color: var(--blue-dark); }
@@ -58,7 +46,12 @@
         .btn { display: inline-flex; align-items: center; gap: 6px; padding: 10px 20px; border-radius: 8px; font-size: 13.5px; font-weight: 600; cursor: pointer; border: none; }
         .btn-primary { background: var(--blue); color: #fff; }
         .btn-outline { background: var(--white); color: var(--text-dark); border: 1px solid var(--border); }
-        @media (max-width: 768px) { .sidebar { display: none; } .main { margin-left: 0; } .page-content { padding: 16px; } }
+        @media (max-width: 768px) {
+            .btn-hamburger { display: flex; }
+            .topbar { padding: 0 16px; }
+            .main { margin-left: 0; }
+            .page-content { padding: 16px; }
+        }
     </style>
 </head>
 
@@ -69,9 +62,14 @@
 
         <main class="main">
             <header class="topbar">
-                <div class="topbar-left">
-                    <h1>Import Data Material</h1>
-                    <p>Inventori ATK PLN Asam-Asam</p>
+                <div style="display:flex;align-items:center;gap:14px;">
+                    <button class="btn-hamburger" onclick="openSidebar()" aria-label="Buka Menu">
+                        <span class="material-symbols-outlined">menu</span>
+                    </button>
+                    <div class="topbar-left">
+                        <h1>Import Data Material</h1>
+                        <p>Inventori ATK PLN Asam-Asam</p>
+                    </div>
                 </div>
             </header>
 

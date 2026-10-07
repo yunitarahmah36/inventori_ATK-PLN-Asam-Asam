@@ -52,149 +52,6 @@
 
         .layout { display: flex; min-height: 100vh; }
 
-        /* SIDEBAR */
-        .sidebar {
-            position: fixed;
-            inset: 0 auto 0 0;
-            width: var(--sidebar-w);
-            background: var(--blue-dark);
-            color: #fff;
-            display: flex;
-            flex-direction: column;
-            z-index: 200;
-            transition: transform var(--transition);
-        }
-
-        .sidebar-logo {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 22px 20px 20px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-        }
-
-        .sidebar-logo-image {
-            width: 40px;
-            height: 40px;
-            object-fit: contain;
-            display: block;
-            flex-shrink: 0;
-        }
-
-        .sidebar-logo-text h1 {
-            margin: 0;
-            font-size: 15px;
-            font-weight: 700;
-            color: #fff;
-            line-height: 1.2;
-        }
-
-        .sidebar-logo-text p {
-            margin: 1px 0 0;
-            font-size: 11px;
-            color: rgba(255, 255, 255, 0.55);
-        }
-
-        .sidebar-user {
-            margin: 14px 12px 6px;
-            padding: 12px;
-            background: rgba(255,255,255,0.07);
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .sidebar-avatar {
-            width: 38px;
-            height: 38px;
-            border-radius: 50%;
-            background: var(--yellow);
-            color: var(--blue-dark);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 800;
-            font-size: 15px;
-            flex-shrink: 0;
-        }
-
-        .sidebar-user-name {
-            font-size: 13px;
-            font-weight: 700;
-            color: #fff;
-            line-height: 1.2;
-        }
-
-        .sidebar-user-role {
-            font-size: 11px;
-            color: var(--yellow);
-            font-weight: 600;
-            text-transform: uppercase;
-            margin-top: 2px;
-        }
-
-        .sidebar-nav {
-            flex: 1;
-            padding: 10px 12px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 3px;
-        }
-
-        .nav-section-title {
-            font-size: 10.5px;
-            font-weight: 700;
-            color: rgba(255,255,255,0.4);
-            text-transform: uppercase;
-            padding: 10px 10px 4px;
-        }
-
-        .nav-item {
-            display: flex;
-            align-items: center;
-            gap: 11px;
-            padding: 10px 12px;
-            border-radius: 9px;
-            color: rgba(255,255,255,0.78);
-            font-size: 13.5px;
-            font-weight: 500;
-            transition: background var(--transition), color var(--transition);
-        }
-
-        .nav-item:hover, .nav-item.active {
-            background: rgba(255,255,255,0.14);
-            color: #fff;
-        }
-
-        .nav-item.active {
-            font-weight: 700;
-            color: var(--yellow);
-        }
-
-        .nav-item .material-symbols-outlined { font-size: 20px; }
-
-        .sidebar-footer {
-            padding: 12px;
-            border-top: 1px solid rgba(255,255,255,0.08);
-        }
-
-        .btn-logout {
-            width: 100%;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 10px 12px;
-            border-radius: 9px;
-            background: rgba(220, 38, 38, 0.18);
-            color: #FCA5A5;
-            border: 1px solid rgba(220, 38, 38, 0.3);
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-        }
-
         /* MAIN */
         .main {
             margin-left: var(--sidebar-w);
@@ -440,18 +297,7 @@
             background: #F9FAFB;
         }
 
-        .drawer-backdrop {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.5);
-            z-index: 199;
-        }
-
         @media (max-width: 768px) {
-            .sidebar { transform: translateX(-100%); }
-            .sidebar.open { transform: translateX(0); }
-            .drawer-backdrop.open { display: block; }
             .main { margin-left: 0; }
             .btn-hamburger { display: flex; }
             .topbar { padding: 0 16px; }
@@ -464,8 +310,6 @@
 </head>
 
 <body>
-
-    <div class="drawer-backdrop" id="drawerBackdrop" onclick="closeSidebar()"></div>
 
     <div class="layout">
 
