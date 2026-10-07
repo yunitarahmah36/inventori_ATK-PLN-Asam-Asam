@@ -67,12 +67,11 @@
         </a>
 
         <!-- Riwayat Stok -->
-        <a href="javascript:void(0)" 
-           class="nav-item {{ request()->routeIs('stock-movements.*') ? 'active' : '' }}" 
-           onclick="showSidebarToast('Fitur Riwayat Stok sedang dikembangkan.')">
+        <a href="{{ route('stock-movements.index') }}"
+           class="nav-item {{ request()->routeIs('stock-movements.index') ? 'active' : '' }}">
             <span class="material-symbols-outlined">history</span>
             <span>Riwayat Stok</span>
-        </a>
+        </a>    
 
         <!-- Laporan -->
         <a href="javascript:void(0)" 
