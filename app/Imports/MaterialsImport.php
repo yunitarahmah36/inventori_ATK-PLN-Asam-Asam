@@ -95,6 +95,41 @@ class MaterialsImport implements
     }
 
     /**
+     * Pesan validasi yang ramah pengguna.
+     */
+    public function customValidationMessages(): array
+    {
+        return [
+            'no_material.required'    => 'Kolom No Material tidak boleh kosong.',
+            'no_material.max'         => 'No Material terlalu panjang (maksimal 50 karakter).',
+            'no_material.unique'      => 'No Material ":input" sudah terdaftar di sistem. Gunakan nomor lain.',
+            'nama_material.required'  => 'Kolom Nama Material tidak boleh kosong.',
+            'nama_material.max'       => 'Nama Material terlalu panjang (maksimal 255 karakter).',
+            'tanggal_masuk.required'  => 'Kolom Tanggal Masuk tidak boleh kosong.',
+            'jumlah_item.required'    => 'Kolom Jumlah Item tidak boleh kosong.',
+            'jumlah_item.integer'     => 'Jumlah Item harus berupa angka bulat (contoh: 10, 25, 100).',
+            'jumlah_item.min'         => 'Jumlah Item tidak boleh bernilai negatif.',
+            'satuan.required'         => 'Kolom Satuan tidak boleh kosong.',
+            'satuan.max'              => 'Satuan terlalu panjang (maksimal 50 karakter).',
+        ];
+    }
+
+    /**
+     * Label kolom yang ditampilkan di pesan error.
+     */
+    public function customValidationAttributes(): array
+    {
+        return [
+            'no_material'   => 'No Material',
+            'nama_material' => 'Nama Material',
+            'tanggal_masuk' => 'Tanggal Masuk',
+            'jumlah_item'   => 'Jumlah Item',
+            'satuan'        => 'Satuan',
+            'deskripsi'     => 'Deskripsi',
+        ];
+    }
+
+    /**
      * Normalisasi satuan.
      */
     private function normalizeUnit($unit)

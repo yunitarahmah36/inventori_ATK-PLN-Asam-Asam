@@ -309,44 +309,128 @@ class MaterialController extends Controller
     }
 
     public function import(Request $request)
-{
-    $request->validate([
-        'file' => [
-            'required',
-            'file',
-            'mimes:xlsx,xls',
-            'max:5120',
-        ],
-    ], [
-        'file.required' => 'File Excel wajib dipilih.',
-        'file.file'     => 'File yang dipilih tidak valid.',
-        'file.mimes'    => 'File harus berformat Excel (.xlsx atau .xls).',
-        'file.max'      => 'Ukuran file maksimal 5 MB.',
-    ]);
+    {
+        $request->validate([
+            'file' => [
+                'required',
+                'file',
+                'mimes:xlsx,xls',
+                'max:5120',
+            ],
+        ], [
+            'file.required' => 'File Excel wajib dipilih sebelum melakukan import.',
+            'file.file'     => 'File yang dipilih tidak valid. Pastikan file tidak rusak.',
+            'file.mimes'    => 'Format file tidak didukung. Gunakan file Excel dengan ekstensi .xlsx atau .xls.',
+            'file.max'      => 'Ukuran file terlalu besar. Maksimal 5 MB.',
+        ]);
 
-    try {
+        try {
 
-        Excel::import(
-            new MaterialsImport(),
-            $request->file('file')
-        );
-
-        return redirect()
-            ->route('materials.index')
-            ->with(
-                'success',
-                'Data material berhasil diimport dari Excel.'
+            Excel::import(
+                new MaterialsImport(),
+                $request->file('file')
             );
 
-    } catch (\Exception $e) {
+            return redirect()
+                ->route('materials.index')
+                ->with(
+                    'success',
+                    'Data material berhasil diimport dari Excel.'
+                );
 
-        return redirect()
-            ->back()
-            ->withInput()
-            ->with(
-                'error',
-                'Import gagal: ' . $e->getMessage()
-            );
+        } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
+
+            // Ambil error validasi per baris dari Excel
+            $failures = $e->failures();
+            $errors   = [];
+
+            foreach ($failures as $failure) {
+                $baris = $failure->row();
+                foreach ($failure->errors() as $pesan) {
+                    $errors[] = "Baris {$baris}: {$pesan}";
+                }
+            }
+
+            return redirect()
+                ->back()
+                ->withInput()
+                ->with('import_errors', $errors)
+                ->with('error_type', 'validation');
+
+        } catch (\PhpOffice\PhpSpreadsheet\Exception $e) {
+
+            return redirect()
+                ->back()
+                ->withInput()
+                ->with('error', 'File Excel tidak dapat dibaca. Pastikan file tidak rusak dan formatnya sesuai.')
+                ->with('error_type', 'file');
+
+        } catch (\Exception $e) {
+
+            // Terjemahkan pesan teknis ke bahasa yang mudah dipahami
+            $message = $e->getMessage();
+            $friendlyMessage = $this->translateImportError($message);
+
+            return redirect()
+                ->back()
+                ->withInput()
+                ->with('error', $friendlyMessage)
+                ->with('error_type', 'general');
+        }
     }
-}
+
+    /**
+     * Terjemahkan pesan error teknis menjadi pesan yang ramah pengguna.
+     */
+    private function translateImportError(string $message): string
+    {
+        // Kolom tidak ditemukan / header salah
+        if (
+            str_contains($message, 'Undefined array key') ||
+            str_contains($message, 'undefined index') ||
+            str_contains($message, 'does not exist')
+        ) {
+            return 'Import gagal. Nama kolom di file Excel tidak sesuai. Pastikan kolom yang ada adalah: No Material, Nama Material, Tanggal Masuk, Jumlah Item, Satuan, Deskripsi. Gunakan template yang tersedia.';
+        }
+
+        // File kosong / tidak ada data
+        if (
+            str_contains($message, 'empty') ||
+            str_contains($message, 'no rows')
+        ) {
+            return 'Import gagal. File Excel yang diunggah tidak memiliki data. Pastikan file berisi minimal satu baris data.';
+        }
+
+        // Format tanggal salah
+        if (
+            str_contains($message, 'date') ||
+            str_contains($message, 'DateTime') ||
+            str_contains($message, 'createFromFormat')
+        ) {
+            return 'Import gagal. Format tanggal di kolom "Tanggal Masuk" tidak dikenali. Gunakan format DD/MM/YYYY (contoh: 01/07/2025).';
+        }
+
+        // No material duplikat
+        if (
+            str_contains($message, 'Duplicate entry') ||
+            str_contains($message, 'SQLSTATE[23000]') ||
+            str_contains($message, 'unique constraint') ||
+            str_contains($message, 'Integrity constraint')
+        ) {
+            return 'Import gagal. Terdapat No Material di file yang sudah terdaftar di sistem. Periksa kembali kolom No Material dan pastikan setiap nomor unik.';
+        }
+
+        // File tidak bisa dibuka / korup
+        if (
+            str_contains($message, 'zip') ||
+            str_contains($message, 'reader') ||
+            str_contains($message, 'Invalid file') ||
+            str_contains($message, 'not a valid')
+        ) {
+            return 'Import gagal. File Excel tidak dapat dibuka. Kemungkinan file rusak atau formatnya tidak didukung. Coba simpan ulang file Excel Anda dan upload kembali.';
+        }
+
+        // Fallback umum
+        return 'Import gagal. Periksa kembali format file dan data yang diunggah. Pastikan semua kolom terisi dengan benar dan gunakan template yang tersedia.';
+    }
 }

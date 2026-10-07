@@ -454,51 +454,73 @@
 
             <!-- SUCCESS -->
             @if(session('success'))
-
-                <div class="alert alert-success">
-
-                    {{ session('success') }}
-
+                <div class="alert alert-success" style="display:flex;align-items:center;gap:10px;">
+                    <span class="material-symbols-outlined" style="font-size:20px;flex-shrink:0;">check_circle</span>
+                    <span>{{ session('success') }}</span>
                 </div>
-
             @endif
 
 
-            <!-- ERROR -->
+            <!-- ERROR UMUM (file rusak, kolom salah, dll) -->
             @if(session('error'))
-
                 <div class="alert alert-danger">
-
-                    {{ session('error') }}
-
+                    <div style="display:flex;align-items:flex-start;gap:10px;">
+                        <span class="material-symbols-outlined" style="font-size:22px;flex-shrink:0;margin-top:1px;">error</span>
+                        <div>
+                            <div style="font-weight:700;font-size:14px;margin-bottom:4px;">Import Tidak Berhasil</div>
+                            <div style="line-height:1.6;">{{ session('error') }}</div>
+                            <div style="margin-top:10px;font-size:12px;color:#7F1D1D;">
+                                💡 <strong>Saran:</strong> Download template di bawah agar format file sudah pasti benar.
+                            </div>
+                        </div>
+                    </div>
                 </div>
-
             @endif
 
 
-            <!-- VALIDATION ERROR -->
-            @if($errors->any())
-
+            <!-- ERROR VALIDASI PER BARIS (dari Excel) -->
+            @if(session('import_errors'))
+                @php $importErrors = session('import_errors'); @endphp
                 <div class="alert alert-danger">
-
-                    <strong>
-                        Import gagal:
-                    </strong>
-
-                    <ul class="error-list">
-
-                        @foreach($errors->all() as $error)
-
-                            <li>
-                                {{ $error }}
-                            </li>
-
-                        @endforeach
-
-                    </ul>
-
+                    <div style="display:flex;align-items:flex-start;gap:10px;">
+                        <span class="material-symbols-outlined" style="font-size:22px;flex-shrink:0;margin-top:1px;">table_rows</span>
+                        <div style="flex:1;min-width:0;">
+                            <div style="font-weight:700;font-size:14px;margin-bottom:4px;">
+                                Import Gagal — Ditemukan {{ count($importErrors) }} masalah pada data
+                            </div>
+                            <div style="font-size:13px;margin-bottom:10px;line-height:1.5;">
+                                Beberapa baris di file Excel tidak sesuai format. Perbaiki data berikut lalu coba import ulang.
+                            </div>
+                            <ul style="margin:0 0 0 4px;padding:0;list-style:none;display:flex;flex-direction:column;gap:5px;">
+                                @foreach($importErrors as $err)
+                                    <li style="display:flex;align-items:flex-start;gap:7px;font-size:12.5px;padding:6px 10px;background:rgba(185,28,28,0.07);border-radius:6px;">
+                                        <span class="material-symbols-outlined" style="font-size:15px;flex-shrink:0;margin-top:1px;color:#B91C1C;">warning</span>
+                                        <span>{{ $err }}</span>
+                                    </li>
+                                @endforeach
+                            </ul>
+                            <div style="margin-top:12px;font-size:12px;color:#7F1D1D;">
+                                💡 <strong>Saran:</strong> Nomor baris di atas sudah termasuk baris header (baris 1). Jadi "Baris 2" berarti data pertama di file Excel Anda.
+                            </div>
+                        </div>
+                    </div>
                 </div>
+            @endif
 
+
+            <!-- ERROR VALIDASI FILE (misal: bukan xlsx/xls) -->
+            @if($errors->any())
+                <div class="alert alert-danger">
+                    <div style="display:flex;align-items:flex-start;gap:10px;">
+                        <span class="material-symbols-outlined" style="font-size:22px;flex-shrink:0;margin-top:1px;">upload_file</span>
+                        <div>
+                            <div style="font-weight:700;font-size:14px;margin-bottom:6px;">File Tidak Dapat Diproses</div>
+                            @foreach($errors->all() as $error)
+                                <div style="line-height:1.6;">{{ $error }}</div>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
             @endif
 
 
