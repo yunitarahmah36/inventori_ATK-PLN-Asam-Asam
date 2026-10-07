@@ -66,6 +66,9 @@ Route::middleware('auth')->group(function () {
     Route::post('/materials/import', [MaterialController::class, 'import'])
         ->name('materials.import');
 
+    Route::post('/materials/bulk-destroy', [MaterialController::class, 'bulkDestroy'])
+        ->name('materials.bulk-destroy');
+
     Route::resource('materials', MaterialController::class);
 
 

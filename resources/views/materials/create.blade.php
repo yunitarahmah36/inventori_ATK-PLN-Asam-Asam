@@ -383,7 +383,7 @@
                                     id="material_number" 
                                     name="material_number" 
                                     class="form-control @error('material_number') is-invalid @enderror"
-                                    value="{{ old('material_number', $suggestedNumber) }}" 
+                                    value="{{ old('material_number') }}"
                                     placeholder="Contoh: MAT001"
                                     required
                                 >

@@ -251,6 +251,27 @@ class MaterialController extends Controller
     }
 
     /**
+     * Hapus beberapa material sekaligus (bulk delete).
+     */
+    public function bulkDestroy(Request $request)
+    {
+        $ids = $request->input('ids', []);
+
+        if (empty($ids) || !is_array($ids)) {
+            return redirect()
+                ->route('materials.index')
+                ->with('error', 'Tidak ada material yang dipilih.');
+        }
+
+        $count = Material::whereIn('id', $ids)->count();
+        Material::whereIn('id', $ids)->delete();
+
+        return redirect()
+            ->route('materials.index')
+            ->with('success', "{$count} material berhasil dihapus.");
+    }
+
+    /**
      * Export data material ke file Excel (.xlsx).
      */
     public function export(Request $request)

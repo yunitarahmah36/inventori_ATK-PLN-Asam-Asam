@@ -873,6 +873,114 @@
         transform: translateY(0) scale(1);
     }
 }
+
+/* ============================================================
+   CHECKBOX & BULK SELECT
+============================================================ */
+.cb-cell {
+    width: 44px;
+    padding-left: 18px !important;
+    padding-right: 8px !important;
+}
+
+.row-checkbox,
+.check-all {
+    width: 17px;
+    height: 17px;
+    accent-color: var(--blue);
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+table.data-table tbody tr.row-selected {
+    background: #EAF3FF;
+}
+
+/* ============================================================
+   BULK ACTION TOOLBAR (floating bar)
+============================================================ */
+.bulk-toolbar {
+    display: none;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 20px;
+    background: var(--blue-dark);
+    border-radius: var(--radius);
+    margin-bottom: 14px;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.18);
+    animation: bulkToolbarIn 0.18s ease-out;
+}
+
+.bulk-toolbar.visible {
+    display: flex;
+}
+
+@keyframes bulkToolbarIn {
+    from { opacity: 0; transform: translateY(-6px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.bulk-count-badge {
+    background: var(--yellow);
+    color: var(--blue-dark);
+    font-size: 12px;
+    font-weight: 800;
+    padding: 3px 10px;
+    border-radius: 20px;
+    white-space: nowrap;
+}
+
+.bulk-toolbar-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: rgba(255,255,255,0.85);
+    flex: 1;
+}
+
+.btn-bulk-delete {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    background: var(--red);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.15s ease;
+    white-space: nowrap;
+}
+
+.btn-bulk-delete:hover {
+    background: #B91C1C;
+}
+
+.btn-bulk-delete .material-symbols-outlined {
+    font-size: 18px;
+}
+
+.btn-bulk-cancel {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    background: rgba(255,255,255,0.1);
+    color: rgba(255,255,255,0.8);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s ease;
+    white-space: nowrap;
+}
+
+.btn-bulk-cancel:hover {
+    background: rgba(255,255,255,0.18);
+    color: #fff;
+}
     </style>
 </head>
 
@@ -993,13 +1101,29 @@
                     </form>
                 </div>
 
+                <!-- Bulk Action Toolbar -->
+                <div class="bulk-toolbar" id="bulkToolbar">
+                    <span class="bulk-count-badge" id="bulkCountBadge">0</span>
+                    <span class="bulk-toolbar-label">material dipilih</span>
+                    <button type="button" class="btn-bulk-cancel" id="bulkCancelBtn">
+                        Batal
+                    </button>
+                    <button type="button" class="btn-bulk-delete" id="bulkDeleteBtn">
+                        <span class="material-symbols-outlined">delete_sweep</span>
+                        Hapus Terpilih
+                    </button>
+                </div>
+
                 <!-- Data Table Card -->
                 <div class="table-card">
                     @if ($materials->count() > 0)
                         <div class="table-responsive">
-                            <table class="data-table">
+                            <table class="data-table" id="materialsTable">
                                 <thead>
                                     <tr>
+                                        <th class="cb-cell">
+                                            <input type="checkbox" class="check-all" id="checkAll" title="Pilih Semua">
+                                        </th>
                                         <th style="width: 50px;">No</th>
                                         <th style="width: 140px;">No Material</th>
                                         <th>Nama Material</th>
@@ -1014,7 +1138,12 @@
                                         $startNumber = ($materials->currentPage() - 1) * $materials->perPage();
                                     @endphp
                                     @foreach ($materials as $index => $mat)
-                                        <tr>
+                                        <tr data-id="{{ $mat->id }}">
+                                            <td class="cb-cell">
+                                                <input type="checkbox" class="row-checkbox"
+                                                       value="{{ $mat->id }}"
+                                                       aria-label="Pilih {{ $mat->name }}">
+                                            </td>
                                             <td>{{ $startNumber + $loop->iteration }}</td>
                                             <td>
                                                 <span class="badge-material-number">{{ $mat->material_number }}</span>
@@ -1155,6 +1284,28 @@
 
             </div>
 
+            <!-- POPUP KONFIRMASI HAPUS MASSAL -->
+            <div id="bulkDeleteModal" class="delete-modal">
+                <div class="delete-modal-box">
+                    <div class="delete-modal-icon" style="background:#FEE2E2;color:#DC2626;">
+                        <span class="material-symbols-outlined">delete_sweep</span>
+                    </div>
+                    <h3>Hapus Material Terpilih?</h3>
+                    <p id="bulkDeleteModalMessage">Anda akan menghapus beberapa material sekaligus. Data yang dihapus tidak dapat dikembalikan.</p>
+                    <div class="delete-modal-actions">
+                        <button type="button" class="delete-modal-cancel" id="bulkModalCancelBtn">Batal</button>
+                        <button type="button" class="delete-modal-confirm" id="bulkModalConfirmBtn">Hapus Semua</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Form tersembunyi untuk bulk delete -->
+            <form id="bulkDeleteHiddenForm" method="POST"
+                  action="{{ route('materials.bulk-destroy') }}"
+                  style="display:none;">
+                @csrf
+            </form>
+
             <!-- POPUP KONFIRMASI HAPUS -->
             <div id="deleteModal" class="delete-modal">
                 <div class="delete-modal-box">
@@ -1181,118 +1332,253 @@
 
             <script>
             (function () {
+
+                // ======================================================
+                // 1. HAPUS SATU (single delete)
+                // ======================================================
                 const modal      = document.getElementById('deleteModal');
                 const cancelBtn  = document.getElementById('deleteModalCancel');
                 const confirmBtn = document.getElementById('deleteModalConfirm');
                 const msgEl      = document.getElementById('deleteModalMessage');
                 const hiddenForm = document.getElementById('deleteHiddenForm');
 
-                if (!modal || !cancelBtn || !confirmBtn || !hiddenForm) return;
-
                 let pendingAction = null;
                 let pendingRow    = null;
 
-                // Delegasi klik: tangkap tombol hapus di mana saja di dalam main
-                document.querySelector('main.main').addEventListener('click', function (e) {
-                    const btn = e.target.closest('.btn-open-delete-modal');
-                    if (!btn) return;
+                if (modal && cancelBtn && confirmBtn && hiddenForm) {
 
-                    e.preventDefault();
+                    document.querySelector('main.main').addEventListener('click', function (e) {
+                        const btn = e.target.closest('.btn-open-delete-modal');
+                        if (!btn) return;
+                        e.preventDefault();
+                        pendingAction = btn.dataset.action;
+                        pendingRow    = btn.closest('tr') || null;
+                        const name    = btn.dataset.name || '';
+                        msgEl.textContent = name
+                            ? `Apakah Anda yakin ingin menghapus material "${name}"? Data yang dihapus tidak dapat dikembalikan.`
+                            : 'Apakah Anda yakin ingin menghapus material ini? Data yang dihapus tidak dapat dikembalikan.';
+                        modal.classList.add('show');
+                    });
 
-                    pendingAction = btn.dataset.action;
-                    pendingRow    = btn.closest('tr') || null;
-                    const name    = btn.dataset.name || '';
+                    cancelBtn.addEventListener('click', function () {
+                        modal.classList.remove('show');
+                        pendingAction = null;
+                        pendingRow    = null;
+                    });
 
-                    msgEl.textContent = name
-                        ? `Apakah Anda yakin ingin menghapus material "${name}"? Data yang dihapus tidak dapat dikembalikan.`
-                        : 'Apakah Anda yakin ingin menghapus material ini? Data yang dihapus tidak dapat dikembalikan.';
+                    confirmBtn.addEventListener('click', async function () {
+                        if (!pendingAction) return;
+                        const action = pendingAction;
+                        const row    = pendingRow;
+                        modal.classList.remove('show');
+                        pendingAction = null;
+                        pendingRow    = null;
 
-                    modal.classList.add('show');
-                });
+                        if (row) {
+                            row.style.transition = 'opacity 0.22s ease, transform 0.22s ease';
+                            row.style.opacity    = '0';
+                            row.style.transform  = 'translateX(-12px)';
+                        }
 
-                cancelBtn.addEventListener('click', function () {
-                    modal.classList.remove('show');
-                    pendingAction = null;
-                    pendingRow    = null;
-                });
+                        confirmBtn.disabled    = true;
+                        confirmBtn.textContent = 'Menghapus...';
 
-                confirmBtn.addEventListener('click', async function () {
-                    if (!pendingAction) return;
-
-                    const action = pendingAction;
-                    const row    = pendingRow;
-
-                    // Tutup modal & reset state
-                    modal.classList.remove('show');
-                    pendingAction = null;
-                    pendingRow    = null;
-
-                    // Animasi fade-out pada baris yang dihapus
-                    if (row) {
-                        row.style.transition = 'opacity 0.22s ease, transform 0.22s ease';
-                        row.style.opacity    = '0';
-                        row.style.transform  = 'translateX(-12px)';
-                    }
-
-                    // Tampilkan indikator loading
-                    confirmBtn.disabled    = true;
-                    confirmBtn.textContent = 'Menghapus...';
-
-                    try {
-                        const csrfToken = hiddenForm.querySelector('input[name="_token"]').value;
-                        const formData  = new FormData();
-                        formData.append('_token',  csrfToken);
-                        formData.append('_method', 'DELETE');
-
-                        // Kirim request hapus via fetch (tanpa full reload)
-                        await fetch(action, {
-                            method: 'POST',
-                            body:   formData,
-                            headers: { 'X-Requested-With': 'XMLHttpRequest' }
-                        });
-
-                        // Tunggu animasi selesai lalu refresh konten via SPA (smooth)
-                        setTimeout(async function () {
-                            if (typeof navigatePage === 'function') {
-                                await navigatePage(
-                                    window.location.pathname + window.location.search,
-                                    false
-                                );
-                            } else {
-                                window.location.reload();
-                            }
+                        try {
+                            const csrfToken = hiddenForm.querySelector('input[name="_token"]').value;
+                            const formData  = new FormData();
+                            formData.append('_token',  csrfToken);
+                            formData.append('_method', 'DELETE');
+                            await fetch(action, {
+                                method: 'POST',
+                                body:   formData,
+                                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                            });
+                            setTimeout(async function () {
+                                if (typeof navigatePage === 'function') {
+                                    await navigatePage(window.location.pathname + window.location.search, false);
+                                } else {
+                                    window.location.reload();
+                                }
+                                confirmBtn.disabled    = false;
+                                confirmBtn.textContent = 'Hapus';
+                            }, 220);
+                        } catch (err) {
+                            console.error('Delete error:', err);
+                            if (row) { row.style.opacity = '1'; row.style.transform = 'translateX(0)'; }
                             confirmBtn.disabled    = false;
                             confirmBtn.textContent = 'Hapus';
-                        }, 220);
-
-                    } catch (err) {
-                        console.error('Delete error:', err);
-                        // Kembalikan baris jika gagal
-                        if (row) {
-                            row.style.opacity   = '1';
-                            row.style.transform = 'translateX(0)';
+                            alert('Gagal menghapus material. Silakan coba lagi.');
                         }
-                        confirmBtn.disabled    = false;
-                        confirmBtn.textContent = 'Hapus';
-                        alert('Gagal menghapus material. Silakan coba lagi.');
+                    });
+
+                    modal.addEventListener('click', function (e) {
+                        if (e.target === modal) {
+                            modal.classList.remove('show');
+                            pendingAction = null;
+                            pendingRow    = null;
+                        }
+                    });
+
+                    document.addEventListener('keydown', function (e) {
+                        if (e.key === 'Escape' && modal.classList.contains('show')) {
+                            modal.classList.remove('show');
+                            pendingAction = null;
+                            pendingRow    = null;
+                        }
+                    });
+                }
+
+                // ======================================================
+                // 2. HAPUS MASSAL (bulk delete)
+                // ======================================================
+                const bulkModal      = document.getElementById('bulkDeleteModal');
+                const bulkCancelBtn  = document.getElementById('bulkModalCancelBtn');
+                const bulkConfirmBtn = document.getElementById('bulkModalConfirmBtn');
+                const bulkMsgEl      = document.getElementById('bulkDeleteModalMessage');
+                const bulkForm       = document.getElementById('bulkDeleteHiddenForm');
+                const bulkToolbar    = document.getElementById('bulkToolbar');
+                const bulkCountBadge = document.getElementById('bulkCountBadge');
+                const bulkDeleteBtn  = document.getElementById('bulkDeleteBtn');
+                const bulkCancelToolbarBtn = document.getElementById('bulkCancelBtn');
+                const checkAll       = document.getElementById('checkAll');
+
+                function getChecked() {
+                    return Array.from(document.querySelectorAll('.row-checkbox:checked'));
+                }
+
+                function updateToolbar() {
+                    const checked = getChecked();
+                    const count   = checked.length;
+                    if (count > 0) {
+                        bulkCountBadge.textContent = count;
+                        bulkToolbar.classList.add('visible');
+                    } else {
+                        bulkToolbar.classList.remove('visible');
+                    }
+                    // Update state checkAll
+                    const allBoxes = document.querySelectorAll('.row-checkbox');
+                    if (checkAll) {
+                        checkAll.indeterminate = count > 0 && count < allBoxes.length;
+                        checkAll.checked       = count > 0 && count === allBoxes.length;
+                    }
+                    // Highlight baris terpilih
+                    document.querySelectorAll('.row-checkbox').forEach(cb => {
+                        const row = cb.closest('tr');
+                        if (row) row.classList.toggle('row-selected', cb.checked);
+                    });
+                }
+
+                // Pilih semua
+                if (checkAll) {
+                    checkAll.addEventListener('change', function () {
+                        document.querySelectorAll('.row-checkbox').forEach(cb => {
+                            cb.checked = checkAll.checked;
+                        });
+                        updateToolbar();
+                    });
+                }
+
+                // Per-baris checkbox (event delegation)
+                document.querySelector('main.main').addEventListener('change', function (e) {
+                    if (e.target.classList.contains('row-checkbox')) {
+                        updateToolbar();
                     }
                 });
 
-                // Klik di luar kotak modal untuk tutup
-                modal.addEventListener('click', function (e) {
-                    if (e.target === modal) {
-                        modal.classList.remove('show');
-                        pendingAction = null;
-                        pendingRow    = null;
-                    }
-                });
+                // Tombol Batal di toolbar
+                if (bulkCancelToolbarBtn) {
+                    bulkCancelToolbarBtn.addEventListener('click', function () {
+                        document.querySelectorAll('.row-checkbox').forEach(cb => cb.checked = false);
+                        if (checkAll) { checkAll.checked = false; checkAll.indeterminate = false; }
+                        updateToolbar();
+                    });
+                }
 
-                // Tutup dengan tombol Escape
+                // Tombol Hapus Terpilih → buka modal konfirmasi
+                if (bulkDeleteBtn) {
+                    bulkDeleteBtn.addEventListener('click', function () {
+                        const count = getChecked().length;
+                        if (count === 0) return;
+                        bulkMsgEl.textContent = `Anda akan menghapus ${count} material sekaligus. Data yang dihapus tidak dapat dikembalikan.`;
+                        bulkModal.classList.add('show');
+                    });
+                }
+
+                // Batal dari modal bulk
+                if (bulkCancelBtn) {
+                    bulkCancelBtn.addEventListener('click', function () {
+                        bulkModal.classList.remove('show');
+                    });
+                }
+
+                // Konfirmasi hapus massal
+                if (bulkConfirmBtn && bulkForm) {
+                    bulkConfirmBtn.addEventListener('click', async function () {
+                        const checkedBoxes = getChecked();
+                        if (checkedBoxes.length === 0) return;
+
+                        bulkModal.classList.remove('show');
+                        bulkConfirmBtn.disabled    = true;
+                        bulkConfirmBtn.textContent = 'Menghapus...';
+
+                        // Animasi fade-out semua baris terpilih
+                        checkedBoxes.forEach(cb => {
+                            const row = cb.closest('tr');
+                            if (row) {
+                                row.style.transition = 'opacity 0.2s ease, transform 0.2s ease';
+                                row.style.opacity    = '0';
+                                row.style.transform  = 'translateX(-12px)';
+                            }
+                        });
+
+                        try {
+                            const csrfInput = bulkForm.querySelector('input[name="_token"]');
+                            const csrfToken = csrfInput ? csrfInput.value : '';
+                            const formData  = new FormData();
+                            formData.append('_token', csrfToken);
+                            checkedBoxes.forEach(cb => formData.append('ids[]', cb.value));
+
+                            await fetch(bulkForm.action, {
+                                method: 'POST',
+                                body:   formData,
+                                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                            });
+
+                            setTimeout(async function () {
+                                if (typeof navigatePage === 'function') {
+                                    await navigatePage(window.location.pathname + window.location.search, false);
+                                } else {
+                                    window.location.reload();
+                                }
+                                bulkConfirmBtn.disabled    = false;
+                                bulkConfirmBtn.textContent = 'Hapus Semua';
+                            }, 220);
+
+                        } catch (err) {
+                            console.error('Bulk delete error:', err);
+                            // Kembalikan baris
+                            checkedBoxes.forEach(cb => {
+                                const row = cb.closest('tr');
+                                if (row) { row.style.opacity = '1'; row.style.transform = 'translateX(0)'; }
+                            });
+                            bulkConfirmBtn.disabled    = false;
+                            bulkConfirmBtn.textContent = 'Hapus Semua';
+                            alert('Gagal menghapus material. Silakan coba lagi.');
+                        }
+                    });
+                }
+
+                // Klik luar modal bulk
+                if (bulkModal) {
+                    bulkModal.addEventListener('click', function (e) {
+                        if (e.target === bulkModal) bulkModal.classList.remove('show');
+                    });
+                }
+
+                // Escape tutup kedua modal
                 document.addEventListener('keydown', function (e) {
-                    if (e.key === 'Escape' && modal.classList.contains('show')) {
-                        modal.classList.remove('show');
-                        pendingAction = null;
-                        pendingRow    = null;
+                    if (e.key === 'Escape') {
+                        if (bulkModal) bulkModal.classList.remove('show');
                     }
                 });
 
