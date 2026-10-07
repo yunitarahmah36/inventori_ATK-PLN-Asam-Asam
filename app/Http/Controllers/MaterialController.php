@@ -8,6 +8,8 @@ use App\Models\StockMovement;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
+use App\Imports\MaterialsImport;
+use App\Exports\MaterialsTemplateExport;
 
 class MaterialController extends Controller
 {
@@ -269,11 +271,61 @@ class MaterialController extends Controller
         );
     }
 
+    public function downloadTemplate()
+    {
+        return Excel::download(
+            new MaterialsTemplateExport(),
+            'Template_Import_Material_ATK_PLN.xlsx'
+        );
+    }
+
     /**
-     * Tampilan awal untuk Import Excel.
-     */
+ * Proses import data material dari Excel.
+ */
     public function importForm()
     {
         return view('materials.import');
     }
+
+    public function import(Request $request)
+{
+    $request->validate([
+        'file' => [
+            'required',
+            'file',
+            'mimes:xlsx,xls',
+            'max:5120',
+        ],
+    ], [
+        'file.required' => 'File Excel wajib dipilih.',
+        'file.file'     => 'File yang dipilih tidak valid.',
+        'file.mimes'    => 'File harus berformat Excel (.xlsx atau .xls).',
+        'file.max'      => 'Ukuran file maksimal 5 MB.',
+    ]);
+
+    try {
+
+        Excel::import(
+            new MaterialsImport(),
+            $request->file('file')
+        );
+
+        return redirect()
+            ->route('materials.index')
+            ->with(
+                'success',
+                'Data material berhasil diimport dari Excel.'
+            );
+
+    } catch (\Exception $e) {
+
+        return redirect()
+            ->back()
+            ->withInput()
+            ->with(
+                'error',
+                'Import gagal: ' . $e->getMessage()
+            );
+    }
+}
 }

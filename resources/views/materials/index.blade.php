@@ -1048,42 +1048,6 @@
         </div>
     </nav>
 
-    <!-- JavaScript -->
-    <script>
-        function openSidebar() {
-            document.getElementById('sidebar').classList.add('open');
-            document.getElementById('drawerBackdrop').classList.add('open');
-            document.body.style.overflow = 'hidden';
-        }
-
-        function closeSidebar() {
-            document.getElementById('sidebar').classList.remove('open');
-            document.getElementById('drawerBackdrop').classList.remove('open');
-            document.body.style.overflow = '';
-        }
-
-        function toggleSubmenu(e, id) {
-            e.preventDefault();
-            const menu  = document.getElementById(id);
-            const arrow = document.getElementById('arrow-material');
-            const isOpen = menu.style.display !== 'none';
-            menu.style.display = isOpen ? 'none' : 'block';
-            if (arrow) arrow.textContent = isOpen ? 'expand_more' : 'expand_less';
-        }
-
-        function changePerPage(val) {
-            const url = new URL(window.location.href);
-            url.searchParams.set('per_page', val);
-            url.searchParams.delete('page'); // Reset ke page 1
-            window.location.href = url.toString();
-        }
-
-        window.addEventListener('resize', function () {
-            if (window.innerWidth > 768) {
-                closeSidebar();
-            }
-        });
-    </script>
 
 </body>
 

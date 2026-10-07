@@ -57,7 +57,13 @@ Route::middleware('auth')->group(function () {
     Route::get('/materials/export', [MaterialController::class, 'export'])
         ->name('materials.export');
 
+    Route::get('/materials/import/template', [MaterialController::class, 'downloadTemplate'])
+    ->name('materials.import.template');
+
     Route::get('/materials/import', [MaterialController::class, 'importForm'])
+        ->name('materials.import.form');
+
+    Route::post('/materials/import', [MaterialController::class, 'import'])
         ->name('materials.import');
 
     Route::resource('materials', MaterialController::class);
