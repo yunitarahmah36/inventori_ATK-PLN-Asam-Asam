@@ -273,14 +273,32 @@ class StockMovementController extends Controller
             );
         }
 
-        // Ambil semua data hasil filter
-        $movements = $query->get();
+        // ==============================
+        // JUMLAH DATA PER HALAMAN
+        // ==============================
+
+        $perPage = $request->input('per_page', 25);
+
+        if ($perPage === 'all') {
+            $movements = $query->get();
+            $startNumber = 1;
+        } else {
+            $allowedPerPage = [10, 25, 50, 100, 250];
+            if (!in_array((int) $perPage, $allowedPerPage)) {
+                $perPage = 25;
+            }
+            
+            $page = $request->input('page', 1);
+            $movements = $query->forPage($page, $perPage)->get();
+            $startNumber = (($page - 1) * $perPage) + 1;
+        }
 
         // Buat PDF
         $pdf = Pdf::loadView(
             'stock-movements.pdf',
             [
-                'movements' => $movements
+                'movements' => $movements,
+                'startNumber' => $startNumber
             ]
         );
 

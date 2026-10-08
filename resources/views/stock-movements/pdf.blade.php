@@ -636,7 +636,7 @@
                     {{-- NO --}}
 
                     <td class="text-center">
-                        {{ $index + 1 }}
+                        {{ (isset($startNumber) ? $startNumber : 1) + $index }}
                     </td>
 
 
