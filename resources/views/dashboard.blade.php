@@ -1081,13 +1081,12 @@
                         Import Excel
                     </a>
 
-                    <button class="action-btn action-btn-white" type="button"
-                        onclick="alert('Halaman Laporan belum tersedia.')">
+                    <a href="{{ route('stock-movements.index') }}" class="action-btn action-btn-white">
                         <div class="action-icon">
-                            <span class="material-symbols-outlined">analytics</span>
+                            <span class="material-symbols-outlined">history</span>
                         </div>
-                        Laporan
-                    </button>
+                        Riwayat
+                    </a>
 
                 </div>
 
