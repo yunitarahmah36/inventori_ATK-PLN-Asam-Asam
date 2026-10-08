@@ -1218,7 +1218,7 @@ table.data-table tbody tr.row-selected {
                                                 @endif
                                             </td>
                                             <td>
-                                                {{ $mat->entry_date ? $mat->entry_date->format('d/m/Y') : '-' }}
+                                                {{ $mat->entry_date ? $mat->entry_date->translatedFormat('j M Y') : '-' }}
                                             </td>
                                             <td>
                                                 <span
