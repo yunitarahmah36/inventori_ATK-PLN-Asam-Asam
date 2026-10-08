@@ -232,11 +232,21 @@
            PAGE CONTENT
         ============================================================ */
         .page-content {
-            flex: 1;
-            padding: 24px 28px 100px;
-            max-width: 1200px;
-            width: 100%;
-        }
+    flex: 1;
+    width: 100%;
+    max-width: none;
+    padding: 24px 28px 100px;
+    box-sizing: border-box;
+}
+
+.welcome-card,
+.quick-actions,
+.stock-alert-banner,
+.stats-grid,
+.sections-row {
+    width: 100%;
+    max-width: none;
+}
 
 
         /* ============================================================
