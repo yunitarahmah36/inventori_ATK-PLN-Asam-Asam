@@ -5,18 +5,14 @@
 
     <meta charset="UTF-8">
 
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
     <title>Riwayat Stok - Inventori ATK PT PLN Indonesia Power UBP Asam Asam</title>
 
-    <link rel="icon"
-          type="image/png"
-          href="{{ asset('images/pln_bulat.png') }}">
+    <link rel="icon" type="image/png" href="{{ asset('images/pln_bulat.png') }}">
 
     {{-- Google Fonts --}}
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
 
     {{-- Material Symbols --}}
@@ -28,63 +24,62 @@
     {{-- =========================================
           CSS HALAMAN INI
     ========================================== --}}
-<style id="page-style">
+    <style id="page-style">
+        :root {
+            --blue: #0057B8;
+            --blue-dark: #003B73;
+            --blue-light: #EAF3FF;
 
-    :root {
-        --blue: #0057B8;
-        --blue-dark: #003B73;
-        --blue-light: #EAF3FF;
+            --yellow: #FFC107;
+            --yellow-light: #FFF8E1;
 
-        --yellow: #FFC107;
-        --yellow-light: #FFF8E1;
+            --bg: #F5F7FA;
+            --white: #FFFFFF;
 
-        --bg: #F5F7FA;
-        --white: #FFFFFF;
+            --text-dark: #1F2937;
+            --text-mid: #374151;
+            --text-muted: #6B7280;
 
-        --text-dark: #1F2937;
-        --text-mid: #374151;
-        --text-muted: #6B7280;
+            --border: #E5E7EB;
 
-        --border: #E5E7EB;
+            --red: #DC2626;
+            --red-light: #FEE2E2;
 
-        --red: #DC2626;
-        --red-light: #FEE2E2;
+            --green: #10B981;
+            --green-light: #D1FAE5;
 
-        --green: #10B981;
-        --green-light: #D1FAE5;
+            --sidebar-w: 260px;
+            --header-h: 68px;
 
-        --sidebar-w: 260px;
-        --header-h: 68px;
+            --radius: 12px;
 
-        --radius: 12px;
+            --shadow:
+                0 2px 12px rgba(0, 0, 0, 0.07);
 
-        --shadow:
-            0 2px 12px rgba(0, 0, 0, 0.07);
-
-        --transition:
-            0.2s ease;
-    }
+            --transition:
+                0.2s ease;
+        }
 
 
-    /* ============================================================
+        /* ============================================================
        RESET & BASE (HAPUS JARAK DEFAULT BROWSER)
     ============================================================ */
-    *,
-    *::before,
-    *::after {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-    }
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    html,
-    body {
-        height: 100%;
-        font-family: 'Inter', Arial, sans-serif;
-        background: var(--bg);
-        color: var(--text-dark);
-        overflow-x: hidden;
-    }
+        html,
+        body {
+            height: 100%;
+            font-family: 'Inter', Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text-dark);
+            overflow-x: hidden;
+        }
 
         a {
             text-decoration: none;
@@ -1514,12 +1509,6 @@
 
                                 </option>
 
-                                <option value="Kurangi" {{ request('activity') == 'Kurangi' ? 'selected' : '' }}>
-
-                                    Kurangi
-
-                                </option>
-
                                 <option value="Edit" {{ request('activity') == 'Edit' ? 'selected' : '' }}>
 
                                     Edit
@@ -1905,14 +1894,14 @@
 
                                                 <div class="material-name">
 
-                                                    {{ $movement->material->name ?? $movement->material_name ?? '-' }}
+                                                    {{ $movement->material->name ?? ($movement->material_name ?? '-') }}
 
                                                 </div>
 
                                                 <div class="material-number">
 
                                                     No:
-                                                    {{ $movement->material->material_number ?? $movement->material_number ?? '-' }}
+                                                    {{ $movement->material->material_number ?? ($movement->material_number ?? '-') }}
 
                                                 </div>
 
@@ -2210,8 +2199,8 @@
 
     <script>
         /* =========================================================
-                       CHANGE PER PAGE
-                    ========================================================= */
+                           CHANGE PER PAGE
+                        ========================================================= */
 
         function changePerPage(value) {
 
