@@ -608,19 +608,138 @@
         }
 
 
+        /* Stock Alert Banner */
+        .stock-alert-banner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            background: linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%);
+            border: 1px solid #FCD34D;
+            border-left: 5px solid #F59E0B;
+            border-radius: var(--radius);
+            padding: 16px 20px;
+            margin-bottom: 22px;
+            box-shadow: 0 4px 14px rgba(245, 158, 11, 0.12);
+        }
+
+        .stock-alert-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .stock-alert-icon-wrap {
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            background: #FDE68A;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            color: #B45309;
+            box-shadow: 0 2px 6px rgba(245, 158, 11, 0.2);
+        }
+
+        .stock-alert-icon-wrap .stock-alert-icon {
+            font-size: 26px;
+        }
+
+        .stock-alert-info {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .stock-alert-title {
+            font-size: 14.5px;
+            font-weight: 700;
+            color: #92400E;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .stock-alert-desc {
+            font-size: 12.5px;
+            color: #B45309;
+            line-height: 1.45;
+        }
+
+        .stock-alert-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #D97706;
+            color: #FFFFFF !important;
+            font-size: 12.5px;
+            font-weight: 600;
+            padding: 9px 16px;
+            border-radius: 8px;
+            white-space: nowrap;
+            flex-shrink: 0;
+            box-shadow: 0 2px 6px rgba(217, 119, 6, 0.25);
+            transition: all var(--transition);
+        }
+
+        .stock-alert-btn:hover {
+            background: #B45309;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 10px rgba(217, 119, 6, 0.35);
+        }
+
+        .stock-alert-btn .material-symbols-outlined {
+            font-size: 16px;
+        }
+
+        .badge-header-warning {
+            font-size: 11px;
+            font-weight: 700;
+            background: #FEF3C7;
+            color: #B45309;
+            border: 1px solid #FCD34D;
+            padding: 2px 8px;
+            border-radius: 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+        }
+
         /* Material List */
         .material-item {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 10px 10px;
+            padding: 10px 12px;
             border-radius: 8px;
             margin-bottom: 6px;
+            border: 1px solid transparent;
             transition: background var(--transition);
         }
 
         .material-item:hover {
             background: var(--bg);
+        }
+
+        .material-item.is-low-stock {
+            background: #FFFBEB;
+            border: 1px solid #FDE68A;
+            border-left: 4px solid #F59E0B;
+        }
+
+        .material-item.is-critical-stock {
+            background: #FEF2F2;
+            border: 1px solid #FECACA;
+            border-left: 4px solid #EF4444;
+        }
+
+        .material-item.is-low-stock:hover {
+            background: #FEF3C7;
+        }
+
+        .material-item.is-critical-stock:hover {
+            background: #FEE2E2;
         }
 
         .material-item:last-child {
@@ -632,6 +751,7 @@
             flex-direction: column;
             gap: 2px;
             min-width: 0;
+            padding-right: 10px;
         }
 
         .material-item-top {
@@ -670,6 +790,12 @@
             color: var(--text-muted);
         }
 
+        .material-date-ago {
+            font-weight: 400;
+            color: var(--text-muted);
+            font-size: 11px;
+        }
+
         .material-low-label {
             display: flex;
             align-items: center;
@@ -677,11 +803,25 @@
             font-size: 11.5px;
             font-weight: 700;
             color: #92400E;
+            flex-wrap: wrap;
         }
 
         .material-low-label .material-symbols-outlined {
             font-size: 13px;
             color: #F59E0B;
+        }
+
+        .material-low-label.critical {
+            color: #B91C1C;
+        }
+
+        .material-low-label.critical .material-symbols-outlined {
+            color: #EF4444;
+        }
+
+        .material-item-right {
+            text-align: right;
+            flex-shrink: 0;
         }
 
         .material-qty {
@@ -694,6 +834,26 @@
 
         .material-qty.low {
             color: #92400E;
+        }
+
+        .pill-badge {
+            font-size: 10px;
+            font-weight: 700;
+            padding: 1px 6px;
+            border-radius: 4px;
+            display: inline-block;
+            margin-top: 2px;
+            white-space: nowrap;
+        }
+
+        .pill-critical {
+            color: #DC2626;
+            background: #FEE2E2;
+        }
+
+        .pill-warning {
+            color: #D97706;
+            background: #FEF3C7;
         }
 
 
@@ -947,6 +1107,17 @@
             .stat-card-value {
                 font-size: 22px;
             }
+
+            .stock-alert-banner {
+                flex-direction: column;
+                align-items: flex-start;
+                padding: 14px 16px;
+            }
+
+            .stock-alert-btn {
+                width: 100%;
+                justify-content: center;
+            }
         }
 
         @media (max-width: 400px) {
@@ -1092,6 +1263,32 @@
 
 
                 <!-- ==================================================
+                     PERINGATAN STOK MENIPIS (Jika Ada)
+                ================================================== -->
+                @if ($lowStockCount > 0)
+                    <div class="stock-alert-banner">
+                        <div class="stock-alert-left">
+                            <div class="stock-alert-icon-wrap">
+                                <span class="material-symbols-outlined stock-alert-icon">warning</span>
+                            </div>
+                            <div class="stock-alert-info">
+                                <div class="stock-alert-title">
+                                    Peringatan: Terdapat {{ $lowStockCount }} Jenis Material dengan Stok Menipis!
+                                </div>
+                                <div class="stock-alert-desc">
+                                    Material yang sudah lama masuk dan persediaannya menipis (≤ 15 unit) otomatis diprioritaskan di posisi teratas daftar material agar segera dilakukan restock / pengadaan.
+                                </div>
+                            </div>
+                        </div>
+                        <a href="{{ route('materials.index') }}" class="stock-alert-btn">
+                            Lihat Semua Material
+                            <span class="material-symbols-outlined">arrow_forward</span>
+                        </a>
+                    </div>
+                @endif
+
+
+                <!-- ==================================================
                      3. STATISTIK (4 Card, semua data dari database)
                 ================================================== -->
                 <p class="section-label">Ringkasan Statistik</p>
@@ -1166,12 +1363,18 @@
                 ================================================== -->
                 <div class="sections-row">
 
-                    <!-- Material Terbaru -->
+                    <!-- Material Terbaru & Prioritas Stok -->
                     <div class="section-card">
                         <div class="section-card-header">
                             <div class="section-card-title">
                                 <span class="material-symbols-outlined">assignment_turned_in</span>
-                                Material Terbaru
+                                Daftar Material
+                                @if ($lowStockCount > 0)
+                                    <span class="badge-header-warning">
+                                        <span class="material-symbols-outlined" style="font-size:13px;">warning</span>
+                                        {{ $lowStockCount }} Menipis
+                                    </span>
+                                @endif
                             </div>
                             <a href="{{ route('materials.index') }}" class="btn-lihat-semua">
                                 Lihat Semua
@@ -1181,28 +1384,47 @@
 
                         @if ($latestMaterials->count() > 0)
                             @foreach ($latestMaterials as $mat)
-                                @php $isLow = $mat->quantity <= 15; @endphp
-                                <div class="material-item">
+                                @php
+                                    $isCritical = $mat->quantity <= 5;
+                                    $isLow = $mat->quantity <= 15;
+                                @endphp
+                                <div class="material-item {{ $isCritical ? 'is-critical-stock' : ($isLow ? 'is-low-stock' : '') }}">
                                     <div class="material-item-left">
                                         <div class="material-item-top">
                                             <span class="material-badge-no {{ $isLow ? 'low-stock' : '' }}">
                                                 {{ $mat->material_number }}
                                             </span>
-                                            <span class="material-name">{{ $mat->name }}</span>
+                                            <span class="material-name" title="{{ $mat->name }}">{{ $mat->name }}</span>
                                         </div>
                                         @if ($isLow)
-                                            <div class="material-low-label">
-                                                <span class="material-symbols-outlined">warning</span>
-                                                Stok Menipis
+                                            <div class="material-low-label {{ $isCritical ? 'critical' : '' }}">
+                                                <span class="material-symbols-outlined">{{ $isCritical ? 'error' : 'warning' }}</span>
+                                                <span>{{ $isCritical ? 'Stok Kritis' : 'Stok Menipis' }}</span>
+                                                <span class="material-date-ago">
+                                                    • Masuk: {{ $mat->entry_date ? $mat->entry_date->format('d/m/Y') : '-' }}
+                                                    @if ($mat->entry_date)
+                                                        ({{ $mat->entry_date->diffForHumans() }})
+                                                    @endif
+                                                </span>
                                             </div>
                                         @else
                                             <div class="material-date">
                                                 Masuk: {{ $mat->entry_date ? $mat->entry_date->format('d/m/Y') : '-' }}
+                                                @if ($mat->entry_date)
+                                                    <span class="material-date-ago">({{ $mat->entry_date->diffForHumans() }})</span>
+                                                @endif
                                             </div>
                                         @endif
                                     </div>
-                                    <div class="material-qty {{ $isLow ? 'low' : '' }}">
-                                        {{ number_format($mat->quantity, 0, ',', '.') }} {{ $mat->unit }}
+                                    <div class="material-item-right">
+                                        <div class="material-qty {{ $isLow ? 'low' : '' }}" style="{{ $isCritical ? 'color:#B91C1C;' : '' }}">
+                                            {{ number_format($mat->quantity, 0, ',', '.') }} {{ $mat->unit }}
+                                        </div>
+                                        @if ($isCritical)
+                                            <span class="pill-badge pill-critical">Stok Kritis</span>
+                                        @elseif ($isLow)
+                                            <span class="pill-badge pill-warning">Perlu Restock</span>
+                                        @endif
                                     </div>
                                 </div>
                             @endforeach

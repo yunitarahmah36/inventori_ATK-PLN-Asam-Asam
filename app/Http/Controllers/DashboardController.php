@@ -28,10 +28,19 @@ class DashboardController extends Controller
         // 4. Jumlah aktivitas yang terjadi hari ini
         $aktivitasHariIni = StockMovement::whereDate('created_at', Carbon::today())->count();
 
-        // 5. Material terbaru (5 data terakhir)
-        $latestMaterials = Material::latest()->take(5)->get();
+        // 5. Daftar material: Diurutkan sesuai tanggal masuk terbaru (entry_date DESC),
+        // terkecuali material yang stoknya menipis (<= 15 unit) otomatis langsung naik ke urutan paling atas.
+        $latestMaterials = Material::orderByRaw("CASE WHEN quantity <= 15 THEN 0 ELSE 1 END ASC")
+            ->orderByRaw("CASE WHEN quantity <= 15 THEN quantity END ASC")
+            ->orderBy('entry_date', 'desc')
+            ->orderBy('id', 'desc')
+            ->take(6)
+            ->get();
 
-        // 6. Aktivitas terbaru (5 data terakhir dengan relasi user dan material)
+        // 6. Total jenis material dengan stok menipis (<= 15 unit)
+        $lowStockCount = Material::where('quantity', '<=', 15)->count();
+
+        // 7. Aktivitas terbaru (5 data terakhir dengan relasi user dan material)
         $latestActivities = StockMovement::with(['material', 'user'])
             ->latest()
             ->take(5)
@@ -44,6 +53,7 @@ class DashboardController extends Controller
             'materialMasuk',
             'aktivitasHariIni',
             'latestMaterials',
+            'lowStockCount',
             'latestActivities'
         ));
     }
