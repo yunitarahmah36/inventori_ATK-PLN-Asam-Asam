@@ -64,6 +64,9 @@
         }
 
         .topbar {
+            position: sticky;
+            top: 0;
+            z-index: 100;
             height: var(--header-h);
             background: var(--white);
             border-bottom: 1px solid var(--border);
@@ -71,64 +74,115 @@
             align-items: center;
             justify-content: space-between;
             padding: 0 28px;
-            position: sticky;
-            top: 0;
-            z-index: 100;
+            box-shadow: 0 1px 6px rgba(0, 0, 0, 0.04);
+        }
+
+        .topbar-left {
+            display: flex;
+            flex-direction: column;
         }
 
         .topbar-left h1 {
-            font-size: 18px;
+            font-size: 20px;
             font-weight: 800;
             color: var(--blue-dark);
             line-height: 1.2;
+            letter-spacing: -0.01em;
+            margin: 0;
         }
 
         .topbar-left p {
             font-size: 12px;
             color: var(--text-muted);
-            margin-top: 1px;
+            margin-top: 2px;
+            margin-bottom: 0;
         }
 
+        /* Hamburger (mobile only) */
+        .btn-hamburger {
+            display: none;
+            align-items: center;
+            justify-content: center;
+            width: 38px;
+            height: 38px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: var(--white);
+            color: var(--text-dark);
+            transition: background var(--transition);
+            cursor: pointer;
+        }
+
+        .btn-hamburger:hover {
+            background: var(--bg);
+        }
+
+        .btn-hamburger .material-symbols-outlined {
+            font-size: 22px;
+        }
+
+        /* Topbar Right: user profile */
         .topbar-user {
             display: flex;
             align-items: center;
             gap: 12px;
+            padding: 6px 12px;
+            border-radius: 40px;
+            background: #F8FAFC;
+            border: 1px solid var(--border);
+            transition: var(--transition);
+            text-decoration: none;
+            color: inherit;
+            cursor: pointer;
         }
 
-        .topbar-user-detail { text-align: right; }
-        .topbar-user-name { font-size: 13px; font-weight: 700; color: var(--text-dark); }
-        .topbar-user-email { font-size: 11px; color: var(--text-muted); }
-        .badge-role {
-            display: inline-block;
-            font-size: 10px;
-            font-weight: 700;
-            padding: 1px 7px;
-            border-radius: 20px;
-            background: var(--blue-light);
-            color: var(--blue);
-            text-transform: uppercase;
+        .topbar-user:hover {
+            background: #F1F5F9;
         }
 
         .topbar-avatar {
             width: 38px;
             height: 38px;
             border-radius: 50%;
-            background: var(--blue);
+            background: linear-gradient(135deg, var(--blue-dark), var(--blue));
             color: #fff;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: 800;
             font-size: 15px;
+            font-weight: 800;
+            flex-shrink: 0;
+            box-shadow: 0 2px 6px rgba(0, 59, 115, 0.25);
         }
 
-        .btn-hamburger {
-            display: none;
-            background: none;
-            border: none;
+        .topbar-user-detail {
+            text-align: right;
+        }
+
+        .topbar-user-name {
+            font-size: 13.5px;
+            font-weight: 700;
             color: var(--text-dark);
-            cursor: pointer;
-            padding: 4px;
+            line-height: 1.2;
+        }
+
+        .topbar-user-email {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 1px;
+        }
+
+        .badge-role {
+            display: inline-block;
+            margin-top: 2px;
+            padding: 2px 8px;
+            border-radius: 20px;
+            background: var(--yellow-light);
+            color: var(--blue-dark);
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
         }
 
         /* PAGE CONTENT */

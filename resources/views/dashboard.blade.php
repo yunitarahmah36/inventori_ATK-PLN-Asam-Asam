@@ -119,17 +119,25 @@
             box-shadow: 0 1px 6px rgba(0, 0, 0, 0.04);
         }
 
+        .topbar-left {
+            display: flex;
+            flex-direction: column;
+        }
+
         .topbar-left h1 {
             font-size: 20px;
-            font-weight: 700;
+            font-weight: 800;
             color: var(--blue-dark);
             line-height: 1.2;
+            letter-spacing: -0.01em;
+            margin: 0;
         }
 
         .topbar-left p {
             font-size: 12px;
             color: var(--text-muted);
             margin-top: 2px;
+            margin-bottom: 0;
         }
 
         /* Hamburger (mobile only) */
@@ -144,6 +152,7 @@
             background: var(--white);
             color: var(--text-dark);
             transition: background var(--transition);
+            cursor: pointer;
         }
 
         .btn-hamburger:hover {
@@ -158,28 +167,34 @@
         .topbar-user {
             display: flex;
             align-items: center;
-            gap: 10px;
-            cursor: pointer;
-            padding: 4px 8px;
+            gap: 12px;
+            padding: 6px 12px;
             border-radius: 40px;
-            transition: background var(--transition), transform var(--transition);
+            background: #F8FAFC;
+            border: 1px solid var(--border);
+            transition: var(--transition);
+            text-decoration: none;
+            color: inherit;
+            cursor: pointer;
         }
+
         .topbar-user:hover {
             background: #F1F5F9;
         }
 
         .topbar-avatar {
-            width: 40px;
-            height: 40px;
+            width: 38px;
+            height: 38px;
             border-radius: 50%;
-            background: var(--blue);
+            background: linear-gradient(135deg, var(--blue-dark), var(--blue));
             color: #fff;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 16px;
-            font-weight: 700;
+            font-size: 15px;
+            font-weight: 800;
             flex-shrink: 0;
+            box-shadow: 0 2px 6px rgba(0, 59, 115, 0.25);
         }
 
         .topbar-user-detail {
@@ -194,21 +209,22 @@
         }
 
         .topbar-user-email {
-            font-size: 11.5px;
+            font-size: 11px;
             color: var(--text-muted);
             margin-top: 1px;
         }
 
         .badge-role {
             display: inline-block;
-            margin-top: 3px;
+            margin-top: 2px;
             padding: 2px 8px;
             border-radius: 20px;
             background: var(--yellow-light);
-            color: var(--blue);
+            color: var(--blue-dark);
             font-size: 10px;
             font-weight: 700;
             letter-spacing: 0.04em;
+            text-transform: uppercase;
         }
 
 
