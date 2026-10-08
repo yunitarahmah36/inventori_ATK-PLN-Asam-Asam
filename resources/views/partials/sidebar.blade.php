@@ -73,6 +73,14 @@
             <span>Riwayat Stok</span>
         </a>    
 
+        <!-- Analisis Material -->
+        <a href="{{ route('material-analysis.index') }}" 
+           class="nav-item {{ request()->routeIs('material-analysis.*') ? 'active' : '' }}" 
+           data-spa-link>
+            <span class="material-symbols-outlined">analytics</span>
+            <span>Analisis Material</span>
+        </a>
+
         <div class="nav-section-title" style="margin-top:10px;">Akun</div>
 
         <!-- Profile -->
@@ -857,43 +865,52 @@
                     }
                 }
 
+                // Salin script library dari head halaman baru jika belum ada (misal Chart.js)
+                newDoc.querySelectorAll('head script[src]').forEach(extScript => {
+                    const src = extScript.getAttribute('src');
+                    if (src && !document.querySelector(`head script[src="${src}"]`)) {
+                        const s = document.createElement('script');
+                        s.src = src;
+                        document.head.appendChild(s);
+                    }
+                });
+
                 // 2. Ganti konten main
-currentMain.innerHTML = newMain.innerHTML;
+                currentMain.innerHTML = newMain.innerHTML;
 
-// 3. Jalankan ulang script halaman baru
-currentMain.querySelectorAll('script').forEach(oldScript => {
+                // 3. Jalankan ulang script halaman baru
+                currentMain.querySelectorAll('script').forEach(oldScript => {
+                    const newScript = document.createElement('script');
 
-    const newScript = document.createElement('script');
+                    // Salin semua atribut script
+                    Array.from(oldScript.attributes).forEach(attribute => {
+                        newScript.setAttribute(
+                            attribute.name,
+                            attribute.value
+                        );
+                    });
 
-    // Salin semua atribut script
-    Array.from(oldScript.attributes).forEach(attribute => {
-        newScript.setAttribute(
-            attribute.name,
-            attribute.value
-        );
-    });
+                    // Salin isi JavaScript
+                    newScript.textContent = oldScript.textContent;
 
-    // Salin isi JavaScript
-    newScript.textContent = oldScript.textContent;
+                    // Replace script lama dengan script baru
+                    oldScript.replaceWith(newScript);
+                });
 
-    // Replace script lama dengan script baru
-    oldScript.replaceWith(newScript);
-});
+                // 4. Update judul tab browser
+                document.title = newDoc.title;
 
-// 4. Update judul tab browser
-document.title = newDoc.title;
+                // 5. Update address bar URL
+                if (push) {
+                    history.pushState(
+                        { url: url },
+                        newDoc.title,
+                        url
+                    );
+                }
 
-// 5. Update address bar URL
-if (push) {
-    history.pushState(
-        { url: url },
-        newDoc.title,
-        url
-    );
-}
-
-// 6. Update menu aktif di sidebar
-updateSidebarActiveMenu(url);
+                // 6. Update menu aktif di sidebar
+                updateSidebarActiveMenu(url);
 
                 // 7. Scroll ke paling atas
                 window.scrollTo({ top: 0, behavior: 'instant' });
@@ -907,6 +924,22 @@ updateSidebarActiveMenu(url);
                 // 10. Jika di HP, tutup menu drawer
                 if (window.innerWidth <= 768) {
                     window.closeSidebar();
+                }
+
+                // 11. Jalankan kembali initTimelineChart() dan initAnalysisCharts() setelah konten halaman selesai dimuat
+                if (typeof window.initTimelineChart === 'function') {
+                    try {
+                        window.initTimelineChart();
+                    } catch (e) {
+                        console.error('Error executing initTimelineChart:', e);
+                    }
+                }
+                if (typeof window.initAnalysisCharts === 'function') {
+                    try {
+                        window.initAnalysisCharts();
+                    } catch (e) {
+                        console.error('Error executing initAnalysisCharts:', e);
+                    }
                 }
             }, 60);
 
@@ -933,6 +966,8 @@ updateSidebarActiveMenu(url);
                         isActive = true;
                     } else if ((itemUrl.pathname === '/stock-history' || itemUrl.pathname.startsWith('/stock-movements')) && (path === '/stock-history' || path.startsWith('/stock-movements'))) {
                         isActive = true;
+                    } else if (itemUrl.pathname === '/material-analysis' && path.startsWith('/material-analysis')) {
+                        isActive = true;
                     } else if (itemUrl.pathname === '/profile' && path.startsWith('/profile')) {
                         isActive = true;
                     }
@@ -958,7 +993,7 @@ updateSidebarActiveMenu(url);
             // File export download jangan di-swap
             if (url.pathname.includes('/export')) return false;
             // Hanya rute internal aplikasi
-            const validPrefixes = ['/dashboard', '/materials', '/stock-history', '/stock-movements', '/profile'];
+            const validPrefixes = ['/dashboard', '/materials', '/stock-history', '/stock-movements', '/material-analysis', '/profile'];
             return validPrefixes.some(prefix => url.pathname.startsWith(prefix));
         } catch (e) {
             return false;

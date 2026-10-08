@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\MaterialAnalysisController;
 use App\Http\Controllers\MaterialController;
 use App\Http\Controllers\PasswordController;
 use App\Http\Controllers\ProfileController;
@@ -82,6 +83,17 @@ Route::get('/stock-history', [StockMovementController::class, 'index'])
 
 Route::get('/stock-history/export-pdf', [StockMovementController::class, 'exportPdf'])
     ->name('stock-movements.export-pdf');
+
+
+    // ==========================
+    // ANALISIS MATERIAL
+    // ==========================
+
+    Route::get('/material-analysis', [MaterialAnalysisController::class, 'index'])
+        ->name('material-analysis.index');
+
+    Route::get('/material-analysis/{key}', [MaterialAnalysisController::class, 'show'])
+        ->name('material-analysis.show');
 
 
     // ==========================
