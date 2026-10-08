@@ -66,22 +66,20 @@
     }
 
 
-    /* TAMBAHKAN INI */
+    /* ============================================================
+       RESET & BASE (HAPUS JARAK DEFAULT BROWSER)
+    ============================================================ */
     *,
     *::before,
     *::after {
+        margin: 0;
+        padding: 0;
         box-sizing: border-box;
     }
 
-
-    html {
-        height: 100%;
-        overflow-y: scroll;
-        scrollbar-gutter: stable;
-    }
-
+    html,
     body {
-        min-height: 100%;
+        height: 100%;
         font-family: 'Inter', Arial, sans-serif;
         background: var(--bg);
         color: var(--text-dark);
@@ -142,40 +140,26 @@
         }
 
 
-        /* =========================================================
-           TOPBAR
-        ========================================================= */
-
+        /* ============================================================
+           TOPBAR (Header - Seragam dengan Dashboard & Halaman Lain)
+        ============================================================ */
         .topbar {
-            height: var(--header-h);
-            background: var(--white);
-            border-bottom: 1px solid var(--border);
-
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-
-            padding: 0 28px;
-
             position: sticky;
             top: 0;
             z-index: 100;
-        }
-
-        .topbar-left-wrapper {
+            height: var(--header-h);
+            background: var(--white);
+            border-bottom: 1px solid var(--border);
             display: flex;
             align-items: center;
-            gap: 14px;
-        }
-
-        .topbar-left {
-            display: flex;
-            flex-direction: column;
+            justify-content: space-between;
+            padding: 0 28px;
+            box-shadow: 0 1px 6px rgba(0, 0, 0, 0.04);
         }
 
         .topbar-left h1 {
-            font-size: 18px;
-            font-weight: 800;
+            font-size: 20px;
+            font-weight: 700;
             color: var(--blue-dark);
             line-height: 1.2;
         }
@@ -186,19 +170,55 @@
             margin-top: 2px;
         }
 
+        /* Hamburger (mobile only) */
+        .btn-hamburger {
+            display: none;
+            align-items: center;
+            justify-content: center;
+            width: 38px;
+            height: 38px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: var(--white);
+            color: var(--text-dark);
+            transition: background var(--transition);
+        }
+
+        .btn-hamburger:hover {
+            background: var(--bg);
+        }
+
+        .btn-hamburger .material-symbols-outlined {
+            font-size: 22px;
+        }
+
+        /* Topbar Right: user profile */
         .topbar-user {
             display: flex;
             align-items: center;
-            gap: 12px;
-
+            gap: 10px;
+            cursor: pointer;
             padding: 4px 8px;
             border-radius: 40px;
-
-            transition: background var(--transition);
+            transition: background var(--transition), transform var(--transition);
         }
 
         .topbar-user:hover {
             background: #F1F5F9;
+        }
+
+        .topbar-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--blue);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: 700;
+            flex-shrink: 0;
         }
 
         .topbar-user-detail {
@@ -206,72 +226,28 @@
         }
 
         .topbar-user-name {
-            font-size: 13px;
+            font-size: 13.5px;
             font-weight: 700;
             color: var(--text-dark);
             line-height: 1.2;
         }
 
         .topbar-user-email {
-            font-size: 11px;
+            font-size: 11.5px;
             color: var(--text-muted);
-            margin-top: 2px;
+            margin-top: 1px;
         }
 
         .badge-role {
             display: inline-block;
-
+            margin-top: 3px;
+            padding: 2px 8px;
+            border-radius: 20px;
+            background: var(--yellow-light);
+            color: var(--blue);
             font-size: 10px;
             font-weight: 700;
-
-            padding: 2px 7px;
-
-            border-radius: 20px;
-
-            background: var(--blue-light);
-            color: var(--blue);
-
-            text-transform: uppercase;
-            letter-spacing: .4px;
-
-            margin-top: 3px;
-        }
-
-        .topbar-avatar {
-            width: 38px;
-            height: 38px;
-
-            border-radius: 50%;
-
-            background: var(--blue);
-            color: #FFFFFF;
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            font-weight: 800;
-            font-size: 15px;
-
-            flex-shrink: 0;
-        }
-
-        .btn-hamburger {
-            display: none;
-
-            background: transparent;
-            border: none;
-
-            color: var(--text-dark);
-
-            cursor: pointer;
-
-            padding: 4px;
-            border-radius: 6px;
-        }
-
-        .btn-hamburger:hover {
-            background: #F1F5F9;
+            letter-spacing: 0.04em;
         }
 
 
@@ -1220,8 +1196,11 @@
             }
 
             .topbar {
-
                 padding: 0 16px;
+            }
+
+            .topbar-left h1 {
+                font-size: 17px;
             }
 
             .page-content {
@@ -1417,85 +1396,32 @@
 
         <main class="main">
 
-
-            {{-- =================================================
-                 TOPBAR
-            ================================================== --}}
-
+            <!-- ============================================================
+                 TOPBAR / HEADER
+            ============================================================ -->
             <header class="topbar">
 
-
-                <div class="topbar-left-wrapper">
-
-
-                    {{-- HAMBURGER MOBILE --}}
-
-                    <button type="button" class="btn-hamburger" onclick="openSidebar()" aria-label="Buka Menu">
-
-                        <span class="material-symbols-outlined">
-                            menu
-                        </span>
-
+                <div style="display:flex;align-items:center;gap:14px;">
+                    <button class="btn-hamburger" id="btnHamburger" onclick="openSidebar()" aria-label="Buka Menu">
+                        <span class="material-symbols-outlined">menu</span>
                     </button>
-
-
-                    {{-- TITLE --}}
-
                     <div class="topbar-left">
-
-                        <h1>
-                            Riwayat Stok
-                        </h1>
-
-                        <p>
-                            Inventori ATK PT PLN Indonesia Power UBP Asam Asam
-                        </p>
-
+                        <h1>Riwayat Stok</h1>
+                        <p>Inventori ATK PT PLN Indonesia Power UBP Asam Asam</p>
                     </div>
-
-
                 </div>
 
-
-                {{-- =================================================
-                     USER TOPBAR
-                ================================================== --}}
-
+                <!-- Profile: Dinamis sesuai user yang sedang login -->
                 <a href="{{ route('profile.show') }}" class="topbar-user" title="Buka Profil Pengguna" data-spa-link>
-
-
                     <div class="topbar-user-detail">
-
-                        <div class="topbar-user-name">
-
-                            {{ Auth::user()->name }}
-
-                        </div>
-
-                        <div class="topbar-user-email">
-
-                            {{ Auth::user()->email }}
-
-                        </div>
-
-                        <span class="badge-role">
-
-                            {{ Auth::user()->role }}
-
-                        </span>
-
+                        <div class="topbar-user-name">{{ Auth::user()->name }}</div>
+                        <div class="topbar-user-email">{{ Auth::user()->email }}</div>
+                        <span class="badge-role">{{ Auth::user()->role }}</span>
                     </div>
-
-
                     <div class="topbar-avatar">
-
-                        {{ strtoupper(substr(Auth::user()->name ?? 'U', 0, 1)) }}
-
+                        {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
                     </div>
-
-
                 </a>
-
 
             </header>
 
