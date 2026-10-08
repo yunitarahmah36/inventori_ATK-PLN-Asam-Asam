@@ -1351,7 +1351,7 @@
                         </div>
                         <div class="stat-card-value">{{ $aktivitasHariIni }}</div>
                         <div class="stat-card-sub">
-                            Transaksi hari ini
+                            Perubahan stok hari ini
                         </div>
                     </div>
 
