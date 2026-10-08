@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -10,6 +11,7 @@ class ProfileController extends Controller
 {
     public function show()
     {
+        /** @var User $user */
         $user           = Auth::user();
         $totalMaterial  = $user->materials()->count();
         $totalAktivitas = $user->stockMovements()->count();
@@ -24,20 +26,17 @@ class ProfileController extends Controller
 
     public function update(Request $request)
     {
+        /** @var User $user */
         $user = Auth::user();
 
         $validated = $request->validate([
-            'name'     => 'required|string|max:100',
-            'username' => 'required|string|max:50|unique:users,username,' . $user->id,
+            'name' => 'required|string|max:100',
         ], [
-            'name.required'     => 'Nama lengkap wajib diisi.',
-            'username.required' => 'Username wajib diisi.',
-            'username.unique'   => 'Username sudah digunakan, pilih yang lain.',
+            'name.required' => 'Nama lengkap wajib diisi.',
         ]);
 
         $user->update([
-            'name'     => $validated['name'],
-            'username' => $validated['username'],
+            'name' => $validated['name'],
         ]);
 
         return redirect()->route('profile.show')->with('success', 'Profil berhasil diperbarui.');
@@ -45,6 +44,7 @@ class ProfileController extends Controller
 
     public function updatePassword(Request $request)
     {
+        /** @var User $user */
         $user = Auth::user();
 
         $request->validate([

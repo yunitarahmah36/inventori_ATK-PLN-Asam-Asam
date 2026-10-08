@@ -1235,10 +1235,6 @@
                                         {{ $user->role }}
                                     </span>
                                     <span class="banner-meta-item">
-                                        <span class="material-symbols-outlined">alternate_email</span>
-                                        {{ $user->username }}
-                                    </span>
-                                    <span class="banner-meta-item">
                                         <span class="material-symbols-outlined">mail</span>
                                         {{ $user->email }}
                                     </span>
@@ -1323,7 +1319,7 @@
 
                             <div class="form-grid">
                                 <!-- Nama Lengkap -->
-                                <div class="form-group">
+                                <div class="form-group full-width">
                                     <label class="form-label" for="inputName">
                                         <span>Nama Lengkap <span class="req">*</span></span>
                                     </label>
@@ -1345,31 +1341,6 @@
                                         </div>
                                     @enderror
                                     <div class="input-hint">Nama ini akan tercatat pada setiap penambahan dan mutasi stok.</div>
-                                </div>
-
-                                <!-- Username -->
-                                <div class="form-group">
-                                    <label class="form-label" for="inputUsername">
-                                        <span>Username <span class="req">*</span></span>
-                                    </label>
-                                    <div class="input-wrap">
-                                        <input type="text" 
-                                               name="username" 
-                                               id="inputUsername" 
-                                               class="form-control {{ $errors->has('username') ? 'is-invalid' : '' }}" 
-                                               value="{{ old('username', $user->username) }}" 
-                                               required 
-                                               autocomplete="username"
-                                               placeholder="Username akun">
-                                        <span class="material-symbols-outlined input-icon-left">alternate_email</span>
-                                    </div>
-                                    @error('username')
-                                        <div class="invalid-feedback">
-                                            <span class="material-symbols-outlined" style="font-size:14px;">error</span>
-                                            {{ $message }}
-                                        </div>
-                                    @enderror
-                                    <div class="input-hint">Digunakan untuk login ke sistem, tanpa spasi.</div>
                                 </div>
 
                                 <!-- Email (Permanen / Tidak Dapat Diubah) -->
