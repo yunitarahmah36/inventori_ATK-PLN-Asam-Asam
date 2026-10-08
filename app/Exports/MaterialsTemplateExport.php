@@ -58,7 +58,7 @@ class MaterialsTemplateExport implements FromArray, WithEvents
                 $sheet->getComment('C1')
                     ->getText()
                     ->createTextRun(
-                        'Format tanggal wajib: DD/MM/YYYY (contoh: 07/10/2026)'
+                        'Format tanggal wajib: MM/DD/YYYY (contoh: 12/20/2026)'
                     );
 
 
@@ -175,7 +175,7 @@ class MaterialsTemplateExport implements FromArray, WithEvents
                     );
 
                     $dateValidation->setError(
-                        'Masukkan tanggal dengan format DD/MM/YYYY. Contoh: 07/10/2026'
+                        'Masukkan tanggal dengan format MM/DD/YYYY. Contoh: 12/20/2026'
                     );
 
                     $dateValidation->setPromptTitle(
@@ -183,7 +183,7 @@ class MaterialsTemplateExport implements FromArray, WithEvents
                     );
 
                     $dateValidation->setPrompt(
-                        'Masukkan tanggal dengan format DD/MM/YYYY. Contoh: 07/10/2026'
+                        'Masukkan tanggal dengan format MM/DD/YYYY. Contoh: 12/20/2026'
                     );
 
                     $sheet
