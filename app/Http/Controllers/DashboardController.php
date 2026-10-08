@@ -28,14 +28,28 @@ class DashboardController extends Controller
         // 4. Jumlah aktivitas yang terjadi hari ini
         $aktivitasHariIni = StockMovement::whereDate('created_at', Carbon::today())->count();
 
-        // 5. Daftar material: Diurutkan sesuai tanggal masuk terbaru (entry_date DESC),
-        // terkecuali material yang stoknya menipis (<= 15 unit) otomatis langsung naik ke urutan paling atas.
-        $latestMaterials = Material::orderByRaw("CASE WHEN quantity <= 15 THEN 0 ELSE 1 END ASC")
-            ->orderByRaw("CASE WHEN quantity <= 15 THEN quantity END ASC")
-            ->orderBy('entry_date', 'desc')
-            ->orderBy('id', 'desc')
-            ->take(6)
-            ->get();
+        // 5. Daftar material di dashboard:
+        // Cukup 1 material stok menipis (<= 15 unit) paling prioritas yang dimunculkan di paling atas.
+        // Sisanya diisi oleh urutan data material paling baru ke lama berdasarkan tanggal masuk / nomor material.
+        $criticalLowStock = Material::where('quantity', '<=', 15)
+            ->orderBy('quantity', 'asc')
+            ->orderBy('entry_date', 'asc')
+            ->first();
+
+        if ($criticalLowStock) {
+            $otherMaterials = Material::where('id', '!=', $criticalLowStock->id)
+                ->orderBy('entry_date', 'desc')
+                ->orderBy('id', 'desc')
+                ->take(5)
+                ->get();
+
+            $latestMaterials = collect([$criticalLowStock])->merge($otherMaterials);
+        } else {
+            $latestMaterials = Material::orderBy('entry_date', 'desc')
+                ->orderBy('id', 'desc')
+                ->take(6)
+                ->get();
+        }
 
         // 6. Total jenis material dengan stok menipis (<= 15 unit)
         $lowStockCount = Material::where('quantity', '<=', 15)->count();

@@ -481,6 +481,135 @@
             background: #fff;
         }
 
+        .filter-select-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .filter-select-group label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-muted);
+            white-space: nowrap;
+        }
+
+        .filter-select-group select {
+            padding: 8px 10px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            font-size: 12.5px;
+            color: var(--text-dark);
+            background: #FAFBFD;
+            outline: none;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .filter-select-group select:focus {
+            border-color: var(--blue);
+            background: #fff;
+        }
+
+        /* Active Filter Alert Bar */
+        .active-filter-alert {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            background: #FFFBEB;
+            border: 1px solid #FCD34D;
+            border-left: 4px solid #F59E0B;
+            border-radius: var(--radius);
+            padding: 12px 18px;
+            margin-bottom: 16px;
+            box-shadow: 0 1px 6px rgba(245, 158, 11, 0.1);
+        }
+
+        .active-filter-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: #92400E;
+        }
+
+        .active-filter-info .material-symbols-outlined {
+            color: #D97706;
+            font-size: 20px;
+        }
+
+        .btn-clear-filter {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #B45309;
+            background: #FEF3C7;
+            border: 1px solid #FDE68A;
+            border-radius: 6px;
+            padding: 5px 12px;
+            text-decoration: none;
+            transition: all var(--transition);
+            white-space: nowrap;
+        }
+
+        .btn-clear-filter:hover {
+            background: #FDE68A;
+            color: #78350F;
+        }
+
+        .btn-clear-filter .material-symbols-outlined {
+            font-size: 15px;
+        }
+
+        /* Table Row Highlights for Low Stock */
+        table.data-table tbody tr.row-low-stock {
+            background: #FFFDF5;
+        }
+
+        table.data-table tbody tr.row-low-stock:hover {
+            background: #FFFBEB;
+        }
+
+        table.data-table tbody tr.row-critical-stock {
+            background: #FFF8F8;
+        }
+
+        table.data-table tbody tr.row-critical-stock:hover {
+            background: #FEF2F2;
+        }
+
+        .qty-badge.qty-low {
+            color: #D97706;
+        }
+
+        .qty-badge.qty-critical {
+            color: #DC2626;
+        }
+
+        .stock-pill {
+            font-size: 10.5px;
+            font-weight: 700;
+            padding: 2px 7px;
+            border-radius: 12px;
+            white-space: nowrap;
+            display: inline-block;
+        }
+
+        .stock-pill.pill-warning {
+            background: #FEF3C7;
+            color: #B45309;
+            border: 1px solid #FCD34D;
+        }
+
+        .stock-pill.pill-critical {
+            background: #FEE2E2;
+            color: #B91C1C;
+            border: 1px solid #FCA5A5;
+        }
+
         /* ============================================================
            DATA TABLE CARD
         ============================================================ */
@@ -1146,12 +1275,21 @@ table.data-table tbody tr.row-selected {
                             <input type="date" id="end_date" name="end_date" value="{{ $endDate }}">
                         </div>
 
+                        <!-- Filter Status Stok -->
+                        <div class="filter-select-group">
+                            <label for="filter_stock">Status:</label>
+                            <select id="filter_stock" name="filter_stock" onchange="document.getElementById('filterForm').submit()">
+                                <option value="" {{ empty($filterStock) ? 'selected' : '' }}>Semua Stok</option>
+                                <option value="low" {{ $filterStock === 'low' ? 'selected' : '' }}>⚠️ Stok Menipis (≤ 15)</option>
+                            </select>
+                        </div>
+
                         <button type="submit" class="btn btn-primary" style="padding: 8px 14px;">
                             <span class="material-symbols-outlined" style="font-size:18px;">filter_alt</span>
                             Filter
                         </button>
 
-                        @if (!empty($search) || !empty($startDate) || !empty($endDate))
+                        @if (!empty($search) || !empty($startDate) || !empty($endDate) || !empty($filterStock))
                             <a href="{{ route('materials.index', ['per_page' => $perPage]) }}" class="btn btn-outline"
                                 style="padding: 8px 14px;">
                                 <span class="material-symbols-outlined" style="font-size:18px;">restart_alt</span>
@@ -1160,6 +1298,20 @@ table.data-table tbody tr.row-selected {
                         @endif
                     </form>
                 </div>
+
+                <!-- Alert Filter Stok Menipis Aktif -->
+                @if ($filterStock === 'low')
+                    <div class="active-filter-alert">
+                        <div class="active-filter-info">
+                            <span class="material-symbols-outlined">warning</span>
+                            <span>Menampilkan <strong>{{ $totalFiltered }} Material</strong> dengan <strong>Stok Menipis (≤ 15 unit)</strong>.</span>
+                        </div>
+                        <a href="{{ route('materials.index', array_merge(request()->except('filter_stock', 'page'))) }}" class="btn-clear-filter">
+                            <span class="material-symbols-outlined">close</span>
+                            Tampilkan Semua Stok
+                        </a>
+                    </div>
+                @endif
 
                 <!-- Bulk Action Toolbar -->
                 <div class="bulk-toolbar" id="bulkToolbar">
@@ -1188,7 +1340,7 @@ table.data-table tbody tr.row-selected {
                                         <th style="width: 140px;">No Material</th>
                                         <th>Nama Material</th>
                                         <th style="width: 140px;">Tanggal Masuk</th>
-                                        <th style="width: 130px;">Jumlah Item</th>
+                                        <th style="width: 140px;">Jumlah Item</th>
                                         <th style="width: 100px;">Satuan</th>
                                         <th style="width: 110px; text-align: center;">Aksi</th>
                                     </tr>
@@ -1198,7 +1350,11 @@ table.data-table tbody tr.row-selected {
                                         $startNumber = ($materials->currentPage() - 1) * $materials->perPage();
                                     @endphp
                                     @foreach ($materials as $index => $mat)
-                                        <tr data-id="{{ $mat->id }}">
+                                        @php
+                                            $isLow = $mat->quantity <= 15;
+                                            $isCritical = $mat->quantity <= 5;
+                                        @endphp
+                                        <tr data-id="{{ $mat->id }}" class="{{ $isCritical ? 'row-critical-stock' : ($isLow ? 'row-low-stock' : '') }}">
                                             <td class="cb-cell">
                                                 <input type="checkbox" class="row-checkbox"
                                                        value="{{ $mat->id }}"
@@ -1221,8 +1377,16 @@ table.data-table tbody tr.row-selected {
                                                 {{ $mat->entry_date ? $mat->entry_date->translatedFormat('j M Y') : '-' }}
                                             </td>
                                             <td>
-                                                <span
-                                                    class="qty-badge">{{ number_format($mat->quantity, 0, ',', '.') }}</span>
+                                                <div style="display: flex; align-items: center; gap: 6px;">
+                                                    <span class="qty-badge {{ $isCritical ? 'qty-critical' : ($isLow ? 'qty-low' : '') }}">
+                                                        {{ number_format($mat->quantity, 0, ',', '.') }}
+                                                    </span>
+                                                    @if ($isCritical)
+                                                        <span class="stock-pill pill-critical">Kritis</span>
+                                                    @elseif ($isLow)
+                                                        <span class="stock-pill pill-warning">Menipis</span>
+                                                    @endif
+                                                </div>
                                             </td>
                                             <td>
                                                 <span

@@ -19,10 +19,11 @@ class MaterialController extends Controller
      */
     public function index(Request $request)
     {
-        $search    = trim($request->input('search', ''));
-        $startDate = $request->input('start_date');
-        $endDate   = $request->input('end_date');
-        $perPage   = $request->input('per_page', 25);
+        $search      = trim($request->input('search', ''));
+        $startDate   = $request->input('start_date');
+        $endDate     = $request->input('end_date');
+        $perPage     = $request->input('per_page', 25);
+        $filterStock = $request->input('filter_stock');
 
         $query = Material::query();
 
@@ -43,8 +44,14 @@ class MaterialController extends Controller
             $query->whereDate('entry_date', '<=', $endDate);
         }
 
-        // Urutkan dari yang terbaru
-        $query->latest('entry_date')->latest('id');
+        // Filter stok menipis (<= 15 unit)
+        if ($filterStock === 'low') {
+            $query->where('quantity', '<=', 15);
+            $query->orderBy('quantity', 'asc')->orderBy('entry_date', 'asc');
+        } else {
+            // Urutkan dari yang terbaru
+            $query->latest('entry_date')->latest('id');
+        }
 
         // Total data sesuai filter
         $totalFiltered = (clone $query)->count();
@@ -69,6 +76,7 @@ class MaterialController extends Controller
             'startDate',
             'endDate',
             'perPage',
+            'filterStock',
             'totalFiltered'
         ));
     }
@@ -343,11 +351,12 @@ class MaterialController extends Controller
      */
     public function export(Request $request)
     {
-        $search    = trim($request->input('search', ''));
-        $startDate = $request->input('start_date');
-        $endDate   = $request->input('end_date');
-        $perPage   = $request->input('per_page', 25);
-        $page      = $request->input('page', 1);
+        $search      = trim($request->input('search', ''));
+        $startDate   = $request->input('start_date');
+        $endDate     = $request->input('end_date');
+        $perPage     = $request->input('per_page', 25);
+        $page        = $request->input('page', 1);
+        $filterStock = $request->input('filter_stock');
 
         $filename = 'Data_Material_ATK_PLN_' . date('Ymd_His') . '.xlsx';
 
@@ -357,7 +366,8 @@ class MaterialController extends Controller
                 $startDate,
                 $endDate,
                 $perPage,
-                $page
+                $page,
+                $filterStock
             ),
             $filename
         );

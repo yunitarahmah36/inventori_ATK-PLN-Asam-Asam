@@ -20,19 +20,22 @@ class MaterialsExport implements FromCollection, WithStyles, WithColumnWidths, W
     protected $endDate;
     protected $perPage;
     protected $page;
+    protected $filterStock;
 
     public function __construct(
         $search = null,
         $startDate = null,
         $endDate = null,
         $perPage = null,
-        $page = null
+        $page = null,
+        $filterStock = null
     ) {
         $this->search = $search;
         $this->startDate = $startDate;
         $this->endDate = $endDate;
         $this->perPage = $perPage;
         $this->page = $page;
+        $this->filterStock = $filterStock;
     }
 
     /**
@@ -75,7 +78,13 @@ class MaterialsExport implements FromCollection, WithStyles, WithColumnWidths, W
             );
         }
 
-        $query->latest('entry_date')->latest('id');
+        // Filter stok menipis (<= 15 unit)
+        if ($this->filterStock === 'low') {
+            $query->where('quantity', '<=', 15);
+            $query->orderBy('quantity', 'asc')->orderBy('entry_date', 'asc');
+        } else {
+            $query->latest('entry_date')->latest('id');
+        }
 
         $startNumber = 1;
 
