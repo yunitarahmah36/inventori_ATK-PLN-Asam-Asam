@@ -905,9 +905,9 @@
 
         .activity-import {
 
-            background: var(--purple-light);
+            background: #FFF3E0;
 
-            color: var(--purple);
+            color: #E65100;
         }
 
         .activity-hapus {

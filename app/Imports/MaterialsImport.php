@@ -3,15 +3,17 @@
 namespace App\Imports;
 
 use App\Models\Material;
+use App\Models\StockMovement;
 use Illuminate\Support\Facades\Auth;
-use Maatwebsite\Excel\Concerns\ToModel;
+use Maatwebsite\Excel\Concerns\OnEachRow;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithValidation;
 use Maatwebsite\Excel\Concerns\SkipsEmptyRows;
+use Maatwebsite\Excel\Row;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
 
 class MaterialsImport implements
-    ToModel,
+    OnEachRow,
     WithHeadingRow,
     WithValidation,
     SkipsEmptyRows
@@ -25,30 +27,45 @@ class MaterialsImport implements
     }
 
     /**
-     * Import setiap baris menjadi Material.
+     * Import setiap baris dan catat riwayat stok.
      */
-    public function model(array $row)
+    public function onRow(Row $row)
     {
-        return new Material([
-            'material_number' => trim($row['no_material']),
+        $rowArray = $row->toArray();
 
-            'name' => trim($row['nama_material']),
+        $quantity = (int) $rowArray['jumlah_item'];
+
+        $material = Material::create([
+            'material_number' => trim($rowArray['no_material']),
+
+            'name' => trim($rowArray['nama_material']),
 
             'entry_date' => $this->convertDate(
-                $row['tanggal_masuk']
+                $rowArray['tanggal_masuk']
             ),
 
-            'quantity' => (int) $row['jumlah_item'],
+            'quantity' => $quantity,
 
             'unit' => $this->normalizeUnit(
-                $row['satuan']
+                $rowArray['satuan']
             ),
 
-            'description' => !empty($row['deskripsi'])
-                ? trim($row['deskripsi'])
+            'description' => !empty($rowArray['deskripsi'])
+                ? trim($rowArray['deskripsi'])
                 : null,
 
             'created_by' => Auth::id(),
+        ]);
+
+        // Catat riwayat aktivitas stok
+        StockMovement::create([
+            'material_id'     => $material->id,
+            'user_id'         => Auth::id(),
+            'activity'        => 'Import',
+            'quantity_before' => 0,
+            'quantity_after'  => $quantity,
+            'quantity_change' => $quantity,
+            'description'     => 'Import data via Excel',
         ]);
     }
 
