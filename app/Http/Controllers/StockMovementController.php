@@ -37,6 +37,8 @@ class StockMovementController extends Controller
                     '%' . $search . '%'
                 )
 
+                ->orWhere('material_name', 'like', '%' . $search . '%')
+                ->orWhere('material_number', 'like', '%' . $search . '%')
                 ->orWhereHas(
                     'material',
                     function ($materialQuery) use ($search) {
@@ -194,6 +196,8 @@ class StockMovementController extends Controller
                     '%' . $search . '%'
                 )
 
+                ->orWhere('material_name', 'like', '%' . $search . '%')
+                ->orWhere('material_number', 'like', '%' . $search . '%')
                 ->orWhereHas(
                     'material',
                     function ($materialQuery) use ($search) {

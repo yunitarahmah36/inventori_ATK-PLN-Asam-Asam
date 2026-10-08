@@ -690,14 +690,14 @@
 
                         <div class="material-name">
 
-                            {{ $movement->material->name ?? '-' }}
+                            {{ $movement->material->name ?? $movement->material_name ?? '-' }}
 
                         </div>
 
                         <div class="material-number">
 
                             No Material:
-                            {{ $movement->material->material_number ?? '-' }}
+                            {{ $movement->material->material_number ?? $movement->material_number ?? '-' }}
 
                         </div>
 

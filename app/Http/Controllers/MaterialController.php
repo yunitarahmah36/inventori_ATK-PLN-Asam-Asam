@@ -137,6 +137,8 @@ class MaterialController extends Controller
         // Catat riwayat aktivitas stok
         StockMovement::create([
             'material_id'     => $material->id,
+            'material_name'   => $material->name,
+            'material_number' => $material->material_number,
             'user_id'         => Auth::id(),
             'activity'        => 'Tambah',
             'quantity_before' => 0,
@@ -219,6 +221,8 @@ class MaterialController extends Controller
         // Catat riwayat aktivitas stok
         StockMovement::create([
             'material_id'     => $material->id,
+            'material_name'   => $material->name,
+            'material_number' => $material->material_number,
             'user_id'         => Auth::id(),
             'activity'        => 'Edit',
             'quantity_before' => $qtyBefore,
@@ -235,17 +239,35 @@ class MaterialController extends Controller
     }
 
     /**
-     * Hapus data material secara permanen dari database MySQL.
+     * Hapus data material dari tabel materials, namun tetap mempertahankan riwayat stok.
      */
     public function destroy(Material $material)
     {
         try {
-            $materialName = $material->name;
+            $materialName   = $material->name;
+            $materialNumber = $material->material_number;
 
-            DB::transaction(function () use ($material) {
-                // Hapus relasi riwayat stok terlebih dahulu untuk mencegah foreign key constraint error
-                $material->stockMovements()->delete();
-                // Hapus data material secara permanen dari tabel materials
+            DB::transaction(function () use ($material, $materialName, $materialNumber) {
+                // Pastikan riwayat stok sebelumnya memiliki snapshot nama dan no material
+                $material->stockMovements()->update([
+                    'material_name'   => $materialName,
+                    'material_number' => $materialNumber,
+                ]);
+
+                // Catat riwayat aktivitas stok untuk aksi hapus
+                StockMovement::create([
+                    'material_id'     => $material->id,
+                    'material_name'   => $materialName,
+                    'material_number' => $materialNumber,
+                    'user_id'         => Auth::id(),
+                    'activity'        => 'Hapus',
+                    'quantity_before' => (int) $material->quantity,
+                    'quantity_after'  => 0,
+                    'quantity_change' => -((int) $material->quantity),
+                    'description'     => 'Material dihapus dari sistem',
+                ]);
+
+                // Hapus data material dari tabel materials (stock_movements akan diset material_id = null oleh FK)
                 $material->delete();
             });
 
@@ -260,7 +282,7 @@ class MaterialController extends Controller
     }
 
     /**
-     * Hapus beberapa material sekaligus secara permanen dari database MySQL.
+     * Hapus beberapa material sekaligus dari tabel materials, namun tetap mempertahankan riwayat stok.
      */
     public function bulkDestroy(Request $request)
     {
@@ -283,11 +305,27 @@ class MaterialController extends Controller
         $count = $materials->count();
 
         try {
-            DB::transaction(function () use ($ids) {
-                // Hapus relasi riwayat stok untuk material terpilih
-                StockMovement::whereIn('material_id', $ids)->delete();
-                // Hapus data material terpilih secara permanen
-                Material::whereIn('id', $ids)->delete();
+            DB::transaction(function () use ($materials) {
+                foreach ($materials as $mat) {
+                    $mat->stockMovements()->update([
+                        'material_name'   => $mat->name,
+                        'material_number' => $mat->material_number,
+                    ]);
+
+                    StockMovement::create([
+                        'material_id'     => $mat->id,
+                        'material_name'   => $mat->name,
+                        'material_number' => $mat->material_number,
+                        'user_id'         => Auth::id(),
+                        'activity'        => 'Hapus',
+                        'quantity_before' => (int) $mat->quantity,
+                        'quantity_after'  => 0,
+                        'quantity_change' => -((int) $mat->quantity),
+                        'description'     => 'Material dihapus dari sistem',
+                    ]);
+
+                    $mat->delete();
+                }
             });
 
             return redirect()

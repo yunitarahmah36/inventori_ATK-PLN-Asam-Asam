@@ -60,6 +60,8 @@ class MaterialsImport implements
         // Catat riwayat aktivitas stok
         StockMovement::create([
             'material_id'     => $material->id,
+            'material_name'   => $material->name,
+            'material_number' => $material->material_number,
             'user_id'         => Auth::id(),
             'activity'        => 'Import',
             'quantity_before' => 0,
