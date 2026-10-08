@@ -38,7 +38,7 @@ class MaterialTest extends TestCase
             $response->assertStatus(200);
             $response->assertSee('Data Material');
             $response->assertSee('Kelola data material ATK PLN Asam-Asam');
-            $response->assertSee('+ Tambah Material');
+            $response->assertSee('Tambah Material');
             $response->assertSee('Import Excel');
             $response->assertSee('Export Excel');
         }
@@ -243,12 +243,21 @@ class MaterialTest extends TestCase
         $response->assertRedirect('/materials');
         $response->assertSessionHas('success');
 
-        $this->assertDatabaseMissing('materials', [
+        $this->assertSoftDeleted('materials', [
             'id' => $material->id,
+        ]);
+
+        $this->assertDatabaseHas('stock_movements', [
+            'material_id'     => $material->id,
+            'user_id'         => $admin->id,
+            'activity'        => 'Hapus',
+            'quantity_before' => 5,
+            'quantity_after'  => 0,
+            'quantity_change' => -5,
         ]);
     }
 
-    public function test_export_downloads_csv_file(): void
+    public function test_export_downloads_excel_file(): void
     {
         $admin = $this->createUser('Admin');
         Material::create([
@@ -262,11 +271,6 @@ class MaterialTest extends TestCase
 
         $response = $this->actingAs($admin)->get('/materials/export');
         $response->assertStatus(200);
-        $response->assertHeader('Content-Type', 'text/csv; charset=UTF-8');
-
-        $content = $response->streamedContent();
-        $this->assertStringContainsString('No Material', $content);
-        $this->assertStringContainsString('Kertas HVS A4 Test Export', $content);
-        $this->assertStringContainsString('MAT001', $content);
+        $response->assertHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
     }
 }

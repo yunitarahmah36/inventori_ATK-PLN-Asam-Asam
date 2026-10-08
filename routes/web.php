@@ -77,8 +77,11 @@ Route::middleware('auth')->group(function () {
     // RIWAYAT STOK
     // ==========================
 
-    Route::get('/stock-history', [StockMovementController::class, 'index'])
-        ->name('stock-movements.index');
+Route::get('/stock-history', [StockMovementController::class, 'index'])
+    ->name('stock-movements.index');
+
+Route::get('/stock-history/export-pdf', [StockMovementController::class, 'exportPdf'])
+    ->name('stock-movements.export-pdf');
 
 
     // ==========================

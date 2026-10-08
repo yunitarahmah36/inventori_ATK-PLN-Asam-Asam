@@ -240,6 +240,17 @@ class MaterialController extends Controller
     {
         $materialName = $material->name;
 
+        // Catat riwayat aktivitas stok
+        StockMovement::create([
+            'material_id'     => $material->id,
+            'user_id'         => Auth::id(),
+            'activity'        => 'Hapus',
+            'quantity_before' => (int) $material->quantity,
+            'quantity_after'  => 0,
+            'quantity_change' => -((int) $material->quantity),
+            'description'     => 'Material dihapus dari sistem',
+        ]);
+
         $material->delete();
 
         return redirect()
@@ -263,8 +274,30 @@ class MaterialController extends Controller
                 ->with('error', 'Tidak ada material yang dipilih.');
         }
 
-        $count = Material::whereIn('id', $ids)->count();
-        Material::whereIn('id', $ids)->delete();
+        $materials = Material::whereIn('id', $ids)->get();
+
+        if ($materials->isEmpty()) {
+            return redirect()
+                ->route('materials.index')
+                ->with('error', 'Tidak ada material yang dipilih.');
+        }
+
+        $count = $materials->count();
+
+        foreach ($materials as $mat) {
+            // Catat riwayat aktivitas stok
+            StockMovement::create([
+                'material_id'     => $mat->id,
+                'user_id'         => Auth::id(),
+                'activity'        => 'Hapus',
+                'quantity_before' => (int) $mat->quantity,
+                'quantity_after'  => 0,
+                'quantity_change' => -((int) $mat->quantity),
+                'description'     => 'Material dihapus dari sistem',
+            ]);
+
+            $mat->delete();
+        }
 
         return redirect()
             ->route('materials.index')

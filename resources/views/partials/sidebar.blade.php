@@ -73,14 +73,6 @@
             <span>Riwayat Stok</span>
         </a>    
 
-        <!-- Laporan -->
-        <a href="javascript:void(0)" 
-           class="nav-item {{ request()->routeIs('reports.*') ? 'active' : '' }}" 
-           onclick="showSidebarToast('Fitur Laporan sedang dikembangkan.')">
-            <span class="material-symbols-outlined">bar_chart</span>
-            <span>Laporan</span>
-        </a>
-
         <div class="nav-section-title" style="margin-top:10px;">Akun</div>
 
         <!-- Profile -->
