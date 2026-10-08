@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport"
         content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Data Material - Inventori ATK PLN Asam-Asam</title>
+    <title>Data Material - Inventori ATK PT PLN Indonesia Power UBP Asam Asam</title>
     <link rel="icon" type="image/png" href="{{ asset('images/pln_bulat.png') }}">
 
     <!-- Google Fonts: Inter -->
@@ -1012,7 +1012,7 @@ table.data-table tbody tr.row-selected {
                     </button>
                     <div class="topbar-left">
                         <h1>Data Material</h1>
-                        <p>Kelola data material ATK PLN Asam-Asam</p>
+                        <p>Kelola data material ATK PT PLN Indonesia Power UBP Asam Asam</p>
                     </div>
                 </div>
 
@@ -1048,7 +1048,7 @@ table.data-table tbody tr.row-selected {
                 <div class="header-card">
                     <div class="header-card-title">
                         <h2>Data Material</h2>
-                        <p>Kelola data material ATK PLN Asam-Asam</p>
+                        <p>Kelola data material ATK PT PLN Indonesia Power UBP Asam Asam</p>
                     </div>
 
                     <div class="header-actions">

@@ -37,7 +37,7 @@ class MaterialTest extends TestCase
             $response = $this->actingAs($user)->get('/materials');
             $response->assertStatus(200);
             $response->assertSee('Data Material');
-            $response->assertSee('Kelola data material ATK PLN Asam-Asam');
+            $response->assertSee('Kelola data material ATK PT PLN Indonesia Power UBP Asam Asam');
             $response->assertSee('Tambah Material');
             $response->assertSee('Import Excel');
             $response->assertSee('Export Excel');

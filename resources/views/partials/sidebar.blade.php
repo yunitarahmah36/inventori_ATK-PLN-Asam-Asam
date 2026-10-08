@@ -23,7 +23,7 @@
             >
             <div class="sidebar-logo-text">
                 <h1>STOK ATK</h1>
-                <p>PLN Asam-Asam</p>
+                <p>PT PLN Indonesia Power UBP Asam Asam</p>
             </div>
         </a>
         <button type="button" class="sidebar-close-btn" onclick="closeSidebar()" aria-label="Tutup Menu">

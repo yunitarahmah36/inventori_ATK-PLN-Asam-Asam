@@ -8,7 +8,7 @@
     <meta name="viewport"
           content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-    <title>Riwayat Stok - Inventori ATK PLN Asam-Asam</title>
+    <title>Riwayat Stok - Inventori ATK PT PLN Indonesia Power UBP Asam Asam</title>
 
     <link rel="icon"
           type="image/png"
@@ -1448,7 +1448,7 @@
                         </h1>
 
                         <p>
-                            Inventori ATK PLN Asam-Asam
+                            Inventori ATK PT PLN Indonesia Power UBP Asam Asam
                         </p>
 
                     </div>

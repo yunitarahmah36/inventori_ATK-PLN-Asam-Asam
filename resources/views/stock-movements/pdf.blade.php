@@ -412,7 +412,7 @@
                     </div>
 
                     <div class="subtitle">
-                        Sistem Inventori ATK PLN Asam-Asam
+                        Sistem Inventori ATK PT PLN Indonesia Power UBP Asam Asam
                     </div>
 
                 </td>
@@ -811,7 +811,7 @@
 
                 <td>
                     Dokumen dibuat secara otomatis oleh
-                    Sistem Inventori ATK PLN Asam-Asam.
+                    Sistem Inventori ATK PT PLN Indonesia Power UBP Asam Asam.
                 </td>
 
                 <td class="footer-right">

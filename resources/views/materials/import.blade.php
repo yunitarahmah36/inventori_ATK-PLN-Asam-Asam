@@ -6,7 +6,7 @@
     <meta name="viewport"
         content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 
-    <title>Import Excel - Inventori ATK PLN Asam-Asam</title>
+    <title>Import Excel - Inventori ATK PT PLN Indonesia Power UBP Asam Asam</title>
 
     <link rel="icon" type="image/png" href="{{ asset('images/pln_bulat.png') }}">
 
@@ -400,7 +400,7 @@
                     </h1>
 
                     <p>
-                        Inventori ATK PLN Asam-Asam
+                        Inventori ATK PT PLN Indonesia Power UBP Asam Asam
                     </p>
 
                 </div>
@@ -542,8 +542,7 @@
 
                 <p>
                     Upload file Excel untuk menambahkan data material
-                    secara massal ke dalam sistem Inventori ATK PLN
-                    Asam-Asam.
+                    secara massal ke dalam sistem Inventori ATK PT PLN Indonesia Power UBP Asam Asam.
                 </p>
 
 
