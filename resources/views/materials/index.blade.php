@@ -259,6 +259,13 @@
             border: 1px solid #A7F3D0;
         }
 
+        .alert-error,
+        .alert-danger {
+            background: var(--red-light);
+            color: #991B1B;
+            border: 1px solid #FECACA;
+        }
+
         .alert-close {
             background: none;
             border: none;
@@ -1077,6 +1084,19 @@ table.data-table tbody tr.row-selected {
                     </div>
                 @endif
 
+                @if (session('error'))
+                    <div class="alert alert-error" id="alertError">
+                        <div style="display:flex;align-items:center;gap:8px;">
+                            <span class="material-symbols-outlined" style="font-size:20px;">error</span>
+                            <span>{{ session('error') }}</span>
+                        </div>
+                        <button type="button" class="alert-close"
+                            onclick="document.getElementById('alertError').remove()">
+                            <span class="material-symbols-outlined" style="font-size:18px;">close</span>
+                        </button>
+                    </div>
+                @endif
+
                 <!-- Header Card dengan Tombol Aksi Utama -->
                 <div class="header-card">
                     <div class="header-card-title">
@@ -1406,49 +1426,18 @@ table.data-table tbody tr.row-selected {
                         pendingRow    = null;
                     });
 
-                    confirmBtn.addEventListener('click', async function () {
+                    confirmBtn.addEventListener('click', function () {
                         if (!pendingAction) return;
                         const action = pendingAction;
-                        const row    = pendingRow;
                         modal.classList.remove('show');
                         pendingAction = null;
                         pendingRow    = null;
 
-                        if (row) {
-                            row.style.transition = 'opacity 0.22s ease, transform 0.22s ease';
-                            row.style.opacity    = '0';
-                            row.style.transform  = 'translateX(-12px)';
-                        }
-
                         confirmBtn.disabled    = true;
                         confirmBtn.textContent = 'Menghapus...';
 
-                        try {
-                            const csrfToken = hiddenForm.querySelector('input[name="_token"]').value;
-                            const formData  = new FormData();
-                            formData.append('_token',  csrfToken);
-                            formData.append('_method', 'DELETE');
-                            await fetch(action, {
-                                method: 'POST',
-                                body:   formData,
-                                headers: { 'X-Requested-With': 'XMLHttpRequest' }
-                            });
-                            setTimeout(async function () {
-                                if (typeof navigatePage === 'function') {
-                                    await navigatePage(window.location.pathname + window.location.search, false);
-                                } else {
-                                    window.location.reload();
-                                }
-                                confirmBtn.disabled    = false;
-                                confirmBtn.textContent = 'Hapus';
-                            }, 220);
-                        } catch (err) {
-                            console.error('Delete error:', err);
-                            if (row) { row.style.opacity = '1'; row.style.transform = 'translateX(0)'; }
-                            confirmBtn.disabled    = false;
-                            confirmBtn.textContent = 'Hapus';
-                            alert('Gagal menghapus material. Silakan coba lagi.');
-                        }
+                        hiddenForm.action = action;
+                        hiddenForm.submit();
                     });
 
                     modal.addEventListener('click', function (e) {
@@ -1553,7 +1542,7 @@ table.data-table tbody tr.row-selected {
 
                 // Konfirmasi hapus massal
                 if (bulkConfirmBtn && bulkForm) {
-                    bulkConfirmBtn.addEventListener('click', async function () {
+                    bulkConfirmBtn.addEventListener('click', function () {
                         const checkedBoxes = getChecked();
                         if (checkedBoxes.length === 0) return;
 
@@ -1561,50 +1550,19 @@ table.data-table tbody tr.row-selected {
                         bulkConfirmBtn.disabled    = true;
                         bulkConfirmBtn.textContent = 'Menghapus...';
 
-                        // Animasi fade-out semua baris terpilih
+                        // Bersihkan input ids[] lama dari bulkForm jika ada
+                        bulkForm.querySelectorAll('input[name="ids[]"]').forEach(el => el.remove());
+
+                        // Masukkan setiap id terpilih ke dalam bulkForm
                         checkedBoxes.forEach(cb => {
-                            const row = cb.closest('tr');
-                            if (row) {
-                                row.style.transition = 'opacity 0.2s ease, transform 0.2s ease';
-                                row.style.opacity    = '0';
-                                row.style.transform  = 'translateX(-12px)';
-                            }
+                            const input = document.createElement('input');
+                            input.type  = 'hidden';
+                            input.name  = 'ids[]';
+                            input.value = cb.value;
+                            bulkForm.appendChild(input);
                         });
 
-                        try {
-                            const csrfInput = bulkForm.querySelector('input[name="_token"]');
-                            const csrfToken = csrfInput ? csrfInput.value : '';
-                            const formData  = new FormData();
-                            formData.append('_token', csrfToken);
-                            checkedBoxes.forEach(cb => formData.append('ids[]', cb.value));
-
-                            await fetch(bulkForm.action, {
-                                method: 'POST',
-                                body:   formData,
-                                headers: { 'X-Requested-With': 'XMLHttpRequest' }
-                            });
-
-                            setTimeout(async function () {
-                                if (typeof navigatePage === 'function') {
-                                    await navigatePage(window.location.pathname + window.location.search, false);
-                                } else {
-                                    window.location.reload();
-                                }
-                                bulkConfirmBtn.disabled    = false;
-                                bulkConfirmBtn.textContent = 'Hapus Semua';
-                            }, 220);
-
-                        } catch (err) {
-                            console.error('Bulk delete error:', err);
-                            // Kembalikan baris
-                            checkedBoxes.forEach(cb => {
-                                const row = cb.closest('tr');
-                                if (row) { row.style.opacity = '1'; row.style.transform = 'translateX(0)'; }
-                            });
-                            bulkConfirmBtn.disabled    = false;
-                            bulkConfirmBtn.textContent = 'Hapus Semua';
-                            alert('Gagal menghapus material. Silakan coba lagi.');
-                        }
+                        bulkForm.submit();
                     });
                 }
 

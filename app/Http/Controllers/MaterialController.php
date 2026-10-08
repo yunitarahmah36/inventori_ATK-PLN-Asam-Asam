@@ -7,6 +7,7 @@ use App\Models\Material;
 use App\Models\StockMovement;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\MaterialsImport;
 use App\Exports\MaterialsTemplateExport;
@@ -234,35 +235,32 @@ class MaterialController extends Controller
     }
 
     /**
-     * Hapus material dari database.
+     * Hapus data material secara permanen dari database MySQL.
      */
     public function destroy(Material $material)
     {
-        $materialName = $material->name;
+        try {
+            $materialName = $material->name;
 
-        // Catat riwayat aktivitas stok
-        StockMovement::create([
-            'material_id'     => $material->id,
-            'user_id'         => Auth::id(),
-            'activity'        => 'Hapus',
-            'quantity_before' => (int) $material->quantity,
-            'quantity_after'  => 0,
-            'quantity_change' => -((int) $material->quantity),
-            'description'     => 'Material dihapus dari sistem',
-        ]);
+            DB::transaction(function () use ($material) {
+                // Hapus relasi riwayat stok terlebih dahulu untuk mencegah foreign key constraint error
+                $material->stockMovements()->delete();
+                // Hapus data material secara permanen dari tabel materials
+                $material->delete();
+            });
 
-        $material->delete();
-
-        return redirect()
-            ->route('materials.index')
-            ->with(
-                'success',
-                "Material {$materialName} berhasil dihapus."
-            );
+            return redirect()
+                ->route('materials.index')
+                ->with('success', "Material \"{$materialName}\" berhasil dihapus.");
+        } catch (\Exception $e) {
+            return redirect()
+                ->route('materials.index')
+                ->with('error', "Gagal menghapus material: " . $e->getMessage());
+        }
     }
 
     /**
-     * Hapus beberapa material sekaligus (bulk delete).
+     * Hapus beberapa material sekaligus secara permanen dari database MySQL.
      */
     public function bulkDestroy(Request $request)
     {
@@ -284,24 +282,22 @@ class MaterialController extends Controller
 
         $count = $materials->count();
 
-        foreach ($materials as $mat) {
-            // Catat riwayat aktivitas stok
-            StockMovement::create([
-                'material_id'     => $mat->id,
-                'user_id'         => Auth::id(),
-                'activity'        => 'Hapus',
-                'quantity_before' => (int) $mat->quantity,
-                'quantity_after'  => 0,
-                'quantity_change' => -((int) $mat->quantity),
-                'description'     => 'Material dihapus dari sistem',
-            ]);
+        try {
+            DB::transaction(function () use ($ids) {
+                // Hapus relasi riwayat stok untuk material terpilih
+                StockMovement::whereIn('material_id', $ids)->delete();
+                // Hapus data material terpilih secara permanen
+                Material::whereIn('id', $ids)->delete();
+            });
 
-            $mat->delete();
+            return redirect()
+                ->route('materials.index')
+                ->with('success', "{$count} material berhasil dihapus.");
+        } catch (\Exception $e) {
+            return redirect()
+                ->route('materials.index')
+                ->with('error', "Gagal menghapus material: " . $e->getMessage());
         }
-
-        return redirect()
-            ->route('materials.index')
-            ->with('success', "{$count} material berhasil dihapus.");
     }
 
     /**

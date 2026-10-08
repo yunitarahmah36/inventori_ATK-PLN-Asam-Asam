@@ -22,7 +22,7 @@ class StockMovement extends Model
 
     public function material(): BelongsTo
     {
-        return $this->belongsTo(Material::class)->withTrashed();
+        return $this->belongsTo(Material::class);
     }
 
     public function user(): BelongsTo
