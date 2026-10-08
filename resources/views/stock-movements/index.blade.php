@@ -1182,23 +1182,18 @@
            RESPONSIVE 1100px
         ========================================================= */
 
-        @media (max-width: 1100px) {
+@media (max-width: 1550px) {
+    .filter-form {
+        grid-template-columns: 1.5fr 1fr 1fr 1fr auto;
+        gap: 12px;
+    }
 
-            .filter-form {
-
-                grid-template-columns:
-                    1fr 1fr;
-            }
-
-            .filter-actions {
-
-                grid-column: span 2;
-
-                justify-content: flex-end;
-            }
-
-        }
-
+    .filter-actions {
+        grid-column: auto;
+        display: flex;
+        gap: 8px;
+    }
+}
 
         /* =========================================================
            RESPONSIVE 768px
