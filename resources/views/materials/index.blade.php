@@ -1115,7 +1115,7 @@ table.data-table tbody tr.row-selected {
                             Import Excel
                         </a>
 
-                        <a href="{{ route('materials.export', request()->query()) }}" class="btn btn-outline">
+                        <a href="{{ route('materials.export', array_merge(['per_page' => $perPage], request()->query())) }}" class="btn btn-outline">
                             <span class="material-symbols-outlined" style="font-size:19px;">download</span>
                             Export Excel
                         </a>

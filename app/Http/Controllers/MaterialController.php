@@ -308,6 +308,8 @@ class MaterialController extends Controller
         $search    = trim($request->input('search', ''));
         $startDate = $request->input('start_date');
         $endDate   = $request->input('end_date');
+        $perPage   = $request->input('per_page', 25);
+        $page      = $request->input('page', 1);
 
         $filename = 'Data_Material_ATK_PLN_' . date('Ymd_His') . '.xlsx';
 
@@ -315,7 +317,9 @@ class MaterialController extends Controller
             new MaterialsExport(
                 $search,
                 $startDate,
-                $endDate
+                $endDate,
+                $perPage,
+                $page
             ),
             $filename
         );

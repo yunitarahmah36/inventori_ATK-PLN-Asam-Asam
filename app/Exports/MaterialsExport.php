@@ -18,15 +18,21 @@ class MaterialsExport implements FromCollection, WithStyles, WithColumnWidths, W
     protected $search;
     protected $startDate;
     protected $endDate;
+    protected $perPage;
+    protected $page;
 
     public function __construct(
         $search = null,
         $startDate = null,
-        $endDate = null
+        $endDate = null,
+        $perPage = null,
+        $page = null
     ) {
         $this->search = $search;
         $this->startDate = $startDate;
         $this->endDate = $endDate;
+        $this->perPage = $perPage;
+        $this->page = $page;
     }
 
     /**
@@ -69,10 +75,21 @@ class MaterialsExport implements FromCollection, WithStyles, WithColumnWidths, W
             );
         }
 
-        $materials = $query
-            ->latest('entry_date')
-            ->latest('id')
-            ->get();
+        $query->latest('entry_date')->latest('id');
+
+        $startNumber = 1;
+
+        if ($this->perPage === 'all' || $this->perPage === 'Semua') {
+            $materials = $query->get();
+        } else {
+            $perPageValue = in_array((int) $this->perPage, [10, 25, 50, 100, 250])
+                ? (int) $this->perPage
+                : 25;
+            $pageValue = max((int) ($this->page ?? 1), 1);
+
+            $materials = $query->forPage($pageValue, $perPageValue)->get();
+            $startNumber = (($pageValue - 1) * $perPageValue) + 1;
+        }
 
         $data = collect();
 
@@ -181,7 +198,7 @@ class MaterialsExport implements FromCollection, WithStyles, WithColumnWidths, W
         foreach ($materials as $index => $mat) {
 
             $data->push([
-                $index + 1,
+                $startNumber + $index,
                 $mat->material_number,
                 $mat->name,
                 $mat->entry_date
