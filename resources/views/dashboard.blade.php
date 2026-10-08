@@ -1401,18 +1401,12 @@
                                                 <span class="material-symbols-outlined">{{ $isCritical ? 'error' : 'warning' }}</span>
                                                 <span>{{ $isCritical ? 'Stok Kritis' : 'Stok Menipis' }}</span>
                                                 <span class="material-date-ago">
-                                                    • Masuk: {{ $mat->entry_date ? $mat->entry_date->format('d/m/Y') : '-' }}
-                                                    @if ($mat->entry_date)
-                                                        ({{ $mat->entry_date->diffForHumans() }})
-                                                    @endif
+                                                    • Masuk: {{ $mat->entry_date ? $mat->entry_date->translatedFormat('j M Y') : '-' }}
                                                 </span>
                                             </div>
                                         @else
                                             <div class="material-date">
-                                                Masuk: {{ $mat->entry_date ? $mat->entry_date->format('d/m/Y') : '-' }}
-                                                @if ($mat->entry_date)
-                                                    <span class="material-date-ago">({{ $mat->entry_date->diffForHumans() }})</span>
-                                                @endif
+                                                Masuk: {{ $mat->entry_date ? $mat->entry_date->translatedFormat('j M Y') : '-' }}
                                             </div>
                                         @endif
                                     </div>
