@@ -159,6 +159,13 @@
             display: flex;
             align-items: center;
             gap: 10px;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 40px;
+            transition: background var(--transition), transform var(--transition);
+        }
+        .topbar-user:hover {
+            background: #F1F5F9;
         }
 
         .topbar-avatar {
@@ -974,7 +981,7 @@
                 </div>
 
                 <!-- Profile: Dinamis sesuai user yang sedang login -->
-                <div class="topbar-user">
+                <a href="{{ route('profile.show') }}" class="topbar-user" title="Buka Profil Pengguna" data-spa-link>
                     <div class="topbar-user-detail">
                         <div class="topbar-user-name">{{ Auth::user()->name }}</div>
                         <div class="topbar-user-email">{{ Auth::user()->email }}</div>
@@ -983,7 +990,7 @@
                     <div class="topbar-avatar">
                         {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
                     </div>
-                </div>
+                </a>
 
             </header>
 

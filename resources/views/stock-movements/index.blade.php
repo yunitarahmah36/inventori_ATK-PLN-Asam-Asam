@@ -178,6 +178,13 @@
             display: flex;
             align-items: center;
             gap: 12px;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 40px;
+            transition: background var(--transition);
+        }
+        .topbar-user:hover {
+            background: #F1F5F9;
         }
 
         .topbar-user-detail {
@@ -965,7 +972,7 @@
 
 
                 {{-- USER TOPBAR --}}
-                <div class="topbar-user">
+                <a href="{{ route('profile.show') }}" class="topbar-user" title="Buka Profil Pengguna" data-spa-link>
 
                     <div class="topbar-user-detail">
 
@@ -987,7 +994,7 @@
                         {{ strtoupper(substr(Auth::user()->name ?? 'U', 0, 1)) }}
                     </div>
 
-                </div>
+                </a>
 
             </header>
 

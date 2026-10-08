@@ -32,7 +32,7 @@
     </div>
 
     <!-- User Profile Card -->
-    <div class="sidebar-user">
+    <a href="{{ route('profile.show') }}" class="sidebar-user" title="Buka Profil Pengguna" data-spa-link>
         <div class="sidebar-avatar">
             {{ strtoupper(substr(Auth::user()->name ?? 'U', 0, 1)) }}
         </div>
@@ -44,7 +44,7 @@
                 {{ Auth::user()->role ?? 'User' }}
             </div>
         </div>
-    </div>
+    </a>
 
     <!-- Navigation Menu -->
     <nav class="sidebar-nav">
@@ -84,9 +84,9 @@
         <div class="nav-section-title" style="margin-top:10px;">Akun</div>
 
         <!-- Profile -->
-        <a href="javascript:void(0)" 
+        <a href="{{ route('profile.show') }}" 
            class="nav-item {{ request()->routeIs('profile.*') ? 'active' : '' }}" 
-           onclick="showSidebarToast('Fitur Profile sedang dikembangkan.')">
+           data-spa-link>
             <span class="material-symbols-outlined">account_circle</span>
             <span>Profile</span>
         </a>
@@ -94,9 +94,10 @@
 
     <!-- Logout -->
     <div class="sidebar-footer">
-        <form action="{{ route('logout') }}" method="POST" style="margin:0;">
+        <form action="{{ route('logout') }}" method="POST" style="margin:0;" id="logoutForm">
             @csrf
-            <button type="submit" class="btn-logout" title="Keluar dari akun">
+            <button type="button" class="btn-logout" title="Keluar dari akun"
+                    onclick="openLogoutModal()">
                 <span class="material-symbols-outlined">logout</span>
                 <span>Keluar (Logout)</span>
             </button>
@@ -109,6 +110,26 @@
 <div id="sidebarToast" class="sidebar-toast" role="alert" aria-live="polite">
     <span class="material-symbols-outlined sidebar-toast-icon">info</span>
     <span id="sidebarToastMsg" class="sidebar-toast-msg"></span>
+</div>
+
+{{-- Popup Konfirmasi Logout --}}
+<div id="logoutModal" class="logout-modal" role="dialog" aria-modal="true" aria-labelledby="logoutModalTitle">
+    <div class="logout-modal-box">
+        <div class="logout-modal-icon">
+            <span class="material-symbols-outlined">logout</span>
+        </div>
+        <h3 id="logoutModalTitle">Keluar dari Akun?</h3>
+        <p>Anda akan keluar dari sistem. Pastikan semua pekerjaan sudah tersimpan sebelum melanjutkan.</p>
+        <div class="logout-modal-actions">
+            <button type="button" class="logout-modal-cancel" onclick="closeLogoutModal()">
+                Batal
+            </button>
+            <button type="button" class="logout-modal-confirm" onclick="document.getElementById('logoutForm').submit()">
+                <span class="material-symbols-outlined" style="font-size:17px;">logout</span>
+                Ya, Keluar
+            </button>
+        </div>
+    </div>
 </div>
 
 {{-- CSS Terpusat & Anti-Ngesot / Anti-Patah --}}
@@ -299,6 +320,13 @@
         display: flex;
         align-items: center;
         gap: 11px;
+        text-decoration: none;
+        color: inherit;
+        transition: background 0.15s ease;
+        cursor: pointer;
+    }
+    .sidebar-user:hover {
+        background: rgba(255, 255, 255, 0.14);
     }
 
     .sidebar-avatar {
@@ -493,6 +521,125 @@
         flex-shrink: 0;
     }
 
+    /* ============================================================
+       POPUP KONFIRMASI LOGOUT
+    ============================================================ */
+    .logout-modal {
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.52);
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 999999;
+        padding: 20px;
+    }
+
+    .logout-modal.show {
+        display: flex;
+        animation: logoutModalFadeIn 0.18s ease-out;
+    }
+
+    @keyframes logoutModalFadeIn {
+        from { opacity: 0; }
+        to   { opacity: 1; }
+    }
+
+    .logout-modal-box {
+        width: 100%;
+        max-width: 380px;
+        background: #fff;
+        border-radius: 16px;
+        padding: 30px 26px 24px;
+        box-shadow: 0 24px 60px rgba(0, 0, 0, 0.22);
+        text-align: center;
+        animation: logoutBoxIn 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes logoutBoxIn {
+        from { opacity: 0; transform: scale(0.94) translateY(10px); }
+        to   { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    .logout-modal-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: #FEE2E2;
+        color: #DC2626;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 16px;
+    }
+
+    .logout-modal-icon .material-symbols-outlined {
+        font-size: 28px;
+    }
+
+    .logout-modal-box h3 {
+        font-size: 18px;
+        font-weight: 800;
+        color: #1F2937;
+        margin: 0 0 8px;
+    }
+
+    .logout-modal-box p {
+        font-size: 13px;
+        color: #6B7280;
+        line-height: 1.6;
+        margin: 0 0 22px;
+    }
+
+    .logout-modal-actions {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+    }
+
+    .logout-modal-cancel {
+        flex: 1;
+        height: 40px;
+        border-radius: 9px;
+        border: 1px solid #E5E7EB;
+        background: #F9FAFB;
+        color: #374151;
+        font-size: 13.5px;
+        font-weight: 600;
+        cursor: pointer;
+        font-family: inherit;
+        transition: background 0.15s ease, border-color 0.15s ease;
+    }
+
+    .logout-modal-cancel:hover {
+        background: #F1F5F9;
+        border-color: #CBD5E1;
+    }
+
+    .logout-modal-confirm {
+        flex: 1;
+        height: 40px;
+        border-radius: 9px;
+        border: none;
+        background: #DC2626;
+        color: #fff;
+        font-size: 13.5px;
+        font-weight: 700;
+        cursor: pointer;
+        font-family: inherit;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        transition: background 0.15s ease;
+    }
+
+    .logout-modal-confirm:hover {
+        background: #B91C1C;
+    }
+
     /* Transisi Halus Konten Utama (SPA) */
     .main {
         transition: opacity 0.08s ease-in-out;
@@ -537,8 +684,34 @@
         document.body.style.overflow = '';
     };
 
+    // --- Logout Modal ---
+    window.openLogoutModal = function () {
+        const m = document.getElementById('logoutModal');
+        if (m) {
+            m.classList.add('show');
+            document.body.style.overflow = 'hidden';
+        }
+    };
+
+    window.closeLogoutModal = function () {
+        const m = document.getElementById('logoutModal');
+        if (m) {
+            m.classList.remove('show');
+            document.body.style.overflow = '';
+        }
+    };
+
+    // Klik di luar kotak modal logout untuk tutup
+    document.addEventListener('click', function (e) {
+        const m = document.getElementById('logoutModal');
+        if (m && m.classList.contains('show') && e.target === m) {
+            window.closeLogoutModal();
+        }
+    });
+
     document.addEventListener('keydown', function (e) {
         if (e.key === 'Escape') {
+            window.closeLogoutModal();
             window.closeSidebar();
         }
     });
@@ -768,6 +941,8 @@ updateSidebarActiveMenu(url);
                         isActive = true;
                     } else if ((itemUrl.pathname === '/stock-history' || itemUrl.pathname.startsWith('/stock-movements')) && (path === '/stock-history' || path.startsWith('/stock-movements'))) {
                         isActive = true;
+                    } else if (itemUrl.pathname === '/profile' && path.startsWith('/profile')) {
+                        isActive = true;
                     }
 
                     if (isActive) {
@@ -791,7 +966,7 @@ updateSidebarActiveMenu(url);
             // File export download jangan di-swap
             if (url.pathname.includes('/export')) return false;
             // Hanya rute internal aplikasi
-            const validPrefixes = ['/dashboard', '/materials', '/stock-history', '/stock-movements'];
+            const validPrefixes = ['/dashboard', '/materials', '/stock-history', '/stock-movements', '/profile'];
             return validPrefixes.some(prefix => url.pathname.startsWith(prefix));
         } catch (e) {
             return false;

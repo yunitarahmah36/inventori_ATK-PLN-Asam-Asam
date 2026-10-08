@@ -145,6 +145,13 @@
             display: flex;
             align-items: center;
             gap: 12px;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 40px;
+            transition: background var(--transition);
+        }
+        .topbar-user:hover {
+            background: #F1F5F9;
         }
 
         .topbar-user-detail {
@@ -1009,7 +1016,7 @@ table.data-table tbody tr.row-selected {
                     </div>
                 </div>
 
-                <div class="topbar-user">
+                <a href="{{ route('profile.show') }}" class="topbar-user" title="Buka Profil Pengguna" data-spa-link>
                     <div class="topbar-user-detail">
                         <div class="topbar-user-name">{{ Auth::user()->name }}</div>
                         <div class="topbar-user-email">{{ Auth::user()->email }}</div>
@@ -1018,7 +1025,7 @@ table.data-table tbody tr.row-selected {
                     <div class="topbar-avatar">
                         {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
                     </div>
-                </div>
+                </a>
             </header>
 
             <div class="page-content">
