@@ -1477,7 +1477,7 @@
                                                     <strong>{{ $act->user->name ?? 'Pengguna' }}</strong>
                                                     {{ $verb }}
                                                     <strong
-                                                        style="color:var(--text-dark);">{{ $act->material->name ?? 'Material' }}</strong>
+                                                        style="color:var(--text-dark);">{{ $act->material->name ?? ($act->material_name ?? 'Material') }}</strong>
                                                     @if (!empty($act->description))
                                                         <div
                                                             style="color:var(--text-muted);font-size:11.5px;margin-top:2px;">

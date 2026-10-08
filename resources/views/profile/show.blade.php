@@ -1561,15 +1561,22 @@
                                         $typeClass = 'penyesuaian';
                                         $prefix = '';
 
-                                        if (str_contains($act, 'masuk')) {
+                                        if (str_contains($act, 'masuk') || str_contains($act, 'tambah')) {
                                             $icon = 'arrow_downward';
                                             $typeClass = 'masuk';
                                             $prefix = '+';
-                                        } elseif (str_contains($act, 'keluar')) {
+                                        } elseif (str_contains($act, 'keluar') || str_contains($act, 'kurang')) {
                                             $icon = 'arrow_upward';
                                             $typeClass = 'keluar';
                                             $prefix = '-';
+                                        } elseif (str_contains($act, 'hapus')) {
+                                            $icon = 'delete';
+                                            $typeClass = 'keluar';
+                                            $prefix = '';
                                         }
+
+                                        $materialDisplayName = $mv->material->name ?? ($mv->material_name ?? ($mv->material_id ? 'Material #' . $mv->material_id : 'Material Dihapus'));
+                                        $materialNumber = $mv->material->material_number ?? ($mv->material_number ?? null);
                                     @endphp
 
                                     <div class="activity-item">
@@ -1578,8 +1585,11 @@
                                                 <span class="material-symbols-outlined">{{ $icon }}</span>
                                             </div>
                                             <div class="activity-details">
-                                                <div class="activity-material-name" title="{{ $mv->material->name ?? 'Material Dihapus' }}">
-                                                    {{ $mv->material->name ?? 'Material #' . $mv->material_id }}
+                                                <div class="activity-material-name" title="{{ $materialDisplayName }}">
+                                                    {{ $materialDisplayName }}
+                                                    @if ($materialNumber)
+                                                        <span style="font-size:12px;font-weight:500;color:var(--text-muted);margin-left:4px;">({{ $materialNumber }})</span>
+                                                    @endif
                                                 </div>
                                                 <div class="activity-sub">
                                                     <span style="font-weight:700;text-transform:uppercase;">{{ $mv->activity }}</span>
@@ -1591,7 +1601,12 @@
 
                                         <div class="activity-right">
                                             <div class="activity-qty {{ $typeClass }}">
-                                                {{ $prefix }}{{ number_format($mv->quantity_change) }} {{ $mv->material->unit ?? 'Item' }}
+                                                @if ((int) $mv->quantity_change > 0)
+                                                    +{{ number_format($mv->quantity_change) }}
+                                                @else
+                                                    {{ number_format($mv->quantity_change) }}
+                                                @endif
+                                                {{ $mv->material->unit ?? 'Item' }}
                                             </div>
                                             <div class="activity-time">
                                                 {{ $mv->created_at ? $mv->created_at->diffForHumans() : '-' }}

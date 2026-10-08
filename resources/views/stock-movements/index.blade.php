@@ -283,6 +283,8 @@
         .page-content {
             padding: 24px 28px 60px;
             flex: 1;
+            min-width: 0;
+            width: 100%;
         }
 
 
@@ -1190,6 +1192,18 @@
 
     .filter-actions {
         grid-column: auto;
+        display: flex;
+        gap: 8px;
+    }
+}
+
+@media (max-width: 1100px) {
+    .filter-form {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .filter-actions {
+        grid-column: span 2;
         display: flex;
         gap: 8px;
     }
