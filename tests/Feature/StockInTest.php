@@ -508,4 +508,172 @@ class StockInTest extends TestCase
         $responseAll->assertStatus(200);
         $responseAll->assertSee('Menampilkan <strong>1–30</strong> dari <strong>30</strong> transaksi', false);
     }
+
+    public function test_download_stock_in_template_returns_excel_with_headers_only(): void
+    {
+        $user = $this->createUser('Admin');
+
+        $response = $this->actingAs($user)->get(route('materials.stock-in.template'));
+
+        $response->assertStatus(200);
+        $this->assertTrue(
+            str_contains($response->headers->get('content-disposition') ?? '', 'template-stok-masuk-atk.xlsx')
+        );
+
+        $export = new \App\Exports\StockInTemplateExport();
+        $arrayData = $export->array();
+
+        // Hanya 1 baris (hanya header kolom, tanpa baris data contoh)
+        $this->assertCount(1, $arrayData);
+        $this->assertEquals([
+            'No Material',
+            'Nama Material',
+            'Tanggal Masuk',
+            'Jumlah Masuk',
+            'Keterangan',
+        ], $arrayData[0]);
+
+        // Pastikan kolom C diformat sebagai dd/mm/yyyy
+        $columnFormats = $export->columnFormats();
+        $this->assertEquals('dd/mm/yyyy', $columnFormats['C']);
+        $this->assertEquals('0', $columnFormats['D']);
+    }
+
+    public function test_manual_stock_in_persists_custom_entry_date_to_movement_and_displays_on_page(): void
+    {
+        $user = $this->createUser('Admin');
+
+        $material = Material::create([
+            'material_number' => 'MAT005',
+            'name'            => 'Buku Catatan Ekspedisi',
+            'entry_date'      => '2026-01-01',
+            'quantity'        => 5,
+            'unit'            => 'Buku',
+        ]);
+
+        $customDate = '2026-05-15';
+
+        $response = $this->actingAs($user)->post(route('materials.stock-in.store'), [
+            'material_id' => $material->id,
+            'quantity'    => 20,
+            'entry_date'  => $customDate,
+            'description' => 'Penerimaan Buku Catatan Periode Mei',
+        ]);
+
+        $response->assertRedirect(route('materials.stock-in.index'));
+
+        // Cek pergerakan stok: created_at harus menyimpan tanggal 2026-05-15
+        $movement = StockMovement::where('material_id', $material->id)
+            ->where('activity', 'Tambah')
+            ->first();
+
+        $this->assertNotNull($movement);
+        $this->assertEquals('2026-05-15', $movement->created_at->format('Y-m-d'));
+
+        // Material juga harus terupdate tanggal masuknya
+        $material->refresh();
+        $this->assertEquals('2026-05-15', $material->entry_date->format('Y-m-d'));
+
+        // Halaman Stok Masuk harus menampilkan tanggal yang diinput (15 Mei 2026)
+        $pageResponse = $this->actingAs($user)->get(route('materials.stock-in.index'));
+        $pageResponse->assertStatus(200);
+        $pageResponse->assertSee('15 Mei 2026');
+    }
+
+    public function test_import_excel_stock_in_supports_dd_mm_yyyy_format_and_persists_entry_date(): void
+    {
+        $user = $this->createUser('Admin');
+
+        $mat = Material::create([
+            'material_number' => 'MAT006',
+            'name'            => 'Kertas Buffalo Kuning',
+            'entry_date'      => '2026-01-01',
+            'quantity'        => 10,
+            'unit'            => 'Rim',
+        ]);
+
+        $rows = collect([
+            [
+                'no_material'   => 'MAT006',
+                'nama_material' => 'Kertas Buffalo Kuning',
+                'tanggal_masuk' => '25/08/2026', // Format DD/MM/YYYY
+                'jumlah_masuk'  => 30,
+                'keterangan'    => 'Pengadaan Kertas Agustus',
+            ],
+        ]);
+
+        $this->actingAs($user);
+        $importer = new StockInImport();
+        $importer->collection($rows);
+
+        $movement = StockMovement::where('material_id', $mat->id)
+            ->where('activity', 'Tambah')
+            ->first();
+
+        $this->assertNotNull($movement);
+        $this->assertEquals('2026-08-25', $movement->created_at->format('Y-m-d'));
+
+        $mat->refresh();
+        $this->assertEquals('2026-08-25', $mat->entry_date->format('Y-m-d'));
+        $this->assertEquals(40, $mat->quantity);
+
+        // Halaman Stok Masuk menampilkan tanggal 25 Agt 2026
+        $pageResponse = $this->actingAs($user)->get(route('materials.stock-in.index'));
+        $pageResponse->assertStatus(200);
+        $pageResponse->assertSee('25 Agt 2026');
+    }
+
+    public function test_import_excel_stock_in_validates_required_and_invalid_date_format(): void
+    {
+        $user = $this->createUser('Admin');
+
+        Material::create([
+            'material_number' => 'MAT007',
+            'name'            => 'Tinta Stempel',
+            'entry_date'      => '2026-01-01',
+            'quantity'        => 10,
+            'unit'            => 'Botol',
+        ]);
+
+        // Uji jika tanggal kosong
+        $rowsEmptyDate = collect([
+            [
+                'no_material'   => 'MAT007',
+                'nama_material' => 'Tinta Stempel',
+                'tanggal_masuk' => '',
+                'jumlah_masuk'  => 5,
+                'keterangan'    => 'Test',
+            ],
+        ]);
+
+        $this->actingAs($user);
+        $importer = new StockInImport();
+
+        try {
+            $importer->collection($rowsEmptyDate);
+            $this->fail('Harusnya gagal karena tanggal masuk kosong');
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            $this->assertArrayHasKey('import_errors', $e->errors());
+            $this->assertTrue(str_contains($e->errors()['import_errors'][0], 'Kolom Tanggal Masuk wajib diisi'));
+        }
+
+        // Uji jika format tanggal ngawur / tidak valid
+        $rowsInvalidDate = collect([
+            [
+                'no_material'   => 'MAT007',
+                'nama_material' => 'Tinta Stempel',
+                'tanggal_masuk' => '99/99/9999',
+                'jumlah_masuk'  => 5,
+                'keterangan'    => 'Test',
+            ],
+        ]);
+
+        try {
+            $importer->collection($rowsInvalidDate);
+            $this->fail('Harusnya gagal karena format tanggal tidak valid');
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            $this->assertArrayHasKey('import_errors', $e->errors());
+            $this->assertTrue(str_contains($e->errors()['import_errors'][0], 'Format tanggal tidak dikenali'));
+        }
+    }
 }

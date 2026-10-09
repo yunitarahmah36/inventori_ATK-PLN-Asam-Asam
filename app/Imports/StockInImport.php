@@ -55,25 +55,56 @@ class StockInImport implements ToCollection, WithHeadingRow, SkipsEmptyRows
     }
 
     /**
-     * Parse tanggal dari format Excel (serial number atau text string).
+     * Konversi tanggal Excel menjadi format database (Y-m-d).
+     * Mendukung serial number Excel, d/m/Y, m/d/Y, d-m-Y, Y-m-d, dan strtotime.
      */
-    private function parseDate($dateValue): ?string
+    public static function convertDate($date): ?string
     {
-        if (empty($dateValue)) {
+        if (empty($date)) {
             return null;
         }
 
-        if (is_numeric($dateValue)) {
+        if (is_numeric($date)) {
             try {
-                return Date::excelToDateTimeObject($dateValue)->format('Y-m-d');
-            } catch (\Exception $e) {}
+                return Date::excelToDateTimeObject($date)->format('Y-m-d');
+            } catch (\Exception $e) {
+                return null;
+            }
         }
 
-        try {
-            return Carbon::parse($dateValue)->format('Y-m-d');
-        } catch (\Exception $e) {
-            return null;
+        $date = trim((string) $date);
+
+        // Format DD/MM/YYYY
+        $dateObject = \DateTime::createFromFormat('d/m/Y', $date);
+        if ($dateObject && $dateObject->format('d/m/Y') === $date) {
+            return $dateObject->format('Y-m-d');
         }
+
+        // Format MM/DD/YYYY
+        $dateObject = \DateTime::createFromFormat('m/d/Y', $date);
+        if ($dateObject && $dateObject->format('m/d/Y') === $date) {
+            return $dateObject->format('Y-m-d');
+        }
+
+        // Format DD-MM-YYYY
+        $dateObject = \DateTime::createFromFormat('d-m-Y', $date);
+        if ($dateObject && $dateObject->format('d-m-Y') === $date) {
+            return $dateObject->format('Y-m-d');
+        }
+
+        // Format YYYY-MM-DD
+        $dateObject = \DateTime::createFromFormat('Y-m-d', $date);
+        if ($dateObject && $dateObject->format('Y-m-d') === $date) {
+            return $dateObject->format('Y-m-d');
+        }
+
+        // Fallback strtotime
+        $ts = strtotime($date);
+        if ($ts !== false) {
+            return date('Y-m-d', $ts);
+        }
+
+        return null;
     }
 
     /**
@@ -178,12 +209,24 @@ class StockInImport implements ToCollection, WithHeadingRow, SkipsEmptyRows
                 $rowHasFieldError = true;
             }
 
+            // Validasi Tanggal Masuk
+            $parsedDate = null;
+            if ($dateRaw === null || trim((string) $dateRaw) === '') {
+                $errors[] = "Baris {$rowNumber}: Kolom Tanggal Masuk wajib diisi.";
+                $rowHasFieldError = true;
+            } else {
+                $parsedDate = self::convertDate($dateRaw);
+                if ($parsedDate === null) {
+                    $errors[] = "Baris {$rowNumber}: Format tanggal tidak dikenali. Gunakan format DD/MM/YYYY (contoh: 01/07/2026).";
+                    $rowHasFieldError = true;
+                }
+            }
+
             if ($rowHasFieldError) {
                 continue;
             }
 
             $qtyInt = (int) $qtyRaw;
-            $parsedDate = $this->parseDate($dateRaw) ?: $now->format('Y-m-d');
 
             // 2. Validasi No. Material dan Nama Material Sekaligus Berdasarkan Data Master
             $normNo   = self::normalizeNumber($noMaterial);
@@ -255,9 +298,10 @@ class StockInImport implements ToCollection, WithHeadingRow, SkipsEmptyRows
                 $qtyIn     = (int) $item['quantity'];
                 $qtyAfter  = $qtyBefore + $qtyIn;
 
-                // Update kuantitas stok material
+                // Update kuantitas stok material dan perbarui tanggal masuk
                 $lockedMaterial->update([
-                    'quantity' => $qtyAfter,
+                    'quantity'   => $qtyAfter,
+                    'entry_date' => $item['entry_date'] ?: $lockedMaterial->entry_date,
                 ]);
 
                 // Tanggal dan waktu pergerakan stok masuk
@@ -267,8 +311,8 @@ class StockInImport implements ToCollection, WithHeadingRow, SkipsEmptyRows
                     $now->second
                 );
 
-                // Catat ke Riwayat Pergerakan Material
-                StockMovement::create([
+                // Catat ke Riwayat Pergerakan Material dengan tanggal transaksi yang valid
+                $movement = new StockMovement([
                     'material_id'     => $lockedMaterial->id,
                     'material_name'   => $lockedMaterial->name,
                     'material_number' => $lockedMaterial->material_number,
@@ -278,8 +322,9 @@ class StockInImport implements ToCollection, WithHeadingRow, SkipsEmptyRows
                     'quantity_after'  => $qtyAfter,
                     'quantity_change' => $qtyIn,
                     'description'     => $item['description'],
-                    'created_at'      => $entryDateTime,
                 ]);
+                $movement->created_at = $entryDateTime;
+                $movement->save();
 
                 $affectedMaterialIds[$lockedMaterial->id] = true;
                 $this->processedRowsCount++;

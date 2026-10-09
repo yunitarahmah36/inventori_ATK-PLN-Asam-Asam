@@ -1089,12 +1089,12 @@
                     </div>
 
                     <div class="date-input-group">
-                        <label for="startDate">Dari:</label>
+                        <label for="startDate">Mulai:</label>
                         <input type="date" id="startDate" name="start_date" value="{{ $startDate }}">
                     </div>
 
                     <div class="date-input-group">
-                        <label for="endDate">Sampai:</label>
+                        <label for="endDate">Selesai:</label>
                         <input type="date" id="endDate" name="end_date" value="{{ $endDate }}">
                     </div>
 
@@ -1122,10 +1122,10 @@
                                     <th style="width: 50px;">No</th>
                                     <th style="width: 140px;">No Material</th>
                                     <th>Nama Material</th>
+                                    <th style="width: 140px;">Tanggal Masuk</th>
                                     <th style="width: 130px;">Jumlah Masuk</th>
                                     <th style="width: 90px;">Satuan</th>
                                     <th>Keterangan / Sumber</th>
-                                    <th style="width: 130px;">Tanggal Masuk</th>
                                     <th style="width: 140px;">Dicatat Oleh</th>
                                 </tr>
                             </thead>
@@ -1143,6 +1143,9 @@
                                             {{ $item->material_name ?: ($item->material->name ?? '-') }}
                                         </td>
                                         <td>
+                                            {{ ($item->material && $item->material->entry_date && ($item->quantity_before == 0 || str_contains($item->description ?? '', 'Penambahan material baru') || str_contains($item->description ?? '', 'Import'))) ? $item->material->entry_date->translatedFormat('j M Y') : ($item->created_at ? $item->created_at->translatedFormat('j M Y') : ($item->material && $item->material->entry_date ? $item->material->entry_date->translatedFormat('j M Y') : '-')) }}
+                                        </td>
+                                        <td>
                                             <span class="qty-badge-in">
                                                 <span class="material-symbols-outlined" style="font-size:15px;">add</span>
                                                 {{ number_format(abs($item->quantity_change), 0, ',', '.') }}
@@ -1153,9 +1156,6 @@
                                         </td>
                                         <td style="color:var(--text-mid); font-size: 12.5px;">
                                             {{ $item->description ?: '-' }}
-                                        </td>
-                                        <td>
-                                            {{ $item->created_at ? $item->created_at->translatedFormat('j M Y') : '-' }}
                                         </td>
                                         <td>
                                             <div style="font-weight:600; font-size:12.5px;">{{ $item->user->name ?? '-' }}</div>

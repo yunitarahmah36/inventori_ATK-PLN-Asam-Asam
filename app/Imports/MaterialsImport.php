@@ -211,7 +211,7 @@ class MaterialsImport implements
                         'entry_date' => $entryDate && $entryDate > $material->entry_date ? $entryDate : $material->entry_date,
                     ]);
 
-                    StockMovement::create([
+                    $movement = new StockMovement([
                         'material_id'     => $material->id,
                         'material_name'   => $material->name,
                         'material_number' => $material->material_number,
@@ -222,6 +222,8 @@ class MaterialsImport implements
                         'quantity_change' => $quantity,
                         'description'     => $desc ?: 'Import data via Excel (penambahan stok material)',
                     ]);
+                    $movement->created_at = $entryDate ? \Carbon\Carbon::parse($entryDate)->setTime(now()->hour, now()->minute, now()->second) : now();
+                    $movement->save();
                 } else {
                     // Buat data material baru
                     $material = Material::create([
@@ -234,7 +236,7 @@ class MaterialsImport implements
                         'created_by'      => Auth::id(),
                     ]);
 
-                    StockMovement::create([
+                    $movement = new StockMovement([
                         'material_id'     => $material->id,
                         'material_name'   => $material->name,
                         'material_number' => $material->material_number,
@@ -245,6 +247,8 @@ class MaterialsImport implements
                         'quantity_change' => $quantity,
                         'description'     => $desc ?: 'Import data via Excel',
                     ]);
+                    $movement->created_at = $entryDate ? \Carbon\Carbon::parse($entryDate)->setTime(now()->hour, now()->minute, now()->second) : now();
+                    $movement->save();
                 }
             }
         });

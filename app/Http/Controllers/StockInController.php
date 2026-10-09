@@ -123,11 +123,6 @@ class StockInController extends Controller
                 $qtyBefore = (int) $material->quantity;
                 $qtyAfter  = $qtyBefore + $qtyIn;
 
-                // Update kuantitas stok material
-                $material->update([
-                    'quantity' => $qtyAfter,
-                ]);
-
                 // Tanggal dan waktu pergerakan stok
                 $entryDateTime = Carbon::parse($validated['entry_date'])->setTime(
                     now()->hour,
@@ -135,8 +130,14 @@ class StockInController extends Controller
                     now()->second
                 );
 
-                // Catat ke Riwayat Pergerakan Material
-                StockMovement::create([
+                // Update kuantitas stok material dan perbarui tanggal masuk
+                $material->update([
+                    'quantity'   => $qtyAfter,
+                    'entry_date' => $validated['entry_date'],
+                ]);
+
+                // Catat ke Riwayat Pergerakan Material dengan tanggal pergerakan yang valid
+                $movement = new StockMovement([
                     'material_id'     => $material->id,
                     'material_name'   => $material->name,
                     'material_number' => $material->material_number,
@@ -146,8 +147,9 @@ class StockInController extends Controller
                     'quantity_after'  => $qtyAfter,
                     'quantity_change' => $qtyIn,
                     'description'     => trim($validated['description']),
-                    'created_at'      => $entryDateTime,
                 ]);
+                $movement->created_at = $entryDateTime;
+                $movement->save();
             });
 
             $materialName = Material::find($validated['material_id'])->name ?? 'Material';

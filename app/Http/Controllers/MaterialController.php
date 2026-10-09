@@ -226,7 +226,7 @@ class MaterialController extends Controller
         ]);
 
         // Catat riwayat aktivitas stok
-        StockMovement::create([
+        $movement = new StockMovement([
             'material_id'     => $material->id,
             'material_name'   => $material->name,
             'material_number' => $material->material_number,
@@ -238,6 +238,8 @@ class MaterialController extends Controller
             'description'     => $validated['description']
                 ?: 'Penambahan material baru',
         ]);
+        $movement->created_at = $material->entry_date ? \Carbon\Carbon::parse($material->entry_date)->setTime(now()->hour, now()->minute, now()->second) : now();
+        $movement->save();
 
         return redirect()
             ->route('materials.index')

@@ -20,6 +20,7 @@ class StockMovement extends Model
         'quantity_after',
         'quantity_change',
         'description',
+        'created_at',
     ];
 
     public function material(): BelongsTo
