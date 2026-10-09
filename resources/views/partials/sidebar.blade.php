@@ -58,13 +58,38 @@
             <span>Dashboard</span>
         </a>
 
-        <!-- Data Material -->
-        <a href="{{ route('materials.index') }}" 
-           class="nav-item {{ request()->routeIs('materials.*') ? 'active' : '' }}" 
-           data-spa-link>
-            <span class="material-symbols-outlined">inventory_2</span>
-            <span>Data Material</span>
-        </a>
+        <!-- Data Material (Parent Menu with Submenu) -->
+        <div class="nav-group {{ (request()->routeIs('materials.*') || request()->is('materials*')) ? 'open' : '' }}" id="navGroupMaterials">
+            <button type="button" 
+                    class="nav-item nav-parent {{ (request()->routeIs('materials.*') || request()->is('materials*')) ? 'active-parent' : '' }}" 
+                    id="btnToggleMaterials"
+                    onclick="toggleMaterialSubmenu(event)"
+                    aria-expanded="{{ (request()->routeIs('materials.*') || request()->is('materials*')) ? 'true' : 'false' }}"
+                    title="Buka / Tutup Submenu Data Material">
+                <div class="nav-parent-title">
+                    <span class="material-symbols-outlined">inventory_2</span>
+                    <span>Data Material</span>
+                </div>
+                <span class="material-symbols-outlined nav-arrow">expand_more</span>
+            </button>
+            <div class="nav-submenu" id="materialSubmenu">
+                <!-- Master Data Material -->
+                <a href="{{ route('materials.index') }}" 
+                   class="nav-subitem {{ (request()->routeIs('materials.*') && !request()->routeIs('materials.stock-in.*') && !request()->is('materials/stock-in*')) ? 'active' : '' }}"
+                   data-spa-link>
+                    <span class="material-symbols-outlined">format_list_bulleted</span>
+                    <span>Daftar Material</span>
+                </a>
+
+                <!-- Submenu Stok Masuk -->
+                <a href="{{ route('materials.stock-in.index') }}" 
+                   class="nav-subitem {{ (request()->routeIs('materials.stock-in.*') || request()->is('materials/stock-in*')) ? 'active' : '' }}"
+                   data-spa-link>
+                    <span class="material-symbols-outlined">add_circle</span>
+                    <span>Stok Masuk</span>
+                </a>
+            </div>
+        </div>
 
         <!-- Riwayat Stok -->
         <a href="{{ route('stock-movements.index') }}"
@@ -435,6 +460,115 @@
         color: var(--sidebar-blue);
     }
 
+    /* ============================================================
+       SUBMENU NAVIGATION (DATA MATERIAL -> STOK MASUK)
+    ============================================================ */
+    .nav-group {
+        margin-bottom: 3px;
+    }
+
+    .nav-parent {
+        width: 100%;
+        border: none;
+        background: transparent;
+        font-family: inherit;
+        text-align: left;
+        justify-content: space-between;
+        cursor: pointer;
+        user-select: none;
+    }
+
+    .nav-parent-title {
+        display: flex;
+        align-items: center;
+        gap: 11px;
+    }
+
+    .nav-parent .nav-arrow {
+        font-size: 19px !important;
+        width: 20px !important;
+        height: 20px !important;
+        min-width: 20px !important;
+        min-height: 20px !important;
+        transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        color: rgba(255, 255, 255, 0.6);
+    }
+
+    .nav-group.open .nav-parent .nav-arrow {
+        transform: rotate(180deg);
+        color: rgba(255, 255, 255, 0.95);
+    }
+
+    .nav-item.active-parent {
+        background: rgba(255, 255, 255, 0.12);
+        color: #ffffff;
+        font-weight: 600;
+    }
+
+    .nav-submenu {
+        display: none;
+        flex-direction: column;
+        padding-left: 18px;
+        margin: 2px 0 6px 10px;
+        border-left: 2px solid rgba(255, 255, 255, 0.16);
+        gap: 2px;
+    }
+
+    .nav-group.open .nav-submenu {
+        display: flex;
+        animation: submenuSlideDown 0.18s ease-out;
+    }
+
+    @keyframes submenuSlideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-4px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .nav-subitem {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        padding: 8px 12px;
+        border-radius: 8px;
+        font-size: 12.5px;
+        font-weight: 500;
+        color: rgba(255, 255, 255, 0.76);
+        text-decoration: none;
+        transition: background 0.12s ease, color 0.12s ease;
+        touch-action: manipulation;
+    }
+
+    .nav-subitem .material-symbols-outlined {
+        font-size: 17px !important;
+        width: 18px !important;
+        height: 18px !important;
+        min-width: 18px !important;
+        min-height: 18px !important;
+    }
+
+    .nav-subitem:hover {
+        background: rgba(255, 255, 255, 0.1);
+        color: #ffffff;
+    }
+
+    .nav-subitem.active {
+        background: var(--sidebar-yellow);
+        color: var(--sidebar-blue);
+        font-weight: 700;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+    }
+
+    .nav-subitem.active:hover {
+        background: #f5b700;
+        color: var(--sidebar-blue);
+    }
+
     /* Footer & Logout */
     .sidebar-footer {
         padding: 12px 14px;
@@ -722,6 +856,24 @@
         }
     });
 
+    // --- Submenu Data Material Toggle (Buka/Tutup) ---
+    window.toggleMaterialSubmenu = function (e) {
+        if (e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        const group = document.getElementById('navGroupMaterials');
+        if (!group) return;
+        const isCurrentlyOpen = group.classList.contains('open');
+        if (isCurrentlyOpen) {
+            group.classList.remove('open');
+        } else {
+            group.classList.add('open');
+        }
+        const btn = document.getElementById('btnToggleMaterials');
+        if (btn) btn.setAttribute('aria-expanded', !isCurrentlyOpen);
+    };
+
     // --- Toast Ringan & Cepat ---
     let _sidebarToastTimer = null;
     window.showSidebarToast = function (msg) {
@@ -953,7 +1105,9 @@
         try {
             const targetUrl = new URL(targetUrlStr, window.location.origin);
             const path = targetUrl.pathname;
-            document.querySelectorAll('.sidebar-nav .nav-item').forEach(item => {
+
+            // 1. Menu Utama non-group
+            document.querySelectorAll('.sidebar-nav > .nav-item:not(.nav-parent)').forEach(item => {
                 const href = item.getAttribute('href');
                 if (!href || href.startsWith('javascript') || href === '#') return;
                 try {
@@ -961,8 +1115,6 @@
                     let isActive = false;
 
                     if (itemUrl.pathname === '/dashboard' && path === '/dashboard') {
-                        isActive = true;
-                    } else if (itemUrl.pathname === '/materials' && path.startsWith('/materials')) {
                         isActive = true;
                     } else if ((itemUrl.pathname === '/stock-history' || itemUrl.pathname.startsWith('/stock-movements')) && (path === '/stock-history' || path.startsWith('/stock-movements'))) {
                         isActive = true;
@@ -976,6 +1128,47 @@
                         item.classList.add('active');
                     } else {
                         item.classList.remove('active');
+                    }
+                } catch (e) {}
+            });
+
+            // 2. Data Material Group & Submenu
+            const groupMaterials = document.getElementById('navGroupMaterials');
+            const parentBtn = document.getElementById('btnToggleMaterials');
+            const isStockIn = path.startsWith('/materials/stock-in');
+            const isMaterials = path.startsWith('/materials');
+
+            if (groupMaterials) {
+                if (isMaterials || isStockIn) {
+                    groupMaterials.classList.add('open');
+                    if (parentBtn) {
+                        parentBtn.classList.add('active-parent');
+                        parentBtn.setAttribute('aria-expanded', 'true');
+                    }
+                } else {
+                    if (parentBtn) {
+                        parentBtn.classList.remove('active-parent');
+                    }
+                }
+            }
+
+            // Subitem highlight
+            document.querySelectorAll('.nav-submenu .nav-subitem').forEach(sub => {
+                const href = sub.getAttribute('href');
+                if (!href) return;
+                try {
+                    const subUrl = new URL(href, window.location.origin);
+                    let isSubActive = false;
+                    if (isStockIn && subUrl.pathname.includes('/stock-in')) {
+                        isSubActive = true;
+                    } else if (!isStockIn && isMaterials && !subUrl.pathname.includes('/stock-in')) {
+                        isSubActive = true;
+                    }
+
+                    if (isSubActive) {
+                        sub.classList.add('active');
+                    } else {
+                        sub.classList.remove('active');
                     }
                 } catch (e) {}
             });

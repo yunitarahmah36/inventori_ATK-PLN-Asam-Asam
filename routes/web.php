@@ -6,6 +6,7 @@ use App\Http\Controllers\MaterialAnalysisController;
 use App\Http\Controllers\MaterialController;
 use App\Http\Controllers\PasswordController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\StockInController;
 use App\Http\Controllers\StockMovementController;
 use Illuminate\Support\Facades\Route;
 
@@ -73,6 +74,22 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/materials/{material}/stock-out', [MaterialController::class, 'stockOut'])
         ->name('materials.stock-out');
+
+    // ==========================
+    // STOK MASUK (SUBMENU DATA MATERIAL)
+    // ==========================
+
+    Route::get('/materials/stock-in', [StockInController::class, 'index'])
+        ->name('materials.stock-in.index');
+
+    Route::post('/materials/stock-in', [StockInController::class, 'storeManual'])
+        ->name('materials.stock-in.store');
+
+    Route::get('/materials/stock-in/template', [StockInController::class, 'downloadTemplate'])
+        ->name('materials.stock-in.template');
+
+    Route::post('/materials/stock-in/import', [StockInController::class, 'import'])
+        ->name('materials.stock-in.import');
 
     Route::resource('materials', MaterialController::class);
 

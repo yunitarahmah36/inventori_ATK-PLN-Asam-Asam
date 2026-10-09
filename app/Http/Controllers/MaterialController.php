@@ -31,7 +31,7 @@ class MaterialController extends Controller
         if (!empty($search)) {
             $query->where(function ($q) use ($search) {
                 $q->where('material_number', 'like', "%{$search}%")
-                  ->orWhere('name', 'like', "%{$search}%");
+                    ->orWhere('name', 'like', "%{$search}%");
             });
         }
 
@@ -105,7 +105,21 @@ class MaterialController extends Controller
                 str_pad($nextNum, 3, '0', STR_PAD_LEFT);
         }
 
-        return view('materials.create', compact('suggestedNumber'));
+        $existingMaterials = Material::orderBy('material_number', 'asc')->get();
+
+        $existingMaterialsMap = $existingMaterials->mapWithKeys(function ($em) {
+            return [
+                strtoupper(trim($em->material_number)) => [
+                    'number' => (string) $em->material_number,
+                    'name'   => (string) $em->name,
+                    'unit'   => (string) $em->unit,
+                    'desc'   => (string) ($em->description ?? ''),
+                    'stock'  => (int) $em->quantity,
+                ]
+            ];
+        });
+
+        return view('materials.create', compact('suggestedNumber', 'existingMaterials', 'existingMaterialsMap'));
     }
 
     /**
@@ -268,7 +282,7 @@ class MaterialController extends Controller
             ],
             'name'        => 'required|string|max:255',
             'entry_date'  => 'required|date',
-            'quantity'    => 'nullable',
+            'quantity'    => 'required|integer|min:0',
             'unit'        => 'required|string|max:50',
             'description' => 'nullable|string|max:1000',
         ], [
@@ -276,12 +290,15 @@ class MaterialController extends Controller
             'name.required'            => 'Nama Material wajib diisi.',
             'entry_date.required'      => 'Tanggal Masuk wajib diisi.',
             'entry_date.date'          => 'Format tanggal tidak valid.',
+            'quantity.required'        => 'Jumlah Item wajib diisi.',
+            'quantity.integer'         => 'Jumlah Item harus berupa angka.',
+            'quantity.min'             => 'Jumlah Item tidak boleh bernilai negatif.',
             'unit.required'            => 'Satuan wajib diisi.',
         ]);
 
         $currentQty = (int) $material->quantity;
 
-        // Update informasi material tanpa mengubah kuantitas stok
+        // Update informasi material tanpa mengubah kuantitas stok (stok hanya lewat Stok Masuk & Stok Keluar)
         $material->update([
             'material_number' => $validated['material_number'],
             'name'            => $validated['name'],
@@ -363,7 +380,7 @@ class MaterialController extends Controller
                     'material_id'     => $lockedMaterial->id,
                     'material_name'   => $lockedMaterial->name,
                     'material_number' => $lockedMaterial->material_number,
-                    'user_id'         => Auth::id(),
+                    'user_id'         => Auth::id() ?? 1,
                     'activity'        => 'Keluar',
                     'quantity_before' => $currentQty,
                     'quantity_after'  => $newQty,
@@ -410,7 +427,7 @@ class MaterialController extends Controller
                     'activity'        => 'Hapus',
                     'quantity_before' => (int) $material->quantity,
                     'quantity_after'  => 0,
-                    'quantity_change' => -((int) $material->quantity),
+                    'quantity_change' => - ((int) $material->quantity),
                     'description'     => 'Material dihapus dari sistem',
                 ]);
 
@@ -467,7 +484,7 @@ class MaterialController extends Controller
                         'activity'        => 'Hapus',
                         'quantity_before' => (int) $mat->quantity,
                         'quantity_after'  => 0,
-                        'quantity_change' => -((int) $mat->quantity),
+                        'quantity_change' => - ((int) $mat->quantity),
                         'description'     => 'Material dihapus dari sistem',
                     ]);
 
@@ -521,8 +538,8 @@ class MaterialController extends Controller
     }
 
     /**
- * Proses import data material dari Excel.
- */
+     * Proses import data material dari Excel.
+     */
     public function importForm()
     {
         return view('materials.import');
@@ -557,7 +574,6 @@ class MaterialController extends Controller
                     'success',
                     'Data material berhasil diimport dari Excel.'
                 );
-
         } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
 
             // Ambil error validasi per baris dari Excel
@@ -576,7 +592,6 @@ class MaterialController extends Controller
                 ->withInput()
                 ->with('import_errors', $errors)
                 ->with('error_type', 'validation');
-
         } catch (\Illuminate\Validation\ValidationException $e) {
 
             $errors = [];
@@ -591,7 +606,6 @@ class MaterialController extends Controller
                 ->withInput()
                 ->with('import_errors', $errors)
                 ->with('error_type', 'validation');
-
         } catch (\PhpOffice\PhpSpreadsheet\Exception $e) {
 
             return redirect()
@@ -599,7 +613,6 @@ class MaterialController extends Controller
                 ->withInput()
                 ->with('error', 'File Excel tidak dapat dibaca. Pastikan file tidak rusak dan formatnya sesuai.')
                 ->with('error_type', 'file');
-
         } catch (\Exception $e) {
 
             // Terjemahkan pesan teknis ke bahasa yang mudah dipahami

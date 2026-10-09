@@ -3,55 +3,74 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Tambah Material - Inventori ATK PT PLN Indonesia Power UBP Asam Asam</title>
     <link rel="icon" type="image/png" href="{{ asset('images/pln_bulat.png') }}">
 
     <!-- Google Fonts: Inter -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
 
     <!-- Material Symbols (Icons) -->
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+        rel="stylesheet">
 
     <style id="page-style">
-        *, *::before, *::after {
+        *,
+        *::before,
+        *::after {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
         :root {
-            --blue:         #0057B8;
-            --blue-dark:    #003B73;
-            --blue-light:   #EAF3FF;
-            --yellow:       #FFC107;
+            --blue: #0057B8;
+            --blue-dark: #003B73;
+            --blue-light: #EAF3FF;
+            --yellow: #FFC107;
             --yellow-light: #FFF8E1;
-            --bg:           #F5F7FA;
-            --white:        #FFFFFF;
-            --text-dark:    #1F2937;
-            --text-mid:     #374151;
-            --text-muted:   #6B7280;
-            --border:       #E5E7EB;
-            --red:          #DC2626;
-            --red-light:    #FEE2E2;
-            --sidebar-w:    260px;
-            --header-h:     68px;
-            --radius:       12px;
-            --shadow:       0 2px 12px rgba(0,0,0,0.07);
-            --transition:   0.2s ease;
+            --bg: #F5F7FA;
+            --white: #FFFFFF;
+            --text-dark: #1F2937;
+            --text-mid: #374151;
+            --text-muted: #6B7280;
+            --border: #E5E7EB;
+            --red: #DC2626;
+            --red-light: #FEE2E2;
+            --sidebar-w: 260px;
+            --header-h: 68px;
+            --radius: 12px;
+            --shadow: 0 2px 12px rgba(0, 0, 0, 0.07);
+            --transition: 0.2s ease;
         }
 
-        html, body {
+        html,
+        body {
             height: 100%;
             font-family: 'Inter', Arial, sans-serif;
             background: var(--bg);
             color: var(--text-dark);
         }
 
-        a { text-decoration: none; color: inherit; }
-        button, input, select, textarea { font-family: inherit; }
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
 
-        .layout { display: flex; min-height: 100vh; }
+        button,
+        input,
+        select,
+        textarea {
+            font-family: inherit;
+        }
+
+        .layout {
+            display: flex;
+            min-height: 100vh;
+        }
 
         /* MAIN */
         .main {
@@ -354,14 +373,105 @@
             background: #F9FAFB;
         }
 
+        /* Dropdown No Material Terdaftar */
+        .select-existing-box {
+            background: #F0F7FF;
+            border: 1px solid #BFDBFE;
+            border-radius: 8px;
+            padding: 8px 12px;
+            margin-bottom: 6px;
+        }
+
+        .select-existing-label {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--blue-dark);
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .select-existing-control {
+            width: 100%;
+            padding: 7px 10px;
+            border-radius: 6px;
+            border: 1px solid #93C5FD;
+            background: #ffffff;
+            font-size: 13px;
+            color: var(--text-dark);
+            outline: none;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .select-existing-control:focus {
+            border-color: var(--blue);
+            box-shadow: 0 0 0 2px rgba(0, 87, 184, 0.15);
+        }
+
+        .material-auto-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 6px;
+            background: #ECFDF5;
+            border: 1px solid #A7F3D0;
+            color: #065F46;
+            font-size: 12px;
+            font-weight: 600;
+            margin-top: 6px;
+            line-height: 1.4;
+        }
+
+        .btn-reset-material {
+            background: none;
+            border: none;
+            color: #047857;
+            text-decoration: underline;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 11.5px;
+            margin-left: 8px;
+            padding: 0;
+        }
+
+        .btn-reset-material:hover {
+            color: #064E3B;
+        }
+
         @media (max-width: 768px) {
-            .main { margin-left: 0; }
-            .btn-hamburger { display: flex; }
-            .topbar { padding: 0 16px; }
-            .page-content { padding: 16px; }
-            .form-grid { grid-template-columns: 1fr; }
-            .form-actions { flex-direction: column-reverse; }
-            .form-actions .btn { width: 100%; justify-content: center; }
+            .main {
+                margin-left: 0;
+            }
+
+            .btn-hamburger {
+                display: flex;
+            }
+
+            .topbar {
+                padding: 0 16px;
+            }
+
+            .page-content {
+                padding: 16px;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-actions {
+                flex-direction: column-reverse;
+            }
+
+            .form-actions .btn {
+                width: 100%;
+                justify-content: center;
+            }
         }
     </style>
 </head>
@@ -432,19 +542,60 @@
                                 <label for="material_number" class="form-label">
                                     No Material <span class="req">*</span>
                                 </label>
+
+                                <!-- Dropdown No Material Terdaftar -->
+                                <div class="select-existing-box">
+                                    <div class="select-existing-label">
+                                        <span class="material-symbols-outlined" style="font-size: 14px;">arrow_drop_down_circle</span>
+                                        Pilih dari No Material yang Sudah Ada
+                                    </div>
+                                    <select 
+                                        id="existing_material_dropdown" 
+                                        class="select-existing-control"
+                                        onchange="window.onExistingMaterialDropdownChange(this)"
+                                    >
+                                        <option value="">-- Pilih No Material yang Sudah Terinput --</option>
+                                        @if (isset($existingMaterials))
+                                            @foreach ($existingMaterials as $em)
+                                                <option 
+                                                    value="{{ $em->material_number }}"
+                                                    data-name="{{ $em->name }}"
+                                                    data-unit="{{ $em->unit }}"
+                                                    data-desc="{{ $em->description }}"
+                                                    data-stock="{{ $em->quantity }}"
+                                                    {{ old('material_number') == $em->material_number ? 'selected' : '' }}
+                                                >
+                                                    [{{ $em->material_number }}] {{ $em->name }} (Stok: {{ $em->quantity }} {{ $em->unit }})
+                                                </option>
+                                            @endforeach
+                                        @endif
+                                    </select>
+                                </div>
+
+                                <!-- Input No Material (Manual / Terisi Otomatis) -->
                                 <input 
                                     type="text" 
                                     id="material_number" 
                                     name="material_number" 
                                     class="form-control @error('material_number') is-invalid @enderror"
-                                    value="{{ old('material_number') }}"
-                                    placeholder="Contoh: MAT001"
+                                    value="{{ old('material_number') }}" 
+                                    placeholder="Atau ketik manual No Material baru (contoh: {{ $suggestedNumber }})..." 
                                     required
+                                    autocomplete="off"
+                                    oninput="window.onManualMaterialNumberInput(this.value)"
                                 >
                                 @error('material_number')
                                     <span class="invalid-feedback">{{ $message }}</span>
                                 @enderror
-                                <span class="form-helper">Nomor unik pengenal material</span>
+                                <span class="form-helper" id="material_number_helper">
+                                    Pilih dari dropdown di atas untuk barang yang sudah ada, atau ketik manual untuk material baru
+                                </span>
+
+                                <div id="autoFilledBadge" class="material-auto-badge" style="display: none;">
+                                    <span class="material-symbols-outlined" style="font-size: 16px;">check_circle</span>
+                                    <span id="autoFilledBadgeText">No Material terdaftar: Nama material terisi otomatis.</span>
+                                    <button type="button" class="btn-reset-material" onclick="window.resetToNewMaterial()">Ketik Baru</button>
+                                </div>
                             </div>
 
                             <!-- Nama Material -->
@@ -455,15 +606,16 @@
                                 <input 
                                     type="text" 
                                     id="name" 
-                                    name="name" 
+                                    name="name"
                                     class="form-control @error('name') is-invalid @enderror"
                                     value="{{ old('name') }}" 
-                                    placeholder="Contoh: Kertas HVS A4 70gr"
+                                    placeholder="Contoh: Kertas HVS A4 70gr" 
                                     required
                                 >
                                 @error('name')
                                     <span class="invalid-feedback">{{ $message }}</span>
                                 @enderror
+                                <span class="form-helper" id="name_helper">Terisi otomatis jika memilih No Material terdaftar</span>
                             </div>
 
                             <!-- Tanggal Masuk -->
@@ -471,14 +623,9 @@
                                 <label for="entry_date" class="form-label">
                                     Tanggal Masuk <span class="req">*</span>
                                 </label>
-                                <input 
-                                    type="date" 
-                                    id="entry_date" 
-                                    name="entry_date" 
+                                <input type="date" id="entry_date" name="entry_date"
                                     class="form-control @error('entry_date') is-invalid @enderror"
-                                    value="{{ old('entry_date', date('Y-m-d')) }}" 
-                                    required
-                                >
+                                    value="{{ old('entry_date', date('Y-m-d')) }}" required>
                                 @error('entry_date')
                                     <span class="invalid-feedback">{{ $message }}</span>
                                 @enderror
@@ -489,16 +636,9 @@
                                 <label for="quantity" class="form-label">
                                     Jumlah Item (Stok) <span class="req">*</span>
                                 </label>
-                                <input 
-                                    type="number" 
-                                    id="quantity" 
-                                    name="quantity" 
+                                <input type="number" id="quantity" name="quantity"
                                     class="form-control @error('quantity') is-invalid @enderror"
-                                    value="{{ old('quantity', 0) }}" 
-                                    min="0"
-                                    placeholder="0"
-                                    required
-                                >
+                                    value="{{ old('quantity', 0) }}" min="0" placeholder="0" required>
                                 @error('quantity')
                                     <span class="invalid-feedback">{{ $message }}</span>
                                 @enderror
@@ -509,16 +649,9 @@
                                 <label for="unit" class="form-label">
                                     Satuan <span class="req">*</span>
                                 </label>
-                                <input 
-                                    type="text" 
-                                    id="unit" 
-                                    name="unit" 
-                                    list="unit-suggestions"
+                                <input type="text" id="unit" name="unit" list="unit-suggestions"
                                     class="form-control @error('unit') is-invalid @enderror"
-                                    value="{{ old('unit') }}" 
-                                    placeholder="Contoh: Rim, Pcs, Buah, Box"
-                                    required
-                                >
+                                    value="{{ old('unit') }}" placeholder="Contoh: Rim, Pcs, Buah, Box" required>
                                 <datalist id="unit-suggestions">
                                     <option value="Rim">
                                     <option value="Pcs">
@@ -540,13 +673,9 @@
                                 <label for="description" class="form-label">
                                     Deskripsi / Keterangan (Opsional)
                                 </label>
-                                <textarea 
-                                    id="description" 
-                                    name="description" 
-                                    rows="3" 
+                                <textarea id="description" name="description" rows="3"
                                     class="form-control @error('description') is-invalid @enderror"
-                                    placeholder="Tambahkan catatan spesifikasi, merk, atau lokasi penyimpanan material jika ada..."
-                                >{{ old('description') }}</textarea>
+                                    placeholder="Tambahkan catatan spesifikasi, merk, atau lokasi penyimpanan material jika ada...">{{ old('description') }}</textarea>
                                 @error('description')
                                     <span class="invalid-feedback">{{ $message }}</span>
                                 @enderror
@@ -568,42 +697,161 @@
                 </div>
 
             </div>
+
+            <script>
+                function openSidebar() {
+                    document.getElementById('sidebar').classList.add('open');
+                    document.getElementById('drawerBackdrop').classList.add('open');
+                    document.body.style.overflow = 'hidden';
+                }
+
+                function closeSidebar() {
+                    document.getElementById('sidebar').classList.remove('open');
+                    document.getElementById('drawerBackdrop').classList.remove('open');
+                    document.body.style.overflow = '';
+                }
+
+                function toggleSubmenu(e, id) {
+                    if (e) e.preventDefault();
+                    const menu = document.getElementById(id);
+                    const arrow = document.getElementById('arrow-material');
+                    if (!menu) return;
+
+                    menu.classList.toggle('show');
+                    const isOpen = menu.classList.contains('show');
+
+                    if (arrow) {
+                        arrow.textContent = isOpen ? 'expand_less' : 'expand_more';
+                    }
+                }
+
+                window.addEventListener('resize', function() {
+                    if (window.innerWidth > 768) {
+                        closeSidebar();
+                    }
+                });
+
+                // Data material yang sudah terdaftar
+                window.EXISTING_MATERIALS_MAP = @json($existingMaterialsMap ?? []);
+
+                window.onExistingMaterialDropdownChange = function (selectEl) {
+                    if (!selectEl) return;
+                    const selectedVal = (selectEl.value || '').trim();
+                    const numberInput = document.getElementById('material_number');
+                    const nameInput = document.getElementById('name');
+                    const unitInput = document.getElementById('unit');
+                    const descInput = document.getElementById('description');
+                    const badge = document.getElementById('autoFilledBadge');
+                    const badgeText = document.getElementById('autoFilledBadgeText');
+
+                    if (!selectedVal) {
+                        if (badge) badge.style.display = 'none';
+                        return;
+                    }
+
+                    const key = selectedVal.toUpperCase();
+                    const item = (window.EXISTING_MATERIALS_MAP && window.EXISTING_MATERIALS_MAP[key]) || null;
+
+                    if (item) {
+                        if (numberInput) numberInput.value = item.number;
+                        if (nameInput) nameInput.value = item.name;
+                        if (unitInput && item.unit) unitInput.value = item.unit;
+                        if (descInput && item.desc) descInput.value = item.desc;
+
+                        if (badge && badgeText) {
+                            badgeText.textContent = `No Material terdaftar milik "${item.name}" (Stok saat ini: ${item.stock} ${item.unit}). Nama material otomatis terisi.`;
+                            badge.style.display = 'inline-flex';
+                        }
+                    } else {
+                        const opt = selectEl.options[selectEl.selectedIndex];
+                        const matName = opt ? (opt.dataset.name || '') : '';
+                        const matUnit = opt ? (opt.dataset.unit || '') : '';
+                        const matDesc = opt ? (opt.dataset.desc || '') : '';
+                        const matStock = opt ? (opt.dataset.stock || '0') : '0';
+
+                        if (numberInput) numberInput.value = selectedVal;
+                        if (nameInput && matName) nameInput.value = matName;
+                        if (unitInput && matUnit) unitInput.value = matUnit;
+                        if (descInput && matDesc && !descInput.value) descInput.value = matDesc;
+
+                        if (badge && badgeText && matName) {
+                            badgeText.textContent = `No Material terdaftar milik "${matName}" (Stok saat ini: ${matStock} ${matUnit}). Nama material otomatis terisi.`;
+                            badge.style.display = 'inline-flex';
+                        }
+                    }
+                };
+
+                window.onManualMaterialNumberInput = function (val) {
+                    const dropdown = document.getElementById('existing_material_dropdown');
+                    const nameInput = document.getElementById('name');
+                    const unitInput = document.getElementById('unit');
+                    const descInput = document.getElementById('description');
+                    const badge = document.getElementById('autoFilledBadge');
+                    const badgeText = document.getElementById('autoFilledBadgeText');
+
+                    const cleanVal = (val || '').trim().toUpperCase();
+                    if (cleanVal && window.EXISTING_MATERIALS_MAP && window.EXISTING_MATERIALS_MAP[cleanVal]) {
+                        const found = window.EXISTING_MATERIALS_MAP[cleanVal];
+                        if (dropdown) dropdown.value = found.number;
+                        if (nameInput) nameInput.value = found.name;
+                        if (unitInput && found.unit) unitInput.value = found.unit;
+                        if (descInput && found.desc && !descInput.value) descInput.value = found.desc;
+
+                        if (badge && badgeText) {
+                            badgeText.textContent = `No Material terdaftar milik "${found.name}" (Stok saat ini: ${found.stock} ${found.unit}). Nama material otomatis terisi.`;
+                            badge.style.display = 'inline-flex';
+                        }
+                    } else {
+                        if (dropdown) dropdown.value = '';
+                        if (badge) badge.style.display = 'none';
+                    }
+                };
+
+                window.resetToNewMaterial = function () {
+                    const dropdown = document.getElementById('existing_material_dropdown');
+                    const numberInput = document.getElementById('material_number');
+                    const nameInput = document.getElementById('name');
+                    const unitInput = document.getElementById('unit');
+                    const descInput = document.getElementById('description');
+                    const badge = document.getElementById('autoFilledBadge');
+
+                    if (dropdown) dropdown.value = '';
+                    if (numberInput) {
+                        numberInput.value = '';
+                        numberInput.focus();
+                    }
+                    if (nameInput) nameInput.value = '';
+                    if (unitInput) unitInput.value = '';
+                    if (descInput) descInput.value = '';
+                    if (badge) badge.style.display = 'none';
+                };
+
+                function initMaterialCreateForm() {
+                    const dropdown = document.getElementById('existing_material_dropdown');
+                    const numberInput = document.getElementById('material_number');
+
+                    if (dropdown) {
+                        dropdown.onchange = function () {
+                            window.onExistingMaterialDropdownChange(this);
+                        };
+                    }
+
+                    if (numberInput) {
+                        numberInput.oninput = function () {
+                            window.onManualMaterialNumberInput(this.value);
+                        };
+
+                        if (numberInput.value) {
+                            window.onManualMaterialNumberInput(numberInput.value);
+                        }
+                    }
+                }
+
+                initMaterialCreateForm();
+                document.addEventListener('DOMContentLoaded', initMaterialCreateForm);
+            </script>
         </main>
     </div>
-
-    <script>
-        function openSidebar() {
-            document.getElementById('sidebar').classList.add('open');
-            document.getElementById('drawerBackdrop').classList.add('open');
-            document.body.style.overflow = 'hidden';
-        }
-
-        function closeSidebar() {
-            document.getElementById('sidebar').classList.remove('open');
-            document.getElementById('drawerBackdrop').classList.remove('open');
-            document.body.style.overflow = '';
-        }
-
-        function toggleSubmenu(e, id) {
-            if (e) e.preventDefault();
-            const menu = document.getElementById(id);
-            const arrow = document.getElementById('arrow-material');
-            if (!menu) return;
-
-            menu.classList.toggle('show');
-            const isOpen = menu.classList.contains('show');
-
-            if (arrow) {
-                arrow.textContent = isOpen ? 'expand_less' : 'expand_more';
-            }
-        }
-
-        window.addEventListener('resize', function () {
-            if (window.innerWidth > 768) {
-                closeSidebar();
-            }
-        });
-    </script>
 </body>
 
 </html>
