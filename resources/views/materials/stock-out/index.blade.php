@@ -1264,14 +1264,13 @@
                     <!-- Penerima / Unit Tujuan -->
                     <div class="form-group-custom">
                         <label for="createRecipient" class="form-label-custom">
-                            Penerima / Unit Tujuan <span style="color:var(--red);">*</span>
+                            Penerima / Unit Tujuan <span style="color:var(--text-muted);font-weight:normal;font-size:12px;">(Opsional)</span>
                         </label>
                         <input type="text" 
                                id="createRecipient" 
                                name="recipient" 
                                class="form-control-custom" 
-                               required 
-                               placeholder="Contoh: Unit Pemeliharaan Turbin / Bpk. Rudi">
+                               placeholder="Contoh: Unit Pemeliharaan Turbin / Bpk. Rudi (opsional)">
                     </div>
 
                     <!-- Keterangan -->
@@ -1374,14 +1373,13 @@
                     <!-- Penerima / Unit Tujuan -->
                     <div class="form-group-custom">
                         <label for="editRecipient" class="form-label-custom">
-                            Penerima / Unit Tujuan <span style="color:var(--red);">*</span>
+                            Penerima / Unit Tujuan <span style="color:var(--text-muted);font-weight:normal;font-size:12px;">(Opsional)</span>
                         </label>
                         <input type="text" 
                                id="editRecipient" 
                                name="recipient" 
                                class="form-control-custom" 
-                               required 
-                               placeholder="Contoh: Unit Pemeliharaan Turbin / Bpk. Rudi">
+                               placeholder="Contoh: Unit Pemeliharaan Turbin / Bpk. Rudi (opsional)">
                     </div>
 
                     <!-- Keterangan -->

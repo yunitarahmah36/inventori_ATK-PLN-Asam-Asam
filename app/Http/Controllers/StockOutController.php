@@ -100,7 +100,7 @@ class StockOutController extends Controller
             'material_id' => 'required|exists:materials,id',
             'quantity'    => 'required|integer|min:1',
             'exit_date'   => 'required|date',
-            'recipient'   => 'required|string|max:255',
+            'recipient'   => 'nullable|string|max:255',
             'description' => 'nullable|string|max:1000',
         ], [
             'material_id.required' => 'Pilih material yang akan dikeluarkan stoknya.',
@@ -110,7 +110,6 @@ class StockOutController extends Controller
             'quantity.min'         => 'Jumlah keluar minimal 1.',
             'exit_date.required'   => 'Tanggal keluar wajib diisi.',
             'exit_date.date'       => 'Format tanggal keluar tidak valid.',
-            'recipient.required'   => 'Penerima / Unit Tujuan wajib diisi.',
             'recipient.max'        => 'Penerima / Unit Tujuan maksimal 255 karakter.',
             'description.max'      => 'Keterangan maksimal 1000 karakter.',
         ]);
@@ -155,7 +154,7 @@ class StockOutController extends Controller
                     'quantity_before' => $currentQty,
                     'quantity_after'  => $newQty,
                     'quantity_change' => -$qtyOut,
-                    'recipient'       => trim($validated['recipient']),
+                    'recipient'       => !empty($validated['recipient']) ? trim($validated['recipient']) : null,
                     'description'     => !empty($validated['description']) ? trim($validated['description']) : null,
                 ]);
                 $movement->created_at = $exitDateTime;
@@ -184,7 +183,7 @@ class StockOutController extends Controller
         $validated = $request->validate([
             'quantity'    => 'required|integer|min:1',
             'exit_date'   => 'required|date',
-            'recipient'   => 'required|string|max:255',
+            'recipient'   => 'nullable|string|max:255',
             'description' => 'nullable|string|max:1000',
         ], [
             'quantity.required'  => 'Jumlah keluar wajib diisi.',
@@ -192,7 +191,6 @@ class StockOutController extends Controller
             'quantity.min'       => 'Jumlah keluar minimal 1.',
             'exit_date.required' => 'Tanggal keluar wajib diisi.',
             'exit_date.date'     => 'Format tanggal keluar tidak valid.',
-            'recipient.required' => 'Penerima / Unit Tujuan wajib diisi.',
             'recipient.max'      => 'Penerima / Unit Tujuan maksimal 255 karakter.',
             'description.max'    => 'Keterangan maksimal 1000 karakter.',
         ]);
@@ -251,7 +249,7 @@ class StockOutController extends Controller
                     'quantity_before' => $qtyBefore,
                     'quantity_after'  => $qtyAfter,
                     'quantity_change' => -$newQtyOut,
-                    'recipient'       => trim($validated['recipient']),
+                    'recipient'       => !empty($validated['recipient']) ? trim($validated['recipient']) : null,
                     'description'     => !empty($validated['description']) ? trim($validated['description']) : null,
                     'created_at'      => $exitDateTime,
                 ]);

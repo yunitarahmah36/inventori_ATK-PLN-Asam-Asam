@@ -506,4 +506,78 @@ class StockOutTest extends TestCase
             )
         );
     }
+
+    public function test_stock_out_store_allows_empty_recipient(): void
+    {
+        $user = $this->createUser('Admin');
+
+        $material = Material::create([
+            'material_number' => 'MAT207',
+            'name'            => 'Buku Tulis Bergaris',
+            'entry_date'      => '2026-10-01',
+            'quantity'        => 20,
+            'unit'            => 'Buku',
+        ]);
+
+        $response = $this->actingAs($user)->post(route('materials.stock-out.store'), [
+            'material_id' => $material->id,
+            'quantity'    => 5,
+            'exit_date'   => '2026-10-09',
+            'recipient'   => '', // sengaja dikosongkan (opsional)
+            'description' => 'Keperluan umum',
+        ]);
+
+        $response->assertRedirect(route('materials.stock-out.index'));
+        $response->assertSessionHas('success');
+
+        $material->refresh();
+        $this->assertEquals(15, $material->quantity);
+
+        $this->assertDatabaseHas('stock_movements', [
+            'material_id'     => $material->id,
+            'material_number' => 'MAT207',
+            'activity'        => 'Keluar',
+            'quantity_change' => -5,
+            'recipient'       => null,
+        ]);
+    }
+
+    public function test_stock_out_update_allows_empty_recipient(): void
+    {
+        $user = $this->createUser('Admin');
+
+        $material = Material::create([
+            'material_number' => 'MAT208',
+            'name'            => 'Sticky Notes',
+            'entry_date'      => '2026-10-01',
+            'quantity'        => 10,
+            'unit'            => 'Pack',
+        ]);
+
+        $movement = StockMovement::create([
+            'material_id'     => $material->id,
+            'material_name'   => $material->name,
+            'material_number' => $material->material_number,
+            'user_id'         => $user->id,
+            'activity'        => 'Keluar',
+            'quantity_before' => 15,
+            'quantity_after'  => 10,
+            'quantity_change' => -5,
+            'recipient'       => 'Penerima Awal',
+            'created_at'      => now(),
+        ]);
+
+        $response = $this->actingAs($user)->put(route('materials.stock-out.update', $movement->id), [
+            'quantity'    => 5,
+            'exit_date'   => '2026-10-09',
+            'recipient'   => '', // dikosongkan
+            'description' => 'Tanpa penerima',
+        ]);
+
+        $response->assertRedirect(route('materials.stock-out.index'));
+        $response->assertSessionHas('success');
+
+        $movement->refresh();
+        $this->assertNull($movement->recipient);
+    }
 }
