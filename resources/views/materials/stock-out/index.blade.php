@@ -1435,11 +1435,9 @@
             </div>
         </div>
 
-    </main>
-
     {{-- Script Interaktif Halaman Stok Keluar --}}
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
+        function initStockOutPage() {
             // ==========================================
             // MODAL TAMBAH STOK KELUAR
             // ==========================================
@@ -1670,8 +1668,20 @@
                     closeDeleteModal();
                 }
             });
-        });
+        }
+
+        // Jalankan juga saat halaman dimuat lewat navigasi SPA.
+        // DOMContentLoaded hanya terjadi sekali saat dokumen pertama kali dimuat.
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initStockOutPage, { once: true });
+        } else {
+            initStockOutPage();
+        }
     </script>
+
+    </main>
+
+
 </body>
 
 </html>
