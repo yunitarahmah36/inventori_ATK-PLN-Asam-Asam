@@ -75,7 +75,7 @@
             <div class="nav-submenu" id="materialSubmenu">
                 <!-- Master Data Material -->
                 <a href="{{ route('materials.index') }}" 
-                   class="nav-subitem {{ (request()->routeIs('materials.*') && !request()->routeIs('materials.stock-in.*') && !request()->is('materials/stock-in*')) ? 'active' : '' }}"
+                   class="nav-subitem {{ (request()->routeIs('materials.*') && !request()->routeIs('materials.stock-in.*') && !request()->is('materials/stock-in*') && !request()->routeIs('materials.stock-out.*') && !request()->is('materials/stock-out*')) ? 'active' : '' }}"
                    data-spa-link>
                     <span class="material-symbols-outlined">format_list_bulleted</span>
                     <span>Daftar Material</span>
@@ -87,6 +87,14 @@
                    data-spa-link>
                     <span class="material-symbols-outlined">add_circle</span>
                     <span>Stok Masuk</span>
+                </a>
+
+                <!-- Submenu Stok Keluar -->
+                <a href="{{ route('materials.stock-out.index') }}" 
+                   class="nav-subitem {{ (request()->routeIs('materials.stock-out.*') || request()->is('materials/stock-out*')) ? 'active' : '' }}"
+                   data-spa-link>
+                    <span class="material-symbols-outlined">do_not_disturb_on</span>
+                    <span>Stok Keluar</span>
                 </a>
             </div>
         </div>
@@ -1136,10 +1144,11 @@
             const groupMaterials = document.getElementById('navGroupMaterials');
             const parentBtn = document.getElementById('btnToggleMaterials');
             const isStockIn = path.startsWith('/materials/stock-in');
+            const isStockOut = path.startsWith('/materials/stock-out');
             const isMaterials = path.startsWith('/materials');
 
             if (groupMaterials) {
-                if (isMaterials || isStockIn) {
+                if (isMaterials || isStockIn || isStockOut) {
                     groupMaterials.classList.add('open');
                     if (parentBtn) {
                         parentBtn.classList.add('active-parent');
@@ -1159,9 +1168,11 @@
                 try {
                     const subUrl = new URL(href, window.location.origin);
                     let isSubActive = false;
-                    if (isStockIn && subUrl.pathname.includes('/stock-in')) {
+                    if (isStockOut && subUrl.pathname.includes('/stock-out')) {
                         isSubActive = true;
-                    } else if (!isStockIn && isMaterials && !subUrl.pathname.includes('/stock-in')) {
+                    } else if (isStockIn && subUrl.pathname.includes('/stock-in')) {
+                        isSubActive = true;
+                    } else if (!isStockIn && !isStockOut && isMaterials && !subUrl.pathname.includes('/stock-in') && !subUrl.pathname.includes('/stock-out')) {
                         isSubActive = true;
                     }
 

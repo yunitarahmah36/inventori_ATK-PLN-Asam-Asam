@@ -8,6 +8,7 @@ use App\Http\Controllers\PasswordController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\StockInController;
 use App\Http\Controllers\StockMovementController;
+use App\Http\Controllers\StockOutController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -90,6 +91,25 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/materials/stock-in/import', [StockInController::class, 'import'])
         ->name('materials.stock-in.import');
+
+    // ==========================
+    // STOK KELUAR (SUBMENU DATA MATERIAL)
+    // ==========================
+
+    Route::get('/materials/stock-out', [StockOutController::class, 'index'])
+        ->name('materials.stock-out.index');
+
+    Route::post('/materials/stock-out', [StockOutController::class, 'store'])
+        ->name('materials.stock-out.store');
+
+    Route::get('/materials/stock-out/export', [StockOutController::class, 'export'])
+        ->name('materials.stock-out.export');
+
+    Route::put('/materials/stock-out/{stockMovement}', [StockOutController::class, 'update'])
+        ->name('materials.stock-out.update');
+
+    Route::delete('/materials/stock-out/{stockMovement}', [StockOutController::class, 'destroy'])
+        ->name('materials.stock-out.destroy');
 
     Route::resource('materials', MaterialController::class);
 

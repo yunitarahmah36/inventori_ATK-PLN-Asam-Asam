@@ -265,4 +265,245 @@ class StockOutTest extends TestCase
         $this->assertEquals('Gunting Kertas Sedang Updated', $material->name);
         $this->assertEquals(15, $material->quantity); // Tetap 15!
     }
+
+    public function test_stock_out_index_page_rendered_with_kpi_and_table(): void
+    {
+        $user = $this->createUser('Admin');
+
+        $material = Material::create([
+            'material_number' => 'MAT201',
+            'name'            => 'Pulpen Standard Hitam',
+            'entry_date'      => '2026-10-01',
+            'quantity'        => 50,
+            'unit'            => 'Pcs',
+        ]);
+
+        StockMovement::create([
+            'material_id'     => $material->id,
+            'material_name'   => $material->name,
+            'material_number' => $material->material_number,
+            'user_id'         => $user->id,
+            'activity'        => 'Keluar',
+            'quantity_before' => 50,
+            'quantity_after'  => 45,
+            'quantity_change' => -5,
+            'recipient'       => 'Divisi HRD',
+            'description'     => 'Keperluan orientasi',
+            'created_at'      => now(),
+        ]);
+
+        $response = $this->actingAs($user)->get(route('materials.stock-out.index'));
+
+        $response->assertStatus(200);
+        $response->assertSee('Stok Keluar');
+        $response->assertSee('Total Transaksi Keluar');
+        $response->assertSee('Total Item Dikeluarkan');
+        $response->assertSee('Pulpen Standard Hitam');
+        $response->assertSee('MAT201');
+        $response->assertSee('Divisi HRD');
+        $response->assertSee('Keperluan orientasi');
+    }
+
+    public function test_stock_out_store_via_stock_out_controller(): void
+    {
+        $user = $this->createUser('Admin');
+
+        $material = Material::create([
+            'material_number' => 'MAT202',
+            'name'            => 'Kertas Buffalo Kuning',
+            'entry_date'      => '2026-10-01',
+            'quantity'        => 30,
+            'unit'            => 'Rim',
+        ]);
+
+        $response = $this->actingAs($user)->post(route('materials.stock-out.store'), [
+            'material_id' => $material->id,
+            'quantity'    => 10,
+            'exit_date'   => '2026-10-09',
+            'recipient'   => 'Seksi Pemeliharaan',
+            'description' => 'Untuk cover laporan',
+        ]);
+
+        $response->assertRedirect(route('materials.stock-out.index'));
+        $response->assertSessionHas('success');
+
+        $material->refresh();
+        $this->assertEquals(20, $material->quantity);
+
+        $this->assertDatabaseHas('stock_movements', [
+            'material_id'     => $material->id,
+            'material_number' => 'MAT202',
+            'activity'        => 'Keluar',
+            'quantity_before' => 30,
+            'quantity_after'  => 20,
+            'quantity_change' => -10,
+            'recipient'       => 'Seksi Pemeliharaan',
+            'description'     => 'Untuk cover laporan',
+        ]);
+    }
+
+    public function test_stock_out_store_fails_if_quantity_exceeds_stock(): void
+    {
+        $user = $this->createUser('Admin');
+
+        $material = Material::create([
+            'material_number' => 'MAT203',
+            'name'            => 'Stapler Besar',
+            'entry_date'      => '2026-10-01',
+            'quantity'        => 3,
+            'unit'            => 'Pcs',
+        ]);
+
+        $response = $this->actingAs($user)->post(route('materials.stock-out.store'), [
+            'material_id' => $material->id,
+            'quantity'    => 5,
+            'exit_date'   => '2026-10-09',
+            'recipient'   => 'Gudang',
+        ]);
+
+        $response->assertSessionHasErrors(['quantity']);
+
+        $material->refresh();
+        $this->assertEquals(3, $material->quantity);
+    }
+
+    public function test_stock_out_update_recalculates_stock_correctly(): void
+    {
+        $user = $this->createUser('Admin');
+
+        $material = Material::create([
+            'material_number' => 'MAT204',
+            'name'            => 'Lakban Hitam',
+            'entry_date'      => '2026-10-01',
+            'quantity'        => 20, // setelah keluar 10, stok awal 30
+            'unit'            => 'Roll',
+        ]);
+
+        $movement = StockMovement::create([
+            'material_id'     => $material->id,
+            'material_name'   => $material->name,
+            'material_number' => $material->material_number,
+            'user_id'         => $user->id,
+            'activity'        => 'Keluar',
+            'quantity_before' => 30,
+            'quantity_after'  => 20,
+            'quantity_change' => -10,
+            'recipient'       => 'Unit Boiler',
+            'description'     => 'Packing alat',
+            'created_at'      => now(),
+        ]);
+
+        // Ubah dari keluar 10 menjadi keluar 15 (tersedia 20 + 10 = 30; sisa baru = 30 - 15 = 15)
+        $response = $this->actingAs($user)->put(route('materials.stock-out.update', $movement->id), [
+            'quantity'    => 15,
+            'exit_date'   => '2026-10-09',
+            'recipient'   => 'Unit Boiler & Turbin',
+            'description' => 'Packing alat tambahan',
+        ]);
+
+        $response->assertRedirect(route('materials.stock-out.index'));
+        $response->assertSessionHas('success');
+
+        $material->refresh();
+        $this->assertEquals(15, $material->quantity);
+
+        $movement->refresh();
+        $this->assertEquals(-15, $movement->quantity_change);
+        $this->assertEquals(30, $movement->quantity_before);
+        $this->assertEquals(15, $movement->quantity_after);
+        $this->assertEquals('Unit Boiler & Turbin', $movement->recipient);
+    }
+
+    public function test_stock_out_update_fails_if_new_quantity_exceeds_available_stock(): void
+    {
+        $user = $this->createUser('Admin');
+
+        $material = Material::create([
+            'material_number' => 'MAT205',
+            'name'            => 'Penghapus Papan Tulis',
+            'entry_date'      => '2026-10-01',
+            'quantity'        => 5,
+            'unit'            => 'Pcs',
+        ]);
+
+        $movement = StockMovement::create([
+            'material_id'     => $material->id,
+            'material_name'   => $material->name,
+            'material_number' => $material->material_number,
+            'user_id'         => $user->id,
+            'activity'        => 'Keluar',
+            'quantity_before' => 7,
+            'quantity_after'  => 5,
+            'quantity_change' => -2, // stok total tersedia adalah 5 + 2 = 7
+            'recipient'       => 'Rapat',
+            'created_at'      => now(),
+        ]);
+
+        // Coba minta keluar 10 padahal maksimal tersedia hanya 7
+        $response = $this->actingAs($user)->put(route('materials.stock-out.update', $movement->id), [
+            'quantity'    => 10,
+            'exit_date'   => '2026-10-09',
+            'recipient'   => 'Rapat',
+        ]);
+
+        $response->assertSessionHasErrors(['quantity']);
+
+        $material->refresh();
+        $this->assertEquals(5, $material->quantity);
+    }
+
+    public function test_stock_out_destroy_restores_material_stock(): void
+    {
+        $user = $this->createUser('Admin');
+
+        $material = Material::create([
+            'material_number' => 'MAT206',
+            'name'            => 'Amplop Coklat Folio',
+            'entry_date'      => '2026-10-01',
+            'quantity'        => 25,
+            'unit'            => 'Lembar',
+        ]);
+
+        $movement = StockMovement::create([
+            'material_id'     => $material->id,
+            'material_name'   => $material->name,
+            'material_number' => $material->material_number,
+            'user_id'         => $user->id,
+            'activity'        => 'Keluar',
+            'quantity_before' => 35,
+            'quantity_after'  => 25,
+            'quantity_change' => -10,
+            'recipient'       => 'Bagian Umum',
+            'created_at'      => now(),
+        ]);
+
+        $response = $this->actingAs($user)->delete(route('materials.stock-out.destroy', $movement->id));
+
+        $response->assertRedirect(route('materials.stock-out.index'));
+        $response->assertSessionHas('success');
+
+        // Pastikan stok dikembalikan (25 + 10 = 35)
+        $material->refresh();
+        $this->assertEquals(35, $material->quantity);
+
+        // Pastikan record pergerakan stok dihapus
+        $this->assertDatabaseMissing('stock_movements', [
+            'id' => $movement->id,
+        ]);
+    }
+
+    public function test_stock_out_export_excel(): void
+    {
+        $user = $this->createUser('Admin');
+
+        $response = $this->actingAs($user)->get(route('materials.stock-out.export'));
+
+        $response->assertStatus(200);
+        $this->assertTrue(
+            str_contains(
+                (string) $response->headers->get('content-disposition'),
+                'laporan-stok-keluar-atk.xlsx'
+            )
+        );
+    }
 }

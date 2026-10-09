@@ -336,6 +336,7 @@ class MaterialController extends Controller
         $validated = $request->validate([
             'quantity'    => 'required|integer|min:1',
             'exit_date'   => 'required|date',
+            'recipient'   => 'nullable|string|max:255',
             'description' => 'required|string|max:1000',
         ], [
             'quantity.required'    => 'Jumlah keluar wajib diisi.',
@@ -343,6 +344,7 @@ class MaterialController extends Controller
             'quantity.min'         => 'Jumlah keluar wajib lebih dari 0.',
             'exit_date.required'   => 'Tanggal keluar wajib diisi.',
             'exit_date.date'       => 'Format tanggal keluar tidak valid.',
+            'recipient.max'        => 'Penerima maksimal 255 karakter.',
             'description.required' => 'Keterangan/tujuan pengeluaran wajib diisi.',
             'description.max'      => 'Keterangan/tujuan pengeluaran maksimal 1000 karakter.',
         ]);
@@ -387,6 +389,7 @@ class MaterialController extends Controller
                     'quantity_before' => $currentQty,
                     'quantity_after'  => $newQty,
                     'quantity_change' => -$qtyOut,
+                    'recipient'       => !empty($validated['recipient']) ? trim($validated['recipient']) : null,
                     'description'     => trim($validated['description']),
                     'created_at'      => $exitDateTime,
                 ]);
