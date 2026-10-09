@@ -378,6 +378,18 @@
             justify-content: center;
         }
 
+        .btn-stock-out {
+            background: #FEF3C7;
+            color: #D97706;
+            border: 1px solid #FDE68A;
+        }
+
+        .btn-stock-out:hover {
+            background: #D97706;
+            color: #fff;
+            border-color: #D97706;
+        }
+
         .btn-edit {
             background: var(--blue-light);
             color: var(--blue);
@@ -1051,6 +1063,217 @@
 }
 
 /* ============================================================
+   POPUP FORM STOK KELUAR
+============================================================ */
+.stock-out-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.52);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 99999;
+    padding: 20px;
+}
+
+.stock-out-modal.show {
+    display: flex;
+}
+
+.stock-out-modal-box {
+    width: 100%;
+    max-width: 500px;
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 26px 28px;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.22);
+    position: relative;
+    animation: stockOutModalIn 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes stockOutModalIn {
+    from {
+        opacity: 0;
+        transform: translateY(12px) scale(0.97);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.modal-close-btn {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition);
+}
+
+.modal-close-btn:hover {
+    background: #F1F5F9;
+    color: var(--text-dark);
+}
+
+.stock-out-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 18px;
+}
+
+.stock-out-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: #FEF3C7;
+    color: #D97706;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.stock-out-icon .material-symbols-outlined {
+    font-size: 26px;
+}
+
+.stock-out-header h3 {
+    margin: 0 0 4px;
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--blue-dark);
+}
+
+.stock-out-header p {
+    margin: 0;
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.4;
+}
+
+.stock-out-material-card {
+    background: #F8FAFC;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-bottom: 16px;
+}
+
+.material-card-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 13px;
+}
+
+.material-card-label {
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+.modal-stock-alert {
+    background: #FEE2E2;
+    border: 1px solid #FECACA;
+    color: #DC2626;
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 12.5px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 16px;
+    line-height: 1.4;
+}
+
+.modal-form-group {
+    margin-bottom: 16px;
+    text-align: left;
+}
+
+.modal-form-label {
+    display: block;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 6px;
+}
+
+.modal-form-group .form-control {
+    width: 100%;
+    padding: 9px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    font-family: inherit;
+    font-size: 13.5px;
+    color: var(--text-dark);
+    background: #fff;
+    transition: var(--transition);
+    box-sizing: border-box;
+}
+
+.modal-form-group .form-control:focus {
+    outline: none;
+    border-color: var(--blue);
+    box-shadow: 0 0 0 3px rgba(0, 87, 184, 0.12);
+}
+
+.input-suffix {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--text-muted);
+    pointer-events: none;
+}
+
+.modal-input-hint {
+    font-size: 11.5px;
+    color: var(--text-muted);
+    margin-top: 5px;
+}
+
+.modal-input-error {
+    font-size: 11.5px;
+    color: var(--red);
+    font-weight: 600;
+    margin-top: 5px;
+}
+
+.stock-out-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+    padding-top: 14px;
+    border-top: 1px solid var(--border);
+}
+
+.stock-out-actions .btn {
+    height: 40px;
+    padding: 0 16px;
+    font-size: 13px;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* ============================================================
    CHECKBOX & BULK SELECT
 ============================================================ */
 .cb-cell {
@@ -1226,6 +1449,26 @@ table.data-table tbody tr.row-selected {
                     </div>
                 @endif
 
+                @if ($errors->any())
+                    <div class="alert alert-error" id="alertValidationErrors">
+                        <div style="display:flex;align-items:flex-start;gap:8px;">
+                            <span class="material-symbols-outlined" style="font-size:20px;margin-top:2px;">error</span>
+                            <div>
+                                <strong>Gagal memproses data:</strong>
+                                <ul style="margin:4px 0 0 16px;padding:0;font-size:13px;">
+                                    @foreach ($errors->all() as $err)
+                                        <li>{{ $err }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        </div>
+                        <button type="button" class="alert-close"
+                            onclick="document.getElementById('alertValidationErrors').remove()">
+                            <span class="material-symbols-outlined" style="font-size:18px;">close</span>
+                        </button>
+                    </div>
+                @endif
+
                 <!-- Header Card dengan Tombol Aksi Utama -->
                 <div class="header-card">
                     <div class="header-card-title">
@@ -1342,7 +1585,7 @@ table.data-table tbody tr.row-selected {
                                         <th style="width: 140px;">Tanggal Masuk</th>
                                         <th style="width: 140px;">Jumlah Item</th>
                                         <th style="width: 100px;">Satuan</th>
-                                        <th style="width: 110px; text-align: center;">Aksi</th>
+                                        <th style="width: 140px; text-align: center;">Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -1357,8 +1600,8 @@ table.data-table tbody tr.row-selected {
                                         <tr data-id="{{ $mat->id }}" class="{{ $isCritical ? 'row-critical-stock' : ($isLow ? 'row-low-stock' : '') }}">
                                             <td class="cb-cell">
                                                 <input type="checkbox" class="row-checkbox"
-                                                       value="{{ $mat->id }}"
-                                                       aria-label="Pilih {{ $mat->name }}">
+                                                        value="{{ $mat->id }}"
+                                                        aria-label="Pilih {{ $mat->name }}">
                                             </td>
                                             <td>{{ $startNumber + $loop->iteration }}</td>
                                             <td>
@@ -1393,7 +1636,21 @@ table.data-table tbody tr.row-selected {
                                                     style="font-weight: 500; color: var(--text-mid);">{{ $mat->unit }}</span>
                                             </td>
                                             <td>
-                                                <div class="actions-cell" style="justify-content: center;">
+                                                <div class="actions-cell" style="justify-content: center; gap: 6px;">
+                                                    <!-- Tombol Stok Keluar -->
+                                                    <button type="button"
+                                                            class="btn btn-icon-only btn-stock-out btn-open-stock-out-modal"
+                                                            title="Stok Keluar"
+                                                            aria-label="Catat Stok Keluar {{ $mat->name }}"
+                                                            data-id="{{ $mat->id }}"
+                                                            data-number="{{ $mat->material_number }}"
+                                                            data-name="{{ addslashes($mat->name) }}"
+                                                            data-stock="{{ (int) $mat->quantity }}"
+                                                            data-unit="{{ $mat->unit }}"
+                                                            data-action="{{ route('materials.stock-out', $mat->id) }}">
+                                                        <span class="material-symbols-outlined" style="font-size: 18px;">output</span>
+                                                    </button>
+
                                                     <!-- Tombol Edit -->
                                                     <a href="{{ route('materials.edit', $mat->id) }}"
                                                         class="btn btn-icon-only btn-edit" title="Edit Material">
@@ -1553,6 +1810,112 @@ table.data-table tbody tr.row-selected {
                 @csrf
                 @method('DELETE')
             </form>
+
+            <!-- POPUP FORM STOK KELUAR -->
+            <div id="stockOutModal" class="stock-out-modal" aria-hidden="true" role="dialog" aria-labelledby="stockOutModalTitle">
+                <div class="stock-out-modal-box">
+                    <!-- Tombol Tutup (X) -->
+                    <button type="button" class="modal-close-btn" id="stockOutModalCloseBtn" aria-label="Tutup Form">
+                        <span class="material-symbols-outlined">close</span>
+                    </button>
+
+                    <!-- Header Modal -->
+                    <div class="stock-out-header">
+                        <div class="stock-out-icon">
+                            <span class="material-symbols-outlined">output</span>
+                        </div>
+                        <div>
+                            <h3 id="stockOutModalTitle">Catat Stok Keluar</h3>
+                            <p>Pengurangan stok akan otomatis tercatat ke Riwayat Pergerakan Material.</p>
+                        </div>
+                    </div>
+
+                    <!-- Ringkasan Info Material -->
+                    <div class="stock-out-material-card">
+                        <div class="material-card-row">
+                            <span class="material-card-label">No Material:</span>
+                            <span class="badge-material-number" id="modalStockOutNumber">-</span>
+                        </div>
+                        <div class="material-card-row" style="margin-top:6px;">
+                            <span class="material-card-label">Nama Material:</span>
+                            <strong id="modalStockOutName" style="color:var(--text-dark);font-size:13.5px;">-</strong>
+                        </div>
+                        <div class="material-card-row" style="margin-top:6px;">
+                            <span class="material-card-label">Stok Tersedia:</span>
+                            <span id="modalStockOutAvailable" class="stock-pill pill-warning" style="font-weight:700;font-size:12.5px;">0 Unit</span>
+                        </div>
+                    </div>
+
+                    <!-- Peringatan Jika Stok Kosong -->
+                    <div id="modalStockOutEmptyAlert" class="modal-stock-alert" style="display:none;">
+                        <span class="material-symbols-outlined" style="font-size:18px;">warning</span>
+                        <span>Stok material ini sedang kosong (0). Pengeluaran material tidak dapat diproses.</span>
+                    </div>
+
+                    <!-- Form Stok Keluar -->
+                    <form id="stockOutForm" method="POST" action="">
+                        @csrf
+
+                        <!-- Jumlah Keluar -->
+                        <div class="modal-form-group">
+                            <label for="modalStockOutQty" class="modal-form-label">
+                                Jumlah Keluar <span style="color:var(--red);">*</span>
+                            </label>
+                            <div style="position:relative;">
+                                <input type="number" 
+                                       id="modalStockOutQty" 
+                                       name="quantity" 
+                                       class="form-control" 
+                                       min="1" 
+                                       required 
+                                       placeholder="Masukkan jumlah keluar">
+                                <span id="modalStockOutUnitSuffix" class="input-suffix">Unit</span>
+                            </div>
+                            <div id="modalStockOutQtyHint" class="modal-input-hint">
+                                Maksimal yang dapat dikeluarkan: <strong id="modalMaxQtyText">0 Unit</strong>
+                            </div>
+                            <div id="modalStockOutQtyError" class="modal-input-error" style="display:none;">
+                                Jumlah keluar tidak boleh melebihi stok yang tersedia!
+                            </div>
+                        </div>
+
+                        <!-- Tanggal Keluar -->
+                        <div class="modal-form-group">
+                            <label for="modalStockOutDate" class="modal-form-label">
+                                Tanggal Keluar <span style="color:var(--red);">*</span>
+                            </label>
+                            <input type="date" 
+                                   id="modalStockOutDate" 
+                                   name="exit_date" 
+                                   class="form-control" 
+                                   required 
+                                   value="{{ date('Y-m-d') }}">
+                        </div>
+
+                        <!-- Keterangan / Tujuan -->
+                        <div class="modal-form-group">
+                            <label for="modalStockOutDesc" class="modal-form-label">
+                                Keterangan / Tujuan Pengeluaran <span style="color:var(--red);">*</span>
+                            </label>
+                            <textarea id="modalStockOutDesc" 
+                                      name="description" 
+                                      class="form-control" 
+                                      rows="3" 
+                                      required 
+                                      placeholder="Contoh: Digunakan untuk pemeliharaan rutin, operasional unit, rapat, dll."></textarea>
+                        </div>
+
+                        <!-- Tombol Aksi -->
+                        <div class="stock-out-actions">
+                            <button type="button" class="btn btn-outline" id="stockOutModalCancel">Batal</button>
+                            <button type="submit" class="btn btn-primary" id="stockOutSubmitBtn" style="background:var(--blue);">
+                                <span class="material-symbols-outlined" style="font-size:18px;">check_circle</span>
+                                Simpan Stok Keluar
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
 
             <script>
             (function () {
@@ -1743,6 +2106,143 @@ table.data-table tbody tr.row-selected {
                         if (bulkModal) bulkModal.classList.remove('show');
                     }
                 });
+
+                // ======================================================
+                // 3. STOK KELUAR MODAL
+                // ======================================================
+                const stockOutModal     = document.getElementById('stockOutModal');
+                const stockOutForm      = document.getElementById('stockOutForm');
+                const stockOutCancel    = document.getElementById('stockOutModalCancel');
+                const stockOutCloseBtn  = document.getElementById('stockOutModalCloseBtn');
+                const stockOutSubmitBtn = document.getElementById('stockOutSubmitBtn');
+
+                const stockOutNumberEl  = document.getElementById('modalStockOutNumber');
+                const stockOutNameEl    = document.getElementById('modalStockOutName');
+                const stockOutAvailEl   = document.getElementById('modalStockOutAvailable');
+                const stockOutAlertEl   = document.getElementById('modalStockOutEmptyAlert');
+
+                const stockOutQtyInput  = document.getElementById('modalStockOutQty');
+                const stockOutUnitEl    = document.getElementById('modalStockOutUnitSuffix');
+                const stockOutMaxHint   = document.getElementById('modalMaxQtyText');
+                const stockOutQtyError  = document.getElementById('modalStockOutQtyError');
+                const stockOutDateInput = document.getElementById('modalStockOutDate');
+                const stockOutDescInput = document.getElementById('modalStockOutDesc');
+
+                let currentStockAvailable = 0;
+
+                function closeStockOutModal() {
+                    if (stockOutModal) {
+                        stockOutModal.classList.remove('show');
+                    }
+                }
+
+                if (stockOutModal && stockOutForm) {
+                    document.querySelector('main.main').addEventListener('click', function (e) {
+                        const btn = e.target.closest('.btn-open-stock-out-modal');
+                        if (!btn) return;
+                        e.preventDefault();
+
+                        const matId     = btn.dataset.id;
+                        const matNumber = btn.dataset.number || '-';
+                        const matName   = btn.dataset.name || '-';
+                        const stockQty  = parseInt(btn.dataset.stock, 10) || 0;
+                        const unit      = btn.dataset.unit || 'Unit';
+                        const actionUrl = btn.dataset.action;
+
+                        currentStockAvailable = stockQty;
+
+                        // Set action form
+                        stockOutForm.action = actionUrl;
+
+                        // Set info visual
+                        if (stockOutNumberEl) stockOutNumberEl.textContent = matNumber;
+                        if (stockOutNameEl)   stockOutNameEl.textContent   = matName;
+                        if (stockOutAvailEl)  stockOutAvailEl.textContent  = `${stockQty.toLocaleString('id-ID')} ${unit}`;
+                        if (stockOutUnitEl)   stockOutUnitEl.textContent   = unit;
+                        if (stockOutMaxHint)  stockOutMaxHint.textContent  = `${stockQty.toLocaleString('id-ID')} ${unit}`;
+
+                        // Reset form inputs & validation
+                        if (stockOutQtyInput) {
+                            stockOutQtyInput.value = '';
+                            stockOutQtyInput.max   = stockQty;
+                            stockOutQtyInput.style.borderColor = '';
+                        }
+                        if (stockOutDescInput) stockOutDescInput.value = '';
+                        if (stockOutDateInput) stockOutDateInput.value = new Date().toISOString().split('T')[0];
+                        if (stockOutQtyError)  stockOutQtyError.style.display = 'none';
+
+                        if (stockQty <= 0) {
+                            if (stockOutAlertEl)   stockOutAlertEl.style.display = 'flex';
+                            if (stockOutQtyInput)  stockOutQtyInput.disabled = true;
+                            if (stockOutSubmitBtn) {
+                                stockOutSubmitBtn.disabled = true;
+                                stockOutSubmitBtn.style.opacity = '0.5';
+                                stockOutSubmitBtn.style.cursor = 'not-allowed';
+                            }
+                        } else {
+                            if (stockOutAlertEl)   stockOutAlertEl.style.display = 'none';
+                            if (stockOutQtyInput)  stockOutQtyInput.disabled = false;
+                            if (stockOutSubmitBtn) {
+                                stockOutSubmitBtn.disabled = false;
+                                stockOutSubmitBtn.style.opacity = '1';
+                                stockOutSubmitBtn.style.cursor = 'pointer';
+                                stockOutSubmitBtn.innerHTML = '<span class="material-symbols-outlined" style="font-size:18px;">check_circle</span> Simpan Stok Keluar';
+                            }
+                        }
+
+                        stockOutModal.classList.add('show');
+                        if (stockQty > 0 && stockOutQtyInput) {
+                            setTimeout(() => stockOutQtyInput.focus(), 150);
+                        }
+                    });
+
+                    if (stockOutCancel)   stockOutCancel.addEventListener('click', closeStockOutModal);
+                    if (stockOutCloseBtn) stockOutCloseBtn.addEventListener('click', closeStockOutModal);
+
+                    stockOutModal.addEventListener('click', function (e) {
+                        if (e.target === stockOutModal) closeStockOutModal();
+                    });
+
+                    document.addEventListener('keydown', function (e) {
+                        if (e.key === 'Escape' && stockOutModal.classList.contains('show')) {
+                            closeStockOutModal();
+                        }
+                    });
+
+                    // Validasi real-time input jumlah keluar
+                    if (stockOutQtyInput) {
+                        stockOutQtyInput.addEventListener('input', function () {
+                            const val = parseInt(this.value, 10);
+                            if (isNaN(val) || val <= 0) {
+                                stockOutQtyError.textContent = 'Jumlah keluar wajib lebih dari 0.';
+                                stockOutQtyError.style.display = 'block';
+                                this.style.borderColor = 'var(--red)';
+                                stockOutSubmitBtn.disabled = true;
+                            } else if (val > currentStockAvailable) {
+                                stockOutQtyError.textContent = `Jumlah keluar tidak boleh melebihi stok yang tersedia (${currentStockAvailable}).`;
+                                stockOutQtyError.style.display = 'block';
+                                this.style.borderColor = 'var(--red)';
+                                stockOutSubmitBtn.disabled = true;
+                            } else {
+                                stockOutQtyError.style.display = 'none';
+                                this.style.borderColor = '';
+                                stockOutSubmitBtn.disabled = false;
+                            }
+                        });
+                    }
+
+                    stockOutForm.addEventListener('submit', function (e) {
+                        const val = parseInt(stockOutQtyInput.value, 10);
+                        if (isNaN(val) || val <= 0 || val > currentStockAvailable) {
+                            e.preventDefault();
+                            stockOutQtyInput.focus();
+                            stockOutQtyError.style.display = 'block';
+                            return;
+                        }
+                        stockOutSubmitBtn.disabled = true;
+                        stockOutSubmitBtn.innerHTML = '<span class="material-symbols-outlined" style="font-size:18px;">hourglass_empty</span> Menyimpan...';
+                    });
+                }
 
             })();
             </script>

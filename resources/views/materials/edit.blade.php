@@ -484,20 +484,23 @@
                             <!-- Jumlah Item -->
                             <div class="form-group">
                                 <label for="quantity" class="form-label">
-                                    Jumlah Item (Stok) <span class="req">*</span>
+                                    Jumlah Item (Stok)
                                 </label>
                                 <input 
                                     type="number" 
                                     id="quantity" 
                                     name="quantity" 
-                                    class="form-control @error('quantity') is-invalid @enderror"
-                                    value="{{ old('quantity', $material->quantity) }}" 
-                                    min="0"
-                                    required
+                                    class="form-control"
+                                    value="{{ $material->quantity }}" 
+                                    readonly
+                                    tabindex="-1"
+                                    style="background-color: #F8FAFC; color: #475569; cursor: not-allowed; border-color: #E2E8F0;"
+                                    title="Jumlah stok tidak dapat diubah di form edit. Gunakan fitur Stok Masuk / Stok Keluar."
                                 >
-                                @error('quantity')
-                                    <span class="invalid-feedback">{{ $message }}</span>
-                                @enderror
+                                <small style="display:block;margin-top:6px;font-size:12px;color:var(--text-muted);line-height:1.4;">
+                                    <span class="material-symbols-outlined" style="font-size:14px;vertical-align:-2px;color:var(--blue);">info</span>
+                                    Stok saat ini bersifat <strong>readonly</strong>. Perubahan stok hanya dapat dilakukan melalui fitur <strong>Stok Masuk</strong> dan <strong>Stok Keluar</strong>.
+                                </small>
                             </div>
 
                             <!-- Satuan -->

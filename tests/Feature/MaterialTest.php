@@ -214,7 +214,7 @@ class MaterialTest extends TestCase
         $this->assertDatabaseHas('materials', [
             'id'       => $material->id,
             'name'     => 'Buku Tulis Bergaris',
-            'quantity' => 50,
+            'quantity' => 30,
         ]);
 
         $this->assertDatabaseHas('stock_movements', [
@@ -222,8 +222,8 @@ class MaterialTest extends TestCase
             'user_id'         => $keuangan->id,
             'activity'        => 'Edit',
             'quantity_before' => 30,
-            'quantity_after'  => 50,
-            'quantity_change' => 20,
+            'quantity_after'  => 30,
+            'quantity_change' => 0,
         ]);
     }
 

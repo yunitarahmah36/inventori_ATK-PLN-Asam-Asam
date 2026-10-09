@@ -71,6 +71,9 @@ Route::middleware('auth')->group(function () {
     Route::post('/materials/bulk-destroy', [MaterialController::class, 'bulkDestroy'])
         ->name('materials.bulk-destroy');
 
+    Route::post('/materials/{material}/stock-out', [MaterialController::class, 'stockOut'])
+        ->name('materials.stock-out');
+
     Route::resource('materials', MaterialController::class);
 
 

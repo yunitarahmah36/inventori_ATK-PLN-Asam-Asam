@@ -582,7 +582,7 @@
 
                         'tambah' => 'activity-tambah',
 
-                        'kurangi' => 'activity-kurangi',
+                        'kurangi', 'keluar' => 'activity-kurangi',
 
                         'edit' => 'activity-edit',
 

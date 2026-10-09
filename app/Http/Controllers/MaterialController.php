@@ -268,7 +268,7 @@ class MaterialController extends Controller
             ],
             'name'        => 'required|string|max:255',
             'entry_date'  => 'required|date',
-            'quantity'    => 'required|integer|min:0',
+            'quantity'    => 'nullable',
             'unit'        => 'required|string|max:50',
             'description' => 'nullable|string|max:1000',
         ], [
@@ -276,43 +276,113 @@ class MaterialController extends Controller
             'name.required'            => 'Nama Material wajib diisi.',
             'entry_date.required'      => 'Tanggal Masuk wajib diisi.',
             'entry_date.date'          => 'Format tanggal tidak valid.',
-            'quantity.required'        => 'Jumlah Item wajib diisi.',
-            'quantity.integer'         => 'Jumlah Item harus berupa angka.',
-            'quantity.min'             => 'Jumlah Item tidak boleh bernilai negatif.',
             'unit.required'            => 'Satuan wajib diisi.',
         ]);
 
-        $qtyBefore = (int) $material->quantity;
-        $qtyAfter  = (int) $validated['quantity'];
-        $qtyChange = $qtyAfter - $qtyBefore;
+        $currentQty = (int) $material->quantity;
 
+        // Update informasi material tanpa mengubah kuantitas stok
         $material->update([
             'material_number' => $validated['material_number'],
             'name'            => $validated['name'],
             'entry_date'      => $validated['entry_date'],
-            'quantity'        => $qtyAfter,
             'unit'            => $validated['unit'],
             'description'     => $validated['description'] ?? null,
         ]);
 
-        // Catat riwayat aktivitas stok
+        // Catat riwayat aktivitas stok (perubahan stok = 0)
         StockMovement::create([
             'material_id'     => $material->id,
             'material_name'   => $material->name,
             'material_number' => $material->material_number,
             'user_id'         => Auth::id(),
             'activity'        => 'Edit',
-            'quantity_before' => $qtyBefore,
-            'quantity_after'  => $qtyAfter,
-            'quantity_change' => $qtyChange,
-            'description'     => $qtyChange !== 0
-                ? "Penyesuaian stok ({$qtyChange} {$material->unit})"
-                : 'Pembaruan informasi data material',
+            'quantity_before' => $currentQty,
+            'quantity_after'  => $currentQty,
+            'quantity_change' => 0,
+            'description'     => 'Pembaruan informasi data material',
         ]);
 
         return redirect()
             ->route('materials.index')
             ->with('success', 'Material berhasil diperbarui.');
+    }
+
+    /**
+     * Catat pengeluaran stok material (Stok Keluar), kurangi jumlah stok,
+     * dan catat riwayat pergerakan stok menggunakan database transaction.
+     */
+    public function stockOut(Request $request, Material $material)
+    {
+        $validated = $request->validate([
+            'quantity'    => 'required|integer|min:1',
+            'exit_date'   => 'required|date',
+            'description' => 'required|string|max:1000',
+        ], [
+            'quantity.required'    => 'Jumlah keluar wajib diisi.',
+            'quantity.integer'     => 'Jumlah keluar harus berupa angka bulat.',
+            'quantity.min'         => 'Jumlah keluar wajib lebih dari 0.',
+            'exit_date.required'   => 'Tanggal keluar wajib diisi.',
+            'exit_date.date'       => 'Format tanggal keluar tidak valid.',
+            'description.required' => 'Keterangan/tujuan pengeluaran wajib diisi.',
+            'description.max'      => 'Keterangan/tujuan pengeluaran maksimal 1000 karakter.',
+        ]);
+
+        $qtyOut = (int) $validated['quantity'];
+
+        try {
+            DB::transaction(function () use ($material, $validated, $qtyOut) {
+                // Lock data material untuk mencegah race condition
+                $lockedMaterial = Material::lockForUpdate()->findOrFail($material->id);
+
+                $currentQty = (int) $lockedMaterial->quantity;
+
+                // Validasi agar jumlah keluar tidak melebihi stok yang tersedia
+                if ($qtyOut > $currentQty) {
+                    throw \Illuminate\Validation\ValidationException::withMessages([
+                        'quantity' => "Jumlah keluar ({$qtyOut} {$lockedMaterial->unit}) melebihi stok yang tersedia ({$currentQty} {$lockedMaterial->unit}).",
+                    ]);
+                }
+
+                $newQty = $currentQty - $qtyOut;
+
+                // Update stok material
+                $lockedMaterial->update([
+                    'quantity' => $newQty,
+                ]);
+
+                // Tanggal dan waktu pergerakan stok keluar
+                $exitDateTime = \Carbon\Carbon::parse($validated['exit_date'])->setTime(
+                    now()->hour,
+                    now()->minute,
+                    now()->second
+                );
+
+                // Catat ke Riwayat Pergerakan Material
+                StockMovement::create([
+                    'material_id'     => $lockedMaterial->id,
+                    'material_name'   => $lockedMaterial->name,
+                    'material_number' => $lockedMaterial->material_number,
+                    'user_id'         => Auth::id(),
+                    'activity'        => 'Keluar',
+                    'quantity_before' => $currentQty,
+                    'quantity_after'  => $newQty,
+                    'quantity_change' => -$qtyOut,
+                    'description'     => trim($validated['description']),
+                    'created_at'      => $exitDateTime,
+                ]);
+            });
+
+            return redirect()
+                ->route('materials.index')
+                ->with('success', "Stok keluar material \"{$material->name}\" sebanyak {$qtyOut} {$material->unit} berhasil dicatat.");
+        } catch (\Illuminate\Validation\ValidationException $ve) {
+            throw $ve;
+        } catch (\Exception $e) {
+            return redirect()
+                ->route('materials.index')
+                ->with('error', "Gagal memproses stok keluar: " . $e->getMessage());
+        }
     }
 
     /**

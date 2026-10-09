@@ -278,4 +278,51 @@ class MaterialImportAndAnalysisTest extends TestCase
         $response->assertSee('MAT002');
         $response->assertSee('2 Data Material');
     }
+
+    public function test_edit_form_renders_readonly_quantity_and_update_does_not_change_quantity(): void
+    {
+        $admin = $this->createUser();
+
+        $material = Material::create([
+            'material_number' => 'MAT099',
+            'name'            => 'Gunting Kertas',
+            'entry_date'      => '2026-10-01',
+            'quantity'        => 42,
+            'unit'            => 'Buah',
+            'created_by'      => $admin->id,
+        ]);
+
+        // Cek halaman edit: field quantity harus readonly dan menampilkan 42
+        $formResponse = $this->actingAs($admin)->get("/materials/{$material->id}/edit");
+        $formResponse->assertStatus(200);
+        $formResponse->assertSee('readonly');
+        $formResponse->assertSee('value="42"', false);
+
+        // Kirim update (bahkan jika ada nilai kuantitas lain yang dikirim)
+        $updateResponse = $this->actingAs($admin)->put("/materials/{$material->id}", [
+            'material_number' => 'MAT099',
+            'name'            => 'Gunting Kertas Stainless',
+            'entry_date'      => '2026-10-05',
+            'quantity'        => 999, // Nilai yang dicoba diubah harus diabaikan!
+            'unit'            => 'Buah',
+            'description'     => 'Keterangan baru',
+        ]);
+
+        $updateResponse->assertRedirect('/materials');
+        $updateResponse->assertSessionHas('success');
+
+        $material->refresh();
+        $this->assertEquals('Gunting Kertas Stainless', $material->name);
+        // Pastikan stok tetap 42 (tidak berubah menjadi 999)
+        $this->assertEquals(42, $material->quantity);
+
+        // Pastikan StockMovement mencatat quantity_change = 0
+        $this->assertDatabaseHas('stock_movements', [
+            'material_id'     => $material->id,
+            'activity'        => 'Edit',
+            'quantity_before' => 42,
+            'quantity_after'  => 42,
+            'quantity_change' => 0,
+        ]);
+    }
 }

@@ -1536,6 +1536,12 @@
 
                                 </option>
 
+                                <option value="Keluar" {{ request('activity') == 'Keluar' ? 'selected' : '' }}>
+
+                                    Keluar
+
+                                </option>
+
                             </select>
 
                         </div>
