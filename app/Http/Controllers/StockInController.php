@@ -100,7 +100,7 @@ class StockInController extends Controller
             'material_id' => 'required|exists:materials,id',
             'quantity'    => 'required|integer|min:1',
             'entry_date'  => 'required|date',
-            'description' => 'required|string|max:1000',
+            'description' => 'nullable|string|max:1000',
         ], [
             'material_id.required' => 'Pilih material yang akan ditambah stoknya.',
             'material_id.exists'   => 'Material yang dipilih belum terdaftar di Data Material.',
@@ -109,7 +109,6 @@ class StockInController extends Controller
             'quantity.min'         => 'Jumlah masuk wajib lebih dari 0.',
             'entry_date.required'  => 'Tanggal masuk wajib diisi.',
             'entry_date.date'      => 'Format tanggal masuk tidak valid.',
-            'description.required' => 'Keterangan atau sumber stok masuk wajib diisi.',
             'description.max'      => 'Keterangan maksimal 1000 karakter.',
         ]);
 
@@ -146,7 +145,7 @@ class StockInController extends Controller
                     'quantity_before' => $qtyBefore,
                     'quantity_after'  => $qtyAfter,
                     'quantity_change' => $qtyIn,
-                    'description'     => trim($validated['description']),
+                    'description'     => !empty($validated['description']) ? trim($validated['description']) : null,
                 ]);
                 $movement->created_at = $entryDateTime;
                 $movement->save();

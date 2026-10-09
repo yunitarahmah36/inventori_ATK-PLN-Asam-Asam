@@ -110,6 +110,38 @@ class StockInTest extends TestCase
         ]);
     }
 
+    public function test_manual_stock_in_allows_empty_optional_description(): void
+    {
+        $user = $this->createUser('Admin');
+
+        $material = Material::create([
+            'material_number' => 'MAT099',
+            'name'            => 'Lakban Hitam',
+            'entry_date'      => '2026-10-01',
+            'quantity'        => 10,
+            'unit'            => 'Rol',
+        ]);
+
+        $response = $this->actingAs($user)->post(route('materials.stock-in.store'), [
+            'material_id' => $material->id,
+            'quantity'    => 5,
+            'entry_date'  => '2026-10-09',
+            'description' => '', // kosong / opsional
+        ]);
+
+        $response->assertRedirect(route('materials.stock-in.index'));
+        $response->assertSessionHas('success');
+
+        $material->refresh();
+        $this->assertEquals(15, $material->quantity);
+
+        $this->assertDatabaseHas('stock_movements', [
+            'material_id'     => $material->id,
+            'quantity_change' => 5,
+            'description'     => null,
+        ]);
+    }
+
     public function test_manual_stock_in_fails_if_quantity_is_zero_or_negative(): void
     {
         $user = $this->createUser('Admin');

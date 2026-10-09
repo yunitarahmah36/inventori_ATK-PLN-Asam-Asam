@@ -1296,14 +1296,13 @@
                     <!-- Keterangan / Sumber -->
                     <div class="form-group-custom">
                         <label for="manualDescription" class="form-label-custom">
-                            Keterangan / Dokumen Sumber <span style="color:var(--red);">*</span>
+                            Keterangan <span style="color:var(--text-muted);font-weight:normal;font-size:12px;">(Opsional)</span>
                         </label>
                         <textarea id="manualDescription" 
                                   name="description" 
                                   class="form-control-custom" 
                                   rows="3" 
-                                  required 
-                                  placeholder="Contoh: Pengadaan ATK Triwulan IV / No. Surat Jalan: SJ-2026-10..."></textarea>
+                                  placeholder="Contoh: Pengadaan ATK Triwulan IV / No. Surat Jalan: SJ-2026-10... (opsional)"></textarea>
                     </div>
 
                     <div class="modal-actions-custom">
