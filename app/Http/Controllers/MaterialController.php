@@ -109,12 +109,43 @@ class MaterialController extends Controller
     }
 
     /**
+     * Normalisasi nama material dengan mengabaikan huruf besar/kecil dan spasi berlebih.
+     */
+    public static function normalizeName(?string $name): string
+    {
+        if ($name === null) {
+            return '';
+        }
+        $cleaned = preg_replace('/\s+/u', ' ', trim($name));
+        return mb_strtolower($cleaned, 'UTF-8');
+    }
+
+    /**
      * Simpan material baru ke database dan catat riwayat stok.
+     * Jika No Material dan nama material sama (setelah normalisasi), jangan ditolak sebagai duplikat;
+     * cukup cegah pembuatan data ganda dengan menambahkan stok ke material yang sudah ada.
      */
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'material_number' => 'required|string|max:50|unique:materials,material_number',
+            'material_number' => [
+                'required',
+                'string',
+                'max:50',
+                function ($attribute, $value, $fail) use ($request) {
+                    $matNumber = trim((string) $value);
+                    $existing = Material::whereRaw('LOWER(TRIM(material_number)) = ?', [strtolower($matNumber)])->first();
+                    if ($existing) {
+                        $inputName = (string) $request->input('name');
+                        $normalizedInputName = self::normalizeName($inputName);
+                        $normalizedExistingName = self::normalizeName($existing->name);
+
+                        if ($normalizedInputName === '' || $normalizedInputName !== $normalizedExistingName) {
+                            $fail("No Material '{$matNumber}' sudah digunakan untuk material '{$existing->name}'. No Material yang sama tidak boleh digunakan untuk nama material yang berbeda.");
+                        }
+                    }
+                },
+            ],
             'name'            => 'required|string|max:255',
             'entry_date'      => 'required|date',
             'quantity'        => 'required|integer|min:0',
@@ -122,7 +153,6 @@ class MaterialController extends Controller
             'description'     => 'nullable|string|max:1000',
         ], [
             'material_number.required' => 'No Material wajib diisi.',
-            'material_number.unique'   => 'No Material sudah digunakan, silakan gunakan nomor lain.',
             'name.required'            => 'Nama Material wajib diisi.',
             'entry_date.required'      => 'Tanggal Masuk wajib diisi.',
             'entry_date.date'          => 'Format tanggal tidak valid.',
@@ -132,11 +162,50 @@ class MaterialController extends Controller
             'unit.required'            => 'Satuan wajib diisi.',
         ]);
 
+        $matNumber = trim($validated['material_number']);
+        $inputName = trim($validated['name']);
+        $normalizedInputName = self::normalizeName($inputName);
+
+        // Cari apakah No Material sudah ada di database
+        $existing = Material::whereRaw('LOWER(TRIM(material_number)) = ?', [strtolower($matNumber)])->first();
+
+        if ($existing) {
+            // No Material dan nama material sama setelah normalisasi:
+            // Cegah pembuatan data ganda dengan menambahkan stok ke data yang sudah ada
+            $qtyBefore = (int) $existing->quantity;
+            $addQty    = (int) $validated['quantity'];
+            $qtyAfter  = $qtyBefore + $addQty;
+
+            $existing->update([
+                'quantity'    => $qtyAfter,
+                'entry_date'  => $validated['entry_date'] > $existing->entry_date ? $validated['entry_date'] : $existing->entry_date,
+                'description' => $validated['description'] ?: $existing->description,
+            ]);
+
+            StockMovement::create([
+                'material_id'     => $existing->id,
+                'material_name'   => $existing->name,
+                'material_number' => $existing->material_number,
+                'user_id'         => Auth::id(),
+                'activity'        => 'Tambah',
+                'quantity_before' => $qtyBefore,
+                'quantity_after'  => $qtyAfter,
+                'quantity_change' => $addQty,
+                'description'     => $validated['description']
+                    ?: 'Penambahan stok material',
+            ]);
+
+            return redirect()
+                ->route('materials.index')
+                ->with('success', 'Stok material berhasil ditambahkan ke data material yang sudah ada.');
+        }
+
+        // Jika material belum ada, buat record material baru
         $material = Material::create([
-            'material_number' => $validated['material_number'],
-            'name'            => $validated['name'],
+            'material_number' => $matNumber,
+            'name'            => $inputName,
             'entry_date'      => $validated['entry_date'],
-            'quantity'        => $validated['quantity'],
+            'quantity'        => (int) $validated['quantity'],
             'unit'            => $validated['unit'],
             'description'     => $validated['description'] ?? null,
             'created_by'      => Auth::id(),
@@ -175,42 +244,42 @@ class MaterialController extends Controller
     public function update(Request $request, Material $material)
     {
         $validated = $request->validate([
-            'material_number' =>
-                'required|string|max:50|unique:materials,material_number,' .
-                $material->id,
+            'material_number' => [
+                'required',
+                'string',
+                'max:50',
+                function ($attribute, $value, $fail) use ($request, $material) {
+                    $matNumber = trim((string) $value);
+                    $other = Material::where('id', '!=', $material->id)
+                        ->whereRaw('LOWER(TRIM(material_number)) = ?', [strtolower($matNumber)])
+                        ->first();
+                    if ($other) {
+                        $inputName = (string) $request->input('name');
+                        $normalizedInputName = self::normalizeName($inputName);
+                        $normalizedOtherName = self::normalizeName($other->name);
 
+                        if ($normalizedInputName !== $normalizedOtherName) {
+                            $fail("No Material '{$matNumber}' sudah digunakan untuk material '{$other->name}'. No Material yang sama tidak boleh digunakan untuk nama material yang berbeda.");
+                        } else {
+                            $fail("No Material '{$matNumber}' sudah terdaftar pada entri material lain.");
+                        }
+                    }
+                },
+            ],
             'name'        => 'required|string|max:255',
             'entry_date'  => 'required|date',
             'quantity'    => 'required|integer|min:0',
             'unit'        => 'required|string|max:50',
             'description' => 'nullable|string|max:1000',
         ], [
-            'material_number.required' =>
-                'No Material wajib diisi.',
-
-            'material_number.unique' =>
-                'No Material sudah digunakan, silakan gunakan nomor lain.',
-
-            'name.required' =>
-                'Nama Material wajib diisi.',
-
-            'entry_date.required' =>
-                'Tanggal Masuk wajib diisi.',
-
-            'entry_date.date' =>
-                'Format tanggal tidak valid.',
-
-            'quantity.required' =>
-                'Jumlah Item wajib diisi.',
-
-            'quantity.integer' =>
-                'Jumlah Item harus berupa angka.',
-
-            'quantity.min' =>
-                'Jumlah Item tidak boleh bernilai negatif.',
-
-            'unit.required' =>
-                'Satuan wajib diisi.',
+            'material_number.required' => 'No Material wajib diisi.',
+            'name.required'            => 'Nama Material wajib diisi.',
+            'entry_date.required'      => 'Tanggal Masuk wajib diisi.',
+            'entry_date.date'          => 'Format tanggal tidak valid.',
+            'quantity.required'        => 'Jumlah Item wajib diisi.',
+            'quantity.integer'         => 'Jumlah Item harus berupa angka.',
+            'quantity.min'             => 'Jumlah Item tidak boleh bernilai negatif.',
+            'unit.required'            => 'Satuan wajib diisi.',
         ]);
 
         $qtyBefore = (int) $material->quantity;
@@ -429,6 +498,21 @@ class MaterialController extends Controller
                 $baris = $failure->row();
                 foreach ($failure->errors() as $pesan) {
                     $errors[] = "Baris {$baris}: {$pesan}";
+                }
+            }
+
+            return redirect()
+                ->back()
+                ->withInput()
+                ->with('import_errors', $errors)
+                ->with('error_type', 'validation');
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+
+            $errors = [];
+            foreach ($e->errors() as $field => $messages) {
+                foreach ($messages as $pesan) {
+                    $errors[] = $pesan;
                 }
             }
 

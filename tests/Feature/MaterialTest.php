@@ -243,12 +243,13 @@ class MaterialTest extends TestCase
         $response->assertRedirect('/materials');
         $response->assertSessionHas('success');
 
-        $this->assertSoftDeleted('materials', [
+        $this->assertDatabaseMissing('materials', [
             'id' => $material->id,
         ]);
 
         $this->assertDatabaseHas('stock_movements', [
-            'material_id'     => $material->id,
+            'material_id'     => null,
+            'material_number' => $material->material_number,
             'user_id'         => $admin->id,
             'activity'        => 'Hapus',
             'quantity_before' => 5,

@@ -12,7 +12,8 @@ use Illuminate\Support\Str;
 class MaterialAnalysisController extends Controller
 {
     /**
-     * Dapatkan data seluruh material yang dikelompokkan secara case-insensitive.
+     * Dapatkan data seluruh material dengan No Material sebagai identitas unik.
+     * Material dengan nama sama tetapi No Material berbeda tidak digabungkan.
      */
     protected function getGroupedMaterials()
     {
@@ -22,60 +23,20 @@ class MaterialAnalysisController extends Controller
 
         $allMovements = StockMovement::with('user')->get();
 
-        $groupedData = [];
-
-        foreach ($allMaterials as $mat) {
-            $rawName = trim($mat->name ?? '');
-            $normalizedKey = mb_strtolower($rawName);
-
-            if (!isset($groupedData[$normalizedKey])) {
-                $groupedData[$normalizedKey] = [
-                    'key'              => $normalizedKey,
-                    'name'             => $rawName,
-                    'canonical_name'   => ucwords($normalizedKey),
-                    'items'            => collect(),
-                    'material_ids'     => [],
-                    'material_numbers' => [],
-                    'variants'         => collect(),
-                    'total_quantity'   => 0,
-                    'units'            => collect(),
-                    'first_entry_date' => $mat->entry_date,
-                    'last_entry_date'  => $mat->entry_date,
-                ];
-            }
-
-            $groupedData[$normalizedKey]['items']->push($mat);
-            $groupedData[$normalizedKey]['material_ids'][] = $mat->id;
-            $groupedData[$normalizedKey]['material_numbers'][] = $mat->material_number;
-            $groupedData[$normalizedKey]['variants']->push($rawName);
-            $groupedData[$normalizedKey]['total_quantity'] += (int) $mat->quantity;
-
-            if (!empty($mat->unit)) {
-                $groupedData[$normalizedKey]['units']->push($mat->unit);
-            }
-
-            if ($mat->entry_date) {
-                if (!$groupedData[$normalizedKey]['first_entry_date'] || $mat->entry_date < $groupedData[$normalizedKey]['first_entry_date']) {
-                    $groupedData[$normalizedKey]['first_entry_date'] = $mat->entry_date;
-                }
-                if (!$groupedData[$normalizedKey]['last_entry_date'] || $mat->entry_date > $groupedData[$normalizedKey]['last_entry_date']) {
-                    $groupedData[$normalizedKey]['last_entry_date'] = $mat->entry_date;
-                }
-            }
-        }
-
         $groups = collect();
         $usedSlugs = [];
 
-        foreach ($groupedData as $key => $group) {
-            $materialIds = $group['material_ids'];
+        foreach ($allMaterials as $mat) {
+            $rawName   = trim($mat->name ?? '');
+            $matNumber = trim($mat->material_number ?? '');
+            $key       = mb_strtolower($matNumber);
 
-            // Filter pergerakan stok milik kelompok ini
-            $groupMovements = $allMovements->filter(function ($mov) use ($materialIds, $key) {
-                if ($mov->material_id && in_array($mov->material_id, $materialIds)) {
+            // Filter pergerakan stok khusus untuk material ini berdasarkan material_id atau material_number
+            $groupMovements = $allMovements->filter(function ($mov) use ($mat, $matNumber) {
+                if ($mov->material_id && $mov->material_id === $mat->id) {
                     return true;
                 }
-                if ($mov->material_name && mb_strtolower(trim($mov->material_name)) === $key) {
+                if ($mov->material_number && strtoupper(trim($mov->material_number)) === strtoupper($matNumber)) {
                     return true;
                 }
                 return false;
@@ -93,26 +54,20 @@ class MaterialAnalysisController extends Controller
                 }
             }
 
-            // Minimal stok masuk mencakup stok fisik yang tercatat saat ini + yang sudah keluar
-            if ($totalMasuk < $group['total_quantity'] + $totalKeluar) {
-                $effectiveMasuk = max($totalMasuk, $group['total_quantity'] + $totalKeluar);
+            $currentQty = (int) $mat->quantity;
+
+            // Minimal stok masuk mencakup stok fisik saat ini + yang sudah keluar
+            if ($totalMasuk < $currentQty + $totalKeluar) {
+                $effectiveMasuk = max($totalMasuk, $currentQty + $totalKeluar);
             } else {
                 $effectiveMasuk = $totalMasuk;
             }
 
-            // Satuan
-            $distinctUnits = $group['units']->unique()->values();
-            $unitDisplay = $distinctUnits->isNotEmpty() ? $distinctUnits->implode(', ') : '-';
-
-            // Variasi nama yang berbeda
-            $uniqueVariants = $group['variants']->unique()->values();
-
             // Status ketersediaan stok
-            $totalQty = $group['total_quantity'];
-            if ($totalQty <= 0) {
+            if ($currentQty <= 0) {
                 $status = 'Habis';
                 $statusClass = 'danger';
-            } elseif ($totalQty <= 15) {
+            } elseif ($currentQty <= 15) {
                 $status = 'Menipis';
                 $statusClass = 'warning';
             } else {
@@ -120,10 +75,10 @@ class MaterialAnalysisController extends Controller
                 $statusClass = 'success';
             }
 
-            // Generate URL-friendly slug
-            $baseSlug = Str::slug($group['canonical_name']);
+            // Generate URL slug ramah pengguna berdasarkan No Material & Nama
+            $baseSlug = Str::slug($matNumber);
             if (empty($baseSlug)) {
-                $baseSlug = 'material-' . substr(md5($key), 0, 8);
+                $baseSlug = 'mat-' . $mat->id;
             }
             $slug = $baseSlug;
             $counter = 1;
@@ -135,23 +90,27 @@ class MaterialAnalysisController extends Controller
             $groups->push([
                 'key'                => $key,
                 'slug'               => $slug,
-                'name'               => $group['canonical_name'],
-                'raw_name'           => $group['name'],
-                'items'              => $group['items'],
-                'items_count'        => $group['items']->count(),
-                'variants'           => $uniqueVariants,
-                'variants_count'     => $uniqueVariants->count(),
-                'has_duplicates'     => $group['items']->count() > 1,
-                'material_numbers'   => array_values(array_unique($group['material_numbers'])),
-                'total_quantity'     => $totalQty,
-                'unit'               => $unitDisplay,
+                'material_id'        => $mat->id,
+                'material_number'    => $matNumber,
+                'name'               => $rawName,
+                'raw_name'           => $rawName,
+                'canonical_name'     => $rawName,
+                'item'               => $mat,
+                'items'              => collect([$mat]),
+                'items_count'        => 1,
+                'variants'           => collect([$rawName]),
+                'variants_count'     => 1,
+                'has_duplicates'     => false,
+                'material_numbers'   => [$matNumber],
+                'total_quantity'     => $currentQty,
+                'unit'               => $mat->unit ?: '-',
                 'total_masuk'        => $effectiveMasuk,
                 'total_keluar'       => $totalKeluar,
                 'movements_count'    => $groupMovements->count(),
                 'status'             => $status,
                 'status_class'       => $statusClass,
-                'first_entry_date'   => $group['first_entry_date'],
-                'last_entry_date'    => $group['last_entry_date'],
+                'first_entry_date'   => $mat->entry_date,
+                'last_entry_date'    => $mat->entry_date,
             ]);
         }
 
@@ -174,8 +133,8 @@ class MaterialAnalysisController extends Controller
             $d = $today->copy()->subDays($i);
             $key = $d->format('Y-m-d');
             $days[$key] = [
-                'label' => $d->translatedFormat('d M'),
-                'masuk' => 0,
+                'label'  => $d->translatedFormat('d M'),
+                'masuk'  => 0,
                 'keluar' => 0
             ];
         }
@@ -187,8 +146,8 @@ class MaterialAnalysisController extends Controller
             $wEnd = $wStart->copy()->endOfWeek();
             $key = $wStart->format('Y-W');
             $weeks[$key] = [
-                'label' => $wStart->translatedFormat('d M') . ' - ' . $wEnd->translatedFormat('d M'),
-                'masuk' => 0,
+                'label'  => $wStart->translatedFormat('d M') . ' - ' . $wEnd->translatedFormat('d M'),
+                'masuk'  => 0,
                 'keluar' => 0
             ];
         }
@@ -199,8 +158,8 @@ class MaterialAnalysisController extends Controller
             $mDate = $today->copy()->subMonths($i)->startOfMonth();
             $key = $mDate->format('Y-m');
             $months[$key] = [
-                'label' => $mDate->translatedFormat('M Y'),
-                'masuk' => 0,
+                'label'  => $mDate->translatedFormat('M Y'),
+                'masuk'  => 0,
                 'keluar' => 0
             ];
         }
@@ -220,8 +179,8 @@ class MaterialAnalysisController extends Controller
                 $days[$dKey]['keluar'] += $keluar;
             } else {
                 $days[$dKey] = [
-                    'label' => $cDate->translatedFormat('d M'),
-                    'masuk' => $masuk,
+                    'label'  => $cDate->translatedFormat('d M'),
+                    'masuk'  => $masuk,
                     'keluar' => $keluar
                 ];
             }
@@ -235,8 +194,8 @@ class MaterialAnalysisController extends Controller
                 $wStart = $cDate->copy()->startOfWeek();
                 $wEnd = $wStart->copy()->endOfWeek();
                 $weeks[$wKey] = [
-                    'label' => $wStart->translatedFormat('d M') . ' - ' . $wEnd->translatedFormat('d M'),
-                    'masuk' => $masuk,
+                    'label'  => $wStart->translatedFormat('d M') . ' - ' . $wEnd->translatedFormat('d M'),
+                    'masuk'  => $masuk,
                     'keluar' => $keluar
                 ];
             }
@@ -248,8 +207,8 @@ class MaterialAnalysisController extends Controller
                 $months[$mKey]['keluar'] += $keluar;
             } else {
                 $months[$mKey] = [
-                    'label' => $cDate->translatedFormat('M Y'),
-                    'masuk' => $masuk,
+                    'label'  => $cDate->translatedFormat('M Y'),
+                    'masuk'  => $masuk,
                     'keluar' => $keluar
                 ];
             }
@@ -285,12 +244,13 @@ class MaterialAnalysisController extends Controller
     {
         $user = Auth::user();
         $groups = $this->getGroupedMaterials();
+
         // Total Statistik Global (KPI Cards)
         $totalGroupsCount     = $groups->count();
         $totalCombinedStock   = $groups->sum('total_quantity');
         $totalOverallMasuk    = $groups->sum('total_masuk');
         $totalOverallKeluar   = $groups->sum('total_keluar');
-        $duplicateGroupsCount = $groups->where('has_duplicates', true)->count();
+        $duplicateGroupsCount = 0;
         $lowStockCount        = $groups->whereIn('status', ['Menipis', 'Habis'])->count();
 
         // Filter dan Pencarian untuk Cards
@@ -300,22 +260,15 @@ class MaterialAnalysisController extends Controller
 
         $filteredGroups = $groups;
 
-        // Pencarian
+        // Pencarian (berdasarkan nama material atau no material)
         if (!empty($search)) {
             $searchLower = mb_strtolower(trim($search));
             $filteredGroups = $filteredGroups->filter(function ($grp) use ($searchLower) {
-                if (str_contains($grp['key'], $searchLower)) {
+                if (str_contains(mb_strtolower($grp['name']), $searchLower)) {
                     return true;
                 }
-                foreach ($grp['variants'] as $v) {
-                    if (str_contains(mb_strtolower($v), $searchLower)) {
-                        return true;
-                    }
-                }
-                foreach ($grp['material_numbers'] as $no) {
-                    if (str_contains(mb_strtolower($no), $searchLower)) {
-                        return true;
-                    }
+                if (str_contains(mb_strtolower($grp['material_number']), $searchLower)) {
+                    return true;
                 }
                 return false;
             });
@@ -323,9 +276,7 @@ class MaterialAnalysisController extends Controller
 
         // Filter Status
         if (!empty($filterStatus)) {
-            if ($filterStatus === 'duplicate') {
-                $filteredGroups = $filteredGroups->where('has_duplicates', true);
-            } elseif ($filterStatus === 'low') {
+            if ($filterStatus === 'low') {
                 $filteredGroups = $filteredGroups->where('status', 'Menipis');
             } elseif ($filterStatus === 'out') {
                 $filteredGroups = $filteredGroups->where('status', 'Habis');
@@ -350,9 +301,6 @@ class MaterialAnalysisController extends Controller
                 break;
             case 'keluar_desc':
                 $filteredGroups = $filteredGroups->sortByDesc('total_keluar');
-                break;
-            case 'duplicate_desc':
-                $filteredGroups = $filteredGroups->sortByDesc('items_count');
                 break;
             case 'stock_desc':
             default:
@@ -407,29 +355,34 @@ class MaterialAnalysisController extends Controller
         $user = Auth::user();
         $groups = $this->getGroupedMaterials();
 
-        // Cari kelompok berdasarkan slug, key, atau nomor material
+        // Cari material berdasarkan slug, key, atau nomor material
         $searchKey = mb_strtolower(urldecode($key));
         $group = $groups->first(function ($g) use ($key, $searchKey) {
             return $g['slug'] === $key
+                || strtolower($g['slug']) === $searchKey
                 || $g['key'] === $searchKey
-                || Str::slug($g['key']) === $key
-                || in_array($key, $g['material_numbers']);
+                || Str::slug($g['material_number']) === $searchKey
+                || strtolower($g['material_number']) === $searchKey
+                || in_array(strtoupper($searchKey), array_map('strtoupper', $g['material_numbers']))
+                || (string) $g['material_id'] === $key;
         });
 
         if (!$group) {
             abort(404, 'Material tidak ditemukan dalam analisis inventori.');
         }
 
-        $materialIds = $group['items']->pluck('id')->filter()->all();
-        $groupKey = $group['key'];
+        $materialId = $group['material_id'];
+        $matNumber  = $group['material_number'];
 
-        // Ambil seluruh riwayat transaksi / mutasi untuk material ini
+        // Ambil seluruh riwayat transaksi / mutasi khusus untuk material ini
         $transactions = StockMovement::with(['user', 'material'])
-            ->where(function ($q) use ($materialIds, $groupKey) {
-                if (!empty($materialIds)) {
-                    $q->whereIn('material_id', $materialIds);
+            ->where(function ($q) use ($materialId, $matNumber) {
+                if ($materialId) {
+                    $q->where('material_id', $materialId);
                 }
-                $q->orWhereRaw('LOWER(TRIM(material_name)) = ?', [$groupKey]);
+                if ($matNumber) {
+                    $q->orWhere('material_number', $matNumber);
+                }
             })
             ->orderBy('created_at', 'desc')
             ->get();
@@ -446,7 +399,7 @@ class MaterialAnalysisController extends Controller
             $dateLabel = $mov->created_at ? $mov->created_at->format('d/m/Y H:i') : '-';
             $change = (int) $mov->quantity_change;
 
-            $timelineLabels[] = $dateLabel;
+            $timelineLabels[]  = $dateLabel;
             $timelineMasuk[]   = $change > 0 ? $change : 0;
             $timelineKeluar[]  = $change < 0 ? abs($change) : 0;
             $timelineBalance[] = (int) $mov->quantity_after;

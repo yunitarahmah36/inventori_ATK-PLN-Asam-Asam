@@ -23,13 +23,29 @@ return new class extends Migration
         });
 
         // Isi data (backfill) material_name dan material_number dari tabel materials
-        DB::statement("
-            UPDATE stock_movements sm
-            JOIN materials m ON sm.material_id = m.id
-            SET sm.material_name = m.name,
-                sm.material_number = m.material_number
-            WHERE sm.material_id IS NOT NULL
-        ");
+        if (DB::getDriverName() === 'mysql') {
+            DB::statement("
+                UPDATE stock_movements sm
+                JOIN materials m ON sm.material_id = m.id
+                SET sm.material_name = m.name,
+                    sm.material_number = m.material_number
+                WHERE sm.material_id IS NOT NULL
+            ");
+        } else {
+            DB::table('stock_movements')
+                ->join('materials', 'stock_movements.material_id', '=', 'materials.id')
+                ->whereNotNull('stock_movements.material_id')
+                ->select('stock_movements.id', 'materials.name', 'materials.material_number')
+                ->get()
+                ->each(function ($row) {
+                    DB::table('stock_movements')
+                        ->where('id', $row->id)
+                        ->update([
+                            'material_name'   => $row->name,
+                            'material_number' => $row->material_number,
+                        ]);
+                });
+        }
 
         // Ubah foreign key constraint dari cascadeOnDelete menjadi nullOnDelete
         Schema::table('stock_movements', function (Blueprint $table) {

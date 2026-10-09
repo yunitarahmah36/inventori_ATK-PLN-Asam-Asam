@@ -1184,24 +1184,22 @@
                         <!-- Filter Status -->
                         <div class="filter-group">
                             <label for="status">Filter Status:</label>
-                            <select id="status" name="status" onchange="document.getElementById('analysisFilterForm').submit()">
+                            <select id="status" name="status">
                                 <option value="" {{ empty($filterStatus) ? 'selected' : '' }}>Semua Material</option>
-                                <option value="duplicate" {{ $filterStatus === 'duplicate' ? 'selected' : '' }}>⚡ Hanya Input Berulang (Duplikat)</option>
-                                <option value="safe" {{ $filterStatus === 'safe' ? 'selected' : '' }}>✅ Stok Aman (> 15)</option>
-                                <option value="low" {{ $filterStatus === 'low' ? 'selected' : '' }}>⚠️ Stok Menipis (≤ 15)</option>
-                                <option value="out" {{ $filterStatus === 'out' ? 'selected' : '' }}>❌ Stok Habis (0)</option>
+                                <option value="safe" {{ $filterStatus === 'safe' ? 'selected' : '' }}>Stok Aman (> 15)</option>
+                                <option value="low" {{ $filterStatus === 'low' ? 'selected' : '' }}>Stok Menipis (≤ 15)</option>
+                                <option value="out" {{ $filterStatus === 'out' ? 'selected' : '' }}>Stok Habis (0)</option>
                             </select>
                         </div>
 
                         <!-- Sort By -->
                         <div class="filter-group">
                             <label for="sort">Urutkan Data:</label>
-                            <select id="sort" name="sort" onchange="document.getElementById('analysisFilterForm').submit()">
+                            <select id="sort" name="sort">
                                 <option value="stock_desc" {{ $sortBy === 'stock_desc' ? 'selected' : '' }}>Stok Terbanyak</option>
                                 <option value="stock_asc" {{ $sortBy === 'stock_asc' ? 'selected' : '' }}>Stok Tersedikit</option>
                                 <option value="masuk_desc" {{ $sortBy === 'masuk_desc' ? 'selected' : '' }}>Stok Masuk Terbanyak</option>
                                 <option value="keluar_desc" {{ $sortBy === 'keluar_desc' ? 'selected' : '' }}>Stok Keluar Terbanyak</option>
-                                <option value="duplicate_desc" {{ $sortBy === 'duplicate_desc' ? 'selected' : '' }}>Input Berulang Terbanyak</option>
                                 <option value="name_asc" {{ $sortBy === 'name_asc' ? 'selected' : '' }}>Nama A - Z</option>
                                 <option value="name_desc" {{ $sortBy === 'name_desc' ? 'selected' : '' }}>Nama Z - A</option>
                             </select>
@@ -1209,7 +1207,7 @@
 
                         <!-- Filter Actions -->
                         <div class="filter-actions">
-                            <button type="submit" class="btn-filter">
+                            <button type="submit" class="btn-filter" id="btnSubmitFilter">
                                 <span class="material-symbols-outlined" style="font-size:18px;">filter_alt</span>
                                 Filter
                             </button>
@@ -1254,10 +1252,7 @@
                                 <div class="material-card-top-row">
                                     <div class="material-code-pill" title="Nomor Material">
                                         <span class="material-symbols-outlined">inventory_2</span>
-                                        <span>{{ $grp['material_numbers'][0] ?? 'MAT' }}</span>
-                                        @if (count($grp['material_numbers']) > 1)
-                                            <span class="material-extra-pill" title="Total {{ count($grp['material_numbers']) }} nomor material terhubung">+{{ count($grp['material_numbers']) - 1 }}</span>
-                                        @endif
+                                        <span>{{ $grp['material_number'] ?? ($grp['material_numbers'][0] ?? 'MAT') }}</span>
                                     </div>
 
                                     <span class="status-badge status-{{ $grp['status_class'] }}">

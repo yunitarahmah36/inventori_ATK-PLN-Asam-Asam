@@ -921,7 +921,7 @@
                     <div class="hero-left">
                         <div class="hero-tag">
                             <span class="material-symbols-outlined">inventory_2</span>
-                            Kelompok Material Terpadu
+                            Identitas Material
                         </div>
                         <h2 class="hero-title">{{ $group['name'] }}</h2>
                         <p class="hero-desc">
@@ -930,22 +930,13 @@
                                 <span class="status-dot"></span>
                                 {{ $group['status'] }}
                             </span>.
-                            @if ($group['has_duplicates'])
-                                <br>Sistem otomatis menggabungkan <strong>{{ $group['items_count'] }} entri data</strong> dengan ejaan kapital yang berbeda menjadi satu kelompok terpadu.
-                            @endif
                         </p>
 
                         <div class="hero-badges-list">
-                            <span style="font-size:12px;color:rgba(255,255,255,0.75);margin-right:4px;">No Material Terkait:</span>
+                            <span style="font-size:12px;color:rgba(255,255,255,0.75);margin-right:4px;">No Material:</span>
                             @foreach ($group['material_numbers'] as $no)
                                 <span class="hero-pill">{{ $no }}</span>
                             @endforeach
-                            @if ($group['has_duplicates'])
-                                <span style="font-size:12px;color:rgba(255,255,255,0.75);margin-left:12px;margin-right:4px;">Variasi Teks:</span>
-                                @foreach ($group['variants'] as $v)
-                                    <span class="hero-pill" style="background:rgba(255,193,7,0.25);color:#FFF8E1;">"{{ $v }}"</span>
-                                @endforeach
-                            @endif
                         </div>
                     </div>
 
