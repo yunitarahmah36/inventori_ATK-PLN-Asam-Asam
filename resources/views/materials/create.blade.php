@@ -466,16 +466,10 @@
                                 <label for="material_number" class="form-label">
                                     No. Material <span class="req">*</span>
                                 </label>
-                                <input 
-                                    type="text" 
-                                    id="material_number" 
-                                    name="material_number" 
+                                <input type="text" id="material_number" name="material_number"
                                     class="form-control @error('material_number') is-invalid @enderror"
-                                    value="{{ old('material_number', $suggestedNumber ?? '') }}" 
-                                    placeholder="Contoh: MAT001 / kode unik material" 
-                                    required
-                                    autocomplete="off"
-                                >
+                                    value="{{ old('material_number', $suggestedNumber ?? '') }}"
+                                    placeholder="Contoh: MAT001 / kode unik material" required autocomplete="off">
                                 @error('material_number')
                                     <span class="invalid-feedback">{{ $message }}</span>
                                 @enderror
@@ -489,21 +483,15 @@
                                 <label for="name" class="form-label">
                                     Nama Material <span class="req">*</span>
                                 </label>
-                                <input 
-                                    type="text" 
-                                    id="name" 
-                                    name="name"
+                                <input type="text" id="name" name="name"
                                     class="form-control @error('name') is-invalid @enderror"
-                                    value="{{ old('name') }}" 
-                                    placeholder="Contoh: Kertas HVS A4 70gr" 
-                                    required
-                                    autocomplete="off"
-                                >
+                                    value="{{ old('name') }}" placeholder="Contoh: Kertas HVS A4 70gr" required
+                                    autocomplete="off">
                                 @error('name')
                                     <span class="invalid-feedback">{{ $message }}</span>
                                 @enderror
                                 <span class="form-helper">
-                                    Nama lengkap barang atau material ATK.
+                                    Nama lengkap barang atau material ATK (wajib unik dan belum pernah didaftarkan sebelumnya).
                                 </span>
                             </div>
 
@@ -512,17 +500,11 @@
                                 <label for="unit" class="form-label">
                                     Satuan <span class="req">*</span>
                                 </label>
-                                <input 
-                                    type="text" 
-                                    id="unit" 
-                                    name="unit" 
-                                    list="unit-suggestions"
+                                <input type="text" id="unit" name="unit" list="unit-suggestions"
                                     class="form-control @error('unit') is-invalid @enderror"
-                                    value="{{ old('unit') }}" 
-                                    placeholder="Contoh: Pcs, Rim, Unit, Box, Roll, Lembar, Meter" 
-                                    required
-                                    autocomplete="off"
-                                >
+                                    value="{{ old('unit') }}"
+                                    placeholder="Contoh: Pcs, Rim, Unit, Box, Roll, Lembar, Meter" required
+                                    autocomplete="off">
                                 <datalist id="unit-suggestions">
                                     <option value="Pcs">
                                     <option value="Unit">

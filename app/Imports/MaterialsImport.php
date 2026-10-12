@@ -102,11 +102,16 @@ class MaterialsImport implements ToCollection, WithHeadingRow, SkipsEmptyRows
         $conflicts   = [];
         $errors      = [];
 
-        $seenInFile = [];
+        $seenInFileByNumber = [];
+        $seenInFileByName   = [];
 
-        // Ambil semua nomor material dari database ke memori untuk pencocokan cepat
-        $existingMaterials = Material::all()->keyBy(function ($item) {
+        // Ambil semua data material dari database ke memori untuk pencocokan cepat
+        $existingByNumber = Material::all()->keyBy(function ($item) {
             return strtolower(trim($item->material_number));
+        });
+
+        $existingByName = Material::all()->keyBy(function ($item) {
+            return self::normalizeName($item->name);
         });
 
         foreach ($rows as $rIndex => $row) {
@@ -151,8 +156,9 @@ class MaterialsImport implements ToCollection, WithHeadingRow, SkipsEmptyRows
             $normalizedName = self::normalizeName($nameVal);
 
             // 1. Cek duplikasi di internal file Excel itu sendiri
-            if (isset($seenInFile[$numKey])) {
-                $prev = $seenInFile[$numKey];
+            // 1a. Cek jika No Material sudah pernah muncul di baris sebelumnya
+            if (isset($seenInFileByNumber[$numKey])) {
+                $prev = $seenInFileByNumber[$numKey];
                 if ($normalizedName !== $prev['normalized_name']) {
                     // Konflik internal file: No Material sama tapi nama material beda
                     $conflicts[] = [
@@ -175,15 +181,23 @@ class MaterialsImport implements ToCollection, WithHeadingRow, SkipsEmptyRows
                 continue;
             }
 
-            $seenInFile[$numKey] = [
-                'row'             => $rIndex,
-                'name'            => $nameVal,
-                'normalized_name' => $normalizedName,
-            ];
+            // 1b. Cek jika Nama Material sudah pernah muncul di baris sebelumnya dengan No Material berbeda
+            if (isset($seenInFileByName[$normalizedName])) {
+                $prev = $seenInFileByName[$normalizedName];
+                $conflicts[] = [
+                    'row'              => $rIndex,
+                    'material_number'  => $numVal,
+                    'name'             => $nameVal,
+                    'conflicting_name' => $prev['name'],
+                    'reason'           => "Nama Material '{$nameVal}' sudah digunakan pada Baris {$prev['row']} untuk No. Material '{$prev['material_number']}'. Nama material tidak boleh sama.",
+                ];
+                continue;
+            }
 
             // 2. Cek terhadap database
-            if ($existingMaterials->has($numKey)) {
-                $existing = $existingMaterials->get($numKey);
+            // 2a. Cek jika No Material sudah terdaftar di database
+            if ($existingByNumber->has($numKey)) {
+                $existing = $existingByNumber->get($numKey);
                 $existingNormName = self::normalizeName($existing->name);
 
                 if ($normalizedName !== $existingNormName) {
@@ -207,6 +221,32 @@ class MaterialsImport implements ToCollection, WithHeadingRow, SkipsEmptyRows
                 }
                 continue;
             }
+
+            // 2b. Cek jika Nama Material sudah terdaftar di database untuk No Material lain
+            if ($existingByName->has($normalizedName)) {
+                $existing = $existingByName->get($normalizedName);
+                $conflicts[] = [
+                    'row'              => $rIndex,
+                    'material_number'  => $numVal,
+                    'name'             => $nameVal,
+                    'conflicting_name' => $existing->name,
+                    'reason'           => "Nama Material '{$nameVal}' sudah terdaftar di sistem untuk No. Material '{$existing->material_number}'. Nama material tidak boleh sama.",
+                ];
+                continue;
+            }
+
+            $seenInFileByNumber[$numKey] = [
+                'row'             => $rIndex,
+                'material_number' => $numVal,
+                'name'            => $nameVal,
+                'normalized_name' => $normalizedName,
+            ];
+            $seenInFileByName[$normalizedName] = [
+                'row'             => $rIndex,
+                'material_number' => $numVal,
+                'name'            => $nameVal,
+                'normalized_name' => $normalizedName,
+            ];
 
             // 3. Data Baru yang Valid
             $newItems[] = [
@@ -237,12 +277,17 @@ class MaterialsImport implements ToCollection, WithHeadingRow, SkipsEmptyRows
      */
     public function collection(Collection $rows)
     {
-        $existingMaterials = Material::all()->keyBy(function ($m) {
+        $existingByNumber = Material::all()->keyBy(function ($m) {
             return strtolower(trim($m->material_number));
         });
 
-        $seenInFile = [];
-        $toInsert   = [];
+        $existingByName = Material::all()->keyBy(function ($m) {
+            return self::normalizeName($m->name);
+        });
+
+        $seenInFileByNumber = [];
+        $seenInFileByName   = [];
+        $toInsert           = [];
 
         foreach ($rows as $index => $row) {
             $num  = trim((string) ($row['no_material'] ?? $row['no_material'] ?? $row['kode_material'] ?? ''));
@@ -257,28 +302,43 @@ class MaterialsImport implements ToCollection, WithHeadingRow, SkipsEmptyRows
                 continue;
             }
 
-            $numKey  = strtolower($num);
+            $numKey   = strtolower($num);
             $normName = self::normalizeName($name);
 
-            // Cek konflik di file
-            if (isset($seenInFile[$numKey])) {
-                if ($seenInFile[$numKey] !== $normName) {
-                    throw new \Exception("Konflik data: No. Material '{$num}' digunakan untuk nama material yang berbeda.");
+            // Cek konflik di internal file
+            if (isset($seenInFileByNumber[$numKey])) {
+                if ($seenInFileByNumber[$numKey] !== $normName) {
+                    throw new \Exception("Konflik data: No. Material '{$num}' digunakan untuk nama material yang berbeda pada file Excel.");
                 }
                 $this->skippedCount++;
                 continue;
             }
-            $seenInFile[$numKey] = $normName;
+
+            if (isset($seenInFileByName[$normName])) {
+                if ($seenInFileByName[$normName] !== $numKey) {
+                    throw new \Exception("Konflik data: Nama Material '{$name}' sudah digunakan untuk No. Material yang berbeda pada file Excel.");
+                }
+                $this->skippedCount++;
+                continue;
+            }
+
+            $seenInFileByNumber[$numKey]   = $normName;
+            $seenInFileByName[$normName]   = $numKey;
 
             // Cek di database
-            if ($existingMaterials->has($numKey)) {
-                $dbMat = $existingMaterials->get($numKey);
+            if ($existingByNumber->has($numKey)) {
+                $dbMat = $existingByNumber->get($numKey);
                 if (self::normalizeName($dbMat->name) !== $normName) {
                     throw new \Exception("Konflik data: No. Material '{$num}' sudah terdaftar untuk '{$dbMat->name}', tetapi di file tertulis '{$name}'.");
                 }
                 // Duplikat yang sama persis: lewati
                 $this->skippedCount++;
                 continue;
+            }
+
+            if ($existingByName->has($normName)) {
+                $dbMatByName = $existingByName->get($normName);
+                throw new \Exception("Konflik data: Nama Material '{$name}' sudah terdaftar di sistem untuk No. Material '{$dbMatByName->material_number}'. Nama material tidak boleh sama.");
             }
 
             $toInsert[] = [

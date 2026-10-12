@@ -156,6 +156,62 @@ class MaterialTest extends TestCase
         $response->assertSessionHasErrors(['material_number', 'name', 'unit']);
     }
 
+    public function test_store_rejects_duplicate_material_name_case_insensitive(): void
+    {
+        $admin = $this->createUser('Admin');
+
+        // Daftarkan material pertama
+        $res1 = $this->actingAs($admin)->post('/materials', [
+            'material_number' => 'MAT005',
+            'name'            => 'STEPLES',
+            'unit'            => 'Pcs',
+        ]);
+        $res1->assertRedirect('/materials');
+
+        // Coba daftarkan material kedua dengan nama sama (huruf kecil: steples) tetapi nomor berbeda (MAT007)
+        $res2 = $this->actingAs($admin)->post('/materials', [
+            'material_number' => 'MAT007',
+            'name'            => 'steples',
+            'unit'            => 'Roll',
+        ]);
+
+        // Harus ditolak dengan validasi error pada 'name'
+        $res2->assertSessionHasErrors(['name']);
+        $this->assertDatabaseMissing('materials', [
+            'material_number' => 'MAT007',
+        ]);
+    }
+
+    public function test_update_rejects_duplicate_material_name_from_another_material(): void
+    {
+        $admin = $this->createUser('Admin');
+
+        $mat1 = Material::create([
+            'material_number' => 'MAT005',
+            'name'            => 'STEPLES',
+            'unit'            => 'Pcs',
+            'created_by'      => $admin->id,
+        ]);
+
+        $mat2 = Material::create([
+            'material_number' => 'MAT006',
+            'name'            => 'CORECCTOR',
+            'unit'            => 'Pcs',
+            'created_by'      => $admin->id,
+        ]);
+
+        // Coba ubah mat2 namanya menjadi sama dengan mat1
+        $response = $this->actingAs($admin)->put("/materials/{$mat2->id}", [
+            'material_number' => 'MAT006',
+            'name'            => 'steples',
+            'unit'            => 'Pcs',
+        ]);
+
+        $response->assertSessionHasErrors(['name']);
+        $mat2->refresh();
+        $this->assertEquals('CORECCTOR', $mat2->name);
+    }
+
     public function test_update_modifies_master_material_without_changing_stock(): void
     {
         $admin = $this->createUser('Admin');

@@ -117,6 +117,13 @@ class MaterialController extends Controller
                 'required',
                 'string',
                 'max:255',
+                function ($attribute, $value, $fail) {
+                    $cleaned = preg_replace('/\s+/u', ' ', trim((string) $value));
+                    $exists = Material::whereRaw('LOWER(TRIM(name)) = ?', [mb_strtolower($cleaned, 'UTF-8')])->exists();
+                    if ($exists) {
+                        $fail('Nama Material sudah terdaftar. Nama material tidak boleh sama dengan data yang sudah ada.');
+                    }
+                },
             ],
             'unit' => [
                 'required',
@@ -178,6 +185,15 @@ class MaterialController extends Controller
                 'required',
                 'string',
                 'max:255',
+                function ($attribute, $value, $fail) use ($material) {
+                    $cleaned = preg_replace('/\s+/u', ' ', trim((string) $value));
+                    $exists = Material::where('id', '!=', $material->id)
+                        ->whereRaw('LOWER(TRIM(name)) = ?', [mb_strtolower($cleaned, 'UTF-8')])
+                        ->exists();
+                    if ($exists) {
+                        $fail('Nama Material sudah terdaftar untuk material lain. Nama material tidak boleh sama.');
+                    }
+                },
             ],
             'unit' => [
                 'required',

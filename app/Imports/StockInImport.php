@@ -144,11 +144,11 @@ class StockInImport implements ToCollection, WithHeadingRow, SkipsEmptyRows
 
             // Ambil No Material dari berbagai kemungkinan nama kolom
             $noMaterial = trim((string) (
-                $row['no_material'] 
-                ?? $row['no'] 
-                ?? $row['nomor_material'] 
-                ?? $row['kode_material'] 
-                ?? $row['no_mat'] 
+                $row['no_material']
+                ?? $row['no']
+                ?? $row['nomor_material']
+                ?? $row['kode_material']
+                ?? $row['no_mat']
                 ?? ''
             ));
 
@@ -163,23 +163,23 @@ class StockInImport implements ToCollection, WithHeadingRow, SkipsEmptyRows
             ));
 
             // Ambil Jumlah Masuk dari berbagai kemungkinan nama kolom
-            $qtyRaw = $row['jumlah_masuk'] 
-                ?? $row['jumlah'] 
-                ?? $row['jumlah_item'] 
-                ?? $row['qty'] 
+            $qtyRaw = $row['jumlah_masuk']
+                ?? $row['jumlah']
+                ?? $row['jumlah_item']
+                ?? $row['qty']
                 ?? null;
 
             // Ambil Tanggal Masuk
-            $dateRaw = $row['tanggal_masuk'] 
-                ?? $row['tanggal'] 
-                ?? $row['tgl'] 
+            $dateRaw = $row['tanggal_masuk']
+                ?? $row['tanggal']
+                ?? $row['tgl']
                 ?? null;
 
             // Ambil Keterangan
             $descRaw = trim((string) (
-                $row['keterangan'] 
-                ?? $row['deskripsi'] 
-                ?? $row['sumber'] 
+                $row['keterangan']
+                ?? $row['deskripsi']
+                ?? $row['sumber']
                 ?? ''
             ));
 

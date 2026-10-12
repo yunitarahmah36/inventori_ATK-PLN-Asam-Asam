@@ -3,55 +3,74 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Edit Material - Inventori ATK PT PLN Indonesia Power UBP Asam Asam</title>
     <link rel="icon" type="image/png" href="{{ asset('images/pln_bulat.png') }}">
 
     <!-- Google Fonts: Inter -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
 
     <!-- Material Symbols (Icons) -->
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+        rel="stylesheet">
 
     <style id="page-style">
-        *, *::before, *::after {
+        *,
+        *::before,
+        *::after {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
         :root {
-            --blue:         #0057B8;
-            --blue-dark:    #003B73;
-            --blue-light:   #EAF3FF;
-            --yellow:       #FFC107;
+            --blue: #0057B8;
+            --blue-dark: #003B73;
+            --blue-light: #EAF3FF;
+            --yellow: #FFC107;
             --yellow-light: #FFF8E1;
-            --bg:           #F5F7FA;
-            --white:        #FFFFFF;
-            --text-dark:    #1F2937;
-            --text-mid:     #374151;
-            --text-muted:   #6B7280;
-            --border:       #E5E7EB;
-            --red:          #DC2626;
-            --red-light:    #FEE2E2;
-            --sidebar-w:    260px;
-            --header-h:     68px;
-            --radius:       12px;
-            --shadow:       0 2px 12px rgba(0,0,0,0.07);
-            --transition:   0.2s ease;
+            --bg: #F5F7FA;
+            --white: #FFFFFF;
+            --text-dark: #1F2937;
+            --text-mid: #374151;
+            --text-muted: #6B7280;
+            --border: #E5E7EB;
+            --red: #DC2626;
+            --red-light: #FEE2E2;
+            --sidebar-w: 260px;
+            --header-h: 68px;
+            --radius: 12px;
+            --shadow: 0 2px 12px rgba(0, 0, 0, 0.07);
+            --transition: 0.2s ease;
         }
 
-        html, body {
+        html,
+        body {
             height: 100%;
             font-family: 'Inter', Arial, sans-serif;
             background: var(--bg);
             color: var(--text-dark);
         }
 
-        a { text-decoration: none; color: inherit; }
-        button, input, select, textarea { font-family: inherit; }
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
 
-        .layout { display: flex; min-height: 100vh; }
+        button,
+        input,
+        select,
+        textarea {
+            font-family: inherit;
+        }
+
+        .layout {
+            display: flex;
+            min-height: 100vh;
+        }
 
         /* MAIN */
         .main {
@@ -423,7 +442,8 @@
                 <div class="form-card">
                     <div class="form-card-header">
                         <h2>Edit Data Material</h2>
-                        <p>Perbarui identitas data master material <strong>{{ $material->name }}</strong> ({{ $material->material_number }}).</p>
+                        <p>Perbarui identitas data master material <strong>{{ $material->name }}</strong>
+                            ({{ $material->material_number }}).</p>
                     </div>
 
                     @if ($errors->any())
@@ -448,20 +468,16 @@
                                 <label for="material_number" class="form-label">
                                     No. Material <span class="req">*</span>
                                 </label>
-                                <input 
-                                    type="text" 
-                                    id="material_number" 
-                                    name="material_number" 
+                                <input type="text" id="material_number" name="material_number"
                                     class="form-control @error('material_number') is-invalid @enderror"
-                                    value="{{ old('material_number', $material->material_number) }}" 
-                                    required
-                                    autocomplete="off"
-                                >
+                                    value="{{ old('material_number', $material->material_number) }}" required
+                                    autocomplete="off">
                                 @error('material_number')
                                     <span class="invalid-feedback">{{ $message }}</span>
                                 @enderror
                                 <span class="form-helper">
-                                    Kode unik material. Jika diubah, riwayat transaksi terkait akan tetap sinkron dan aman.
+                                    Kode unik material. Jika diubah, riwayat transaksi terkait akan tetap sinkron dan
+                                    aman.
                                 </span>
                             </div>
 
@@ -470,20 +486,14 @@
                                 <label for="name" class="form-label">
                                     Nama Material <span class="req">*</span>
                                 </label>
-                                <input 
-                                    type="text" 
-                                    id="name" 
-                                    name="name" 
+                                <input type="text" id="name" name="name"
                                     class="form-control @error('name') is-invalid @enderror"
-                                    value="{{ old('name', $material->name) }}" 
-                                    required
-                                    autocomplete="off"
-                                >
+                                    value="{{ old('name', $material->name) }}" required autocomplete="off">
                                 @error('name')
                                     <span class="invalid-feedback">{{ $message }}</span>
                                 @enderror
                                 <span class="form-helper">
-                                    Nama barang material ATK.
+                                    Nama lengkap barang atau material ATK (wajib unik dan tidak boleh sama dengan material lain).
                                 </span>
                             </div>
 
@@ -492,16 +502,9 @@
                                 <label for="unit" class="form-label">
                                     Satuan <span class="req">*</span>
                                 </label>
-                                <input 
-                                    type="text" 
-                                    id="unit" 
-                                    name="unit" 
-                                    list="unit-suggestions"
+                                <input type="text" id="unit" name="unit" list="unit-suggestions"
                                     class="form-control @error('unit') is-invalid @enderror"
-                                    value="{{ old('unit', $material->unit) }}" 
-                                    required
-                                    autocomplete="off"
-                                >
+                                    value="{{ old('unit', $material->unit) }}" required autocomplete="off">
                                 <datalist id="unit-suggestions">
                                     <option value="Pcs">
                                     <option value="Unit">

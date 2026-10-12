@@ -206,7 +206,7 @@ class MaterialImportAndAnalysisTest extends TestCase
         $this->assertDatabaseHas('materials', ['material_number' => 'MAT001', 'name' => 'Kertas HVS A4']);
     }
 
-    public function test_materials_are_not_merged_by_name_alone(): void
+    public function test_import_detects_conflict_when_name_already_registered_for_different_number(): void
     {
         $admin = $this->createUser();
 
@@ -217,7 +217,7 @@ class MaterialImportAndAnalysisTest extends TestCase
             'unit'            => 'Pcs',
         ]);
 
-        // Di Excel: MAT002 dengan nama "Pulpen Standard" (No. Material berbeda, TIDAK boleh digabung)
+        // Di Excel: MAT002 dengan nama "Pulpen Standard" (Nama sudah terdaftar untuk MAT001 -> KONFLIK!)
         $file = $this->createExcelUpload([
             ['MAT002', 'Pulpen Standard', 'Pcs'],
         ]);
@@ -227,13 +227,10 @@ class MaterialImportAndAnalysisTest extends TestCase
         ]);
 
         $preview = session('import_preview');
-        $this->assertEquals(1, $preview['new_count']); // Diakui sebagai material baru terpisah
-
-        $this->actingAs($admin)->post('/materials/import/confirm');
-
-        $this->assertEquals(2, Material::count());
-        $this->assertDatabaseHas('materials', ['material_number' => 'MAT001', 'name' => 'Pulpen Standard']);
-        $this->assertDatabaseHas('materials', ['material_number' => 'MAT002', 'name' => 'Pulpen Standard']);
+        $this->assertEquals(0, $preview['new_count']);
+        $this->assertEquals(1, $preview['conflict_count']);
+        $this->assertStringContainsString('Pulpen Standard', $preview['conflicts'][0]['reason']);
+        $this->assertStringContainsString('MAT001', $preview['conflicts'][0]['reason']);
     }
 
     public function test_import_notifies_when_all_data_is_already_registered(): void
