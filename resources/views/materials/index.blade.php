@@ -282,15 +282,37 @@
         .btn {
             display: inline-flex;
             align-items: center;
-            gap: 6px;
-            padding: 9px 16px;
-            border-radius: 8px;
-            font-size: 13px;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px 18px;
+            border-radius: 9px;
+            font-size: 13.5px;
             font-weight: 600;
             cursor: pointer;
             border: none;
             transition: var(--transition);
             white-space: nowrap;
+            text-decoration: none;
+            line-height: 1.4;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn .material-symbols-outlined {
+            font-size: 19px !important;
+            color: inherit !important;
+            line-height: 1 !important;
+            margin: 0 !important;
+            display: inline-flex !important;
+            align-items: center;
+            justify-content: center;
+            vertical-align: middle;
         }
 
         .btn-primary {
@@ -301,16 +323,19 @@
 
         .btn-primary:hover {
             background: var(--blue-dark);
+            box-shadow: 0 4px 10px rgba(0, 87, 184, 0.35);
         }
 
         .btn-yellow {
             background: var(--yellow);
             color: var(--blue-dark);
             font-weight: 700;
+            box-shadow: 0 2px 6px rgba(255, 193, 7, 0.3);
         }
 
         .btn-yellow:hover {
             background: #E5AC00;
+            box-shadow: 0 4px 10px rgba(255, 193, 7, 0.4);
         }
 
         .btn-outline {
@@ -322,6 +347,7 @@
         .btn-outline:hover {
             background: #F8FAFC;
             border-color: #CBD5E1;
+            color: var(--text-dark);
         }
 
         .btn-danger {
@@ -528,6 +554,59 @@
             color: #64748B;
         }
 
+        /* Filter Pengurutan (Sort Dropdown) */
+        .sort-select-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .sort-select-wrapper .sort-icon {
+            position: absolute;
+            left: 12px;
+            font-size: 19px;
+            color: #64748B;
+            pointer-events: none;
+            transition: color 0.2s ease;
+        }
+
+        .sort-select-wrapper select {
+            height: 42px;
+            padding: 0 34px 0 38px;
+            border-radius: 9px;
+            border: 1.5px solid var(--border);
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-dark);
+            background-color: #F8FAFC;
+            outline: none;
+            cursor: pointer;
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2364748b'%3e%3cpath d='M7 10l5 5 5-5z'/%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            background-size: 18px;
+            transition: all 0.2s ease;
+        }
+
+        .sort-select-wrapper select:hover {
+            background-color: #FFFFFF;
+            border-color: #CBD5E1;
+        }
+
+        .sort-select-wrapper select:focus {
+            background-color: #FFFFFF;
+            border-color: var(--blue);
+            box-shadow: 0 0 0 3.5px rgba(0, 87, 184, 0.12);
+        }
+
+        .sort-select-wrapper:focus-within .sort-icon {
+            color: var(--blue);
+        }
+
         /* Search Status Bar & Badge */
         .search-status-bar {
             display: flex;
@@ -605,10 +684,14 @@
             color: var(--text-dark);
         }
 
-        @media (max-width: 640px) {
+        @media (max-width: 768px) {
             .search-input-group {
                 flex-direction: column;
                 align-items: stretch;
+            }
+            .sort-select-wrapper,
+            .sort-select-wrapper select {
+                width: 100%;
             }
             .search-buttons {
                 width: 100%;
@@ -852,30 +935,33 @@
             text-align: center;
         }
 
-        .empty-state .material-symbols-outlined {
-            font-size: 48px;
-            color: #94A3B8;
-            margin-bottom: 12px;
+        .empty-state > .material-symbols-outlined,
+        .empty-state-icon {
+            font-size: 52px !important;
+            color: #94A3B8 !important;
+            margin-bottom: 14px;
+            display: inline-block;
         }
 
         .empty-state h3 {
-            font-size: 16px;
+            font-size: 17px;
             font-weight: 700;
             color: var(--text-dark);
             margin-bottom: 6px;
         }
 
         .empty-state p {
-            font-size: 13px;
+            font-size: 13.5px;
             color: var(--text-muted);
-            margin-bottom: 18px;
+            margin-bottom: 22px;
         }
 
         .empty-actions {
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
+            gap: 12px;
+            flex-wrap: wrap;
         }
 
         /* DELETE MODAL */
@@ -1122,7 +1208,7 @@
                     <form method="GET" action="{{ route('materials.index') }}" class="search-form" id="searchForm">
                         <input type="hidden" name="per_page" value="{{ $perPage }}">
 
-                        <!-- Input Pencarian & Tombol Aksi -->
+                        <!-- Input Pencarian, Filter Pengurutan, & Tombol Aksi -->
                         <div class="search-input-group">
                             <div class="search-input-wrapper">
                                 <span class="material-symbols-outlined search-icon">search</span>
@@ -1140,14 +1226,27 @@
                                 @endif
                             </div>
 
+                            <!-- Filter Pengurutan -->
+                            <div class="sort-select-wrapper">
+                                <span class="material-symbols-outlined sort-icon">swap_vert</span>
+                                <select name="sort" id="sortSelect" onchange="document.getElementById('searchForm').submit()" title="Urutkan data material">
+                                    <option value="latest" {{ ($sort ?? 'latest') === 'latest' ? 'selected' : '' }}>Terbaru (Paling Atas)</option>
+                                    <option value="oldest" {{ ($sort ?? '') === 'oldest' ? 'selected' : '' }}>Terlama</option>
+                                    <option value="name_asc" {{ ($sort ?? '') === 'name_asc' ? 'selected' : '' }}>Nama Material (A - Z)</option>
+                                    <option value="name_desc" {{ ($sort ?? '') === 'name_desc' ? 'selected' : '' }}>Nama Material (Z - A)</option>
+                                    <option value="number_asc" {{ ($sort ?? '') === 'number_asc' ? 'selected' : '' }}>No. Material (A - Z)</option>
+                                    <option value="number_desc" {{ ($sort ?? '') === 'number_desc' ? 'selected' : '' }}>No. Material (Z - A)</option>
+                                </select>
+                            </div>
+
                             <div class="search-buttons">
                                 <button type="submit" class="btn btn-search">
                                     <span class="material-symbols-outlined">search</span>
                                     <span>Cari</span>
                                 </button>
 
-                                @if (!empty($search))
-                                    <a href="{{ route('materials.index', ['per_page' => $perPage]) }}" class="btn btn-reset" title="Kembalikan semua data">
+                                @if (!empty($search) || ($sort ?? 'latest') !== 'latest')
+                                    <a href="{{ route('materials.index', ['per_page' => $perPage]) }}" class="btn btn-reset" title="Kembalikan semua data & reset pengurutan">
                                         <span class="material-symbols-outlined">restart_alt</span>
                                         <span>Reset</span>
                                     </a>
@@ -1162,7 +1261,7 @@
                                     <span class="material-symbols-outlined pill-icon">filter_alt</span>
                                     <span>Menampilkan hasil pencarian untuk: <strong>"{{ $search }}"</strong></span>
                                     <span class="result-count">({{ $materials->total() }} material ditemukan)</span>
-                                    <a href="{{ route('materials.index', ['per_page' => $perPage]) }}" class="pill-remove" title="Hapus filter pencarian">
+                                    <a href="{{ route('materials.index', array_merge(['per_page' => $perPage], ($sort !== 'latest' ? ['sort' => $sort] : []))) }}" class="pill-remove" title="Hapus filter pencarian">
                                         <span class="material-symbols-outlined">close</span>
                                     </a>
                                 </div>
@@ -1170,6 +1269,16 @@
                                 <div class="search-meta-info">
                                     <span class="material-symbols-outlined">inventory_2</span>
                                     <span>Total <strong>{{ $materials->total() }}</strong> Master Material terdaftar</span>
+                                    @if (($sort ?? 'latest') !== 'latest')
+                                        <span style="color:var(--text-muted);font-size:12px;">• Urutan: 
+                                            @if ($sort === 'oldest') Terlama
+                                            @elseif ($sort === 'name_asc') Nama (A - Z)
+                                            @elseif ($sort === 'name_desc') Nama (Z - A)
+                                            @elseif ($sort === 'number_asc') No. Material (A - Z)
+                                            @elseif ($sort === 'number_desc') No. Material (Z - A)
+                                            @endif
+                                        </span>
+                                    @endif
                                 </div>
                             @endif
                         </div>
@@ -1310,17 +1419,17 @@
                     @else
                         <!-- Empty State Jika Tidak Ada Material -->
                         <div class="empty-state">
-                            <span class="material-symbols-outlined">inventory_2</span>
+                            <span class="material-symbols-outlined empty-state-icon">inventory_2</span>
                             <h3>Belum ada data material</h3>
                             <p>Silakan daftarkan material baru atau import data master melalui file Excel.</p>
                             <div class="empty-actions">
                                 <a href="{{ route('materials.create') }}" class="btn btn-primary">
                                     <span class="material-symbols-outlined">add</span>
-                                    Tambah Material
+                                    <span>Tambah Material</span>
                                 </a>
                                 <a href="{{ route('materials.import') }}" class="btn btn-yellow">
                                     <span class="material-symbols-outlined">upload_file</span>
-                                    Import Excel
+                                    <span>Import Excel</span>
                                 </a>
                             </div>
                         </div>

@@ -370,4 +370,48 @@ class MaterialTest extends TestCase
         $response->assertStatus(200);
         $response->assertHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
     }
+
+    public function test_materials_default_order_is_latest_and_supports_sorting(): void
+    {
+        $admin = $this->createUser('Admin');
+
+        $mat1 = Material::create([
+            'material_number' => 'MAT001',
+            'name'            => 'Buku Tulis A',
+            'unit'            => 'Pcs',
+            'created_at'      => now()->subDays(2),
+        ]);
+
+        $mat2 = Material::create([
+            'material_number' => 'MAT002',
+            'name'            => 'Amplop Cokelat',
+            'unit'            => 'Pcs',
+            'created_at'      => now()->subDays(1),
+        ]);
+
+        $mat3 = Material::create([
+            'material_number' => 'MAT003',
+            'name'            => 'Zebra Pen',
+            'unit'            => 'Pcs',
+            'created_at'      => now(),
+        ]);
+
+        // Default: data terbaru di posisi teratas
+        $responseDefault = $this->actingAs($admin)->get('/materials');
+        $responseDefault->assertStatus(200);
+        $materialsDefault = $responseDefault->viewData('materials');
+        $this->assertEquals($mat3->id, $materialsDefault->first()->id);
+        $this->assertEquals($mat1->id, $materialsDefault->last()->id);
+
+        // Sort Nama A - Z
+        $responseNameAsc = $this->actingAs($admin)->get('/materials?sort=name_asc');
+        $materialsNameAsc = $responseNameAsc->viewData('materials');
+        $this->assertEquals($mat2->id, $materialsNameAsc->first()->id); // Amplop Cokelat
+        $this->assertEquals($mat3->id, $materialsNameAsc->last()->id);  // Zebra Pen
+
+        // Sort Terlama
+        $responseOldest = $this->actingAs($admin)->get('/materials?sort=oldest');
+        $materialsOldest = $responseOldest->viewData('materials');
+        $this->assertEquals($mat1->id, $materialsOldest->first()->id); // Buku Tulis A
+    }
 }

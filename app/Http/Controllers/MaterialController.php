@@ -22,6 +22,7 @@ class MaterialController extends Controller
     {
         $search  = trim($request->input('search', ''));
         $perPage = $request->input('per_page', 25);
+        $sort    = $request->input('sort', 'latest');
 
         $query = Material::query();
 
@@ -33,8 +34,29 @@ class MaterialController extends Controller
             });
         }
 
-        // Urutkan berdasarkan No Material secara teratur
-        $query->orderBy('material_number', 'asc')->orderBy('id', 'asc');
+        // Pengurutan data (Default: data yang baru diinput otomatis paling atas)
+        switch ($sort) {
+            case 'oldest':
+                $query->orderBy('created_at', 'asc')->orderBy('id', 'asc');
+                break;
+            case 'name_asc':
+                $query->orderBy('name', 'asc')->orderBy('id', 'asc');
+                break;
+            case 'name_desc':
+                $query->orderBy('name', 'desc')->orderBy('id', 'desc');
+                break;
+            case 'number_asc':
+                $query->orderBy('material_number', 'asc')->orderBy('id', 'asc');
+                break;
+            case 'number_desc':
+                $query->orderBy('material_number', 'desc')->orderBy('id', 'desc');
+                break;
+            case 'latest':
+            default:
+                $sort = 'latest';
+                $query->orderBy('created_at', 'desc')->orderBy('id', 'desc');
+                break;
+        }
 
         // Hitung total data sesuai filter pencarian
         $totalFiltered = (clone $query)->count();
@@ -54,7 +76,8 @@ class MaterialController extends Controller
             'materials',
             'search',
             'perPage',
-            'totalFiltered'
+            'totalFiltered',
+            'sort'
         ));
     }
 
