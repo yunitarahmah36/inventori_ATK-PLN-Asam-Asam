@@ -25,8 +25,11 @@ class DashboardController extends Controller
             ->whereYear('entry_date', Carbon::now()->year)
             ->count();
 
-        // 4. Jumlah aktivitas yang terjadi hari ini
-        $aktivitasHariIni = StockMovement::whereDate('created_at', Carbon::today())->count();
+        // 4. Jumlah aktivitas yang terjadi hari ini (pencatatan & perubahan pergerakan stok hari ini)
+        $aktivitasHariIni = StockMovement::where(function ($q) {
+            $q->whereDate('created_at', Carbon::today())
+              ->orWhereDate('updated_at', Carbon::today());
+        })->count();
 
         // 5. Daftar material di dashboard:
         // Cukup 1 material stok menipis (<= 15 unit) paling prioritas yang dimunculkan di paling atas.
@@ -54,10 +57,11 @@ class DashboardController extends Controller
         // 6. Total jenis material dengan stok menipis (<= 15 unit)
         $lowStockCount = Material::where('quantity', '<=', 15)->count();
 
-        // 7. Aktivitas terbaru (5 data terakhir dengan relasi user dan material)
+        // 7. Aktivitas terbaru (mencakup semua transaksi CRUD dari Data Material, Stok Masuk, dan Stok Keluar)
         $latestActivities = StockMovement::with(['material', 'user'])
-            ->latest()
-            ->take(5)
+            ->orderBy('updated_at', 'desc')
+            ->orderBy('id', 'desc')
+            ->take(10)
             ->get();
 
         return view('dashboard', compact(

@@ -871,6 +871,22 @@
         .activity-list {
             position: relative;
             padding-left: 22px;
+            max-height: 520px;
+            overflow-y: auto;
+            padding-right: 6px;
+        }
+
+        .activity-list::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        .activity-list::-webkit-scrollbar-thumb {
+            background: #E2E8F0;
+            border-radius: 4px;
+        }
+
+        .activity-list::-webkit-scrollbar-thumb:hover {
+            background: #CBD5E1;
         }
 
         .activity-list::before {
@@ -912,11 +928,27 @@
         }
 
         .dot-tambah {
-            background: #D1FAE5;
+            background: #EAF3FF;
         }
 
         .dot-tambah .activity-dot-inner {
+            background: #0057B8;
+        }
+
+        .dot-masuk {
+            background: #D1FAE5;
+        }
+
+        .dot-masuk .activity-dot-inner {
             background: #059669;
+        }
+
+        .dot-keluar {
+            background: #FEE2E2;
+        }
+
+        .dot-keluar .activity-dot-inner {
+            background: #DC2626;
         }
 
         .dot-import {
@@ -955,7 +987,7 @@
             display: flex;
             align-items: flex-start;
             justify-content: space-between;
-            gap: 8px;
+            gap: 10px;
         }
 
         .activity-desc {
@@ -979,34 +1011,99 @@
         }
 
         .badge-tambah {
+            background: #EAF3FF;
+            color: #0057B8;
+            border: 1px solid #BFDBFE;
+        }
+
+        .badge-masuk {
             background: #D1FAE5;
             color: #065F46;
+            border: 1px solid #A7F3D0;
+        }
+
+        .badge-keluar {
+            background: #FEE2E2;
+            color: #B91C1C;
+            border: 1px solid #FECACA;
         }
 
         .badge-import {
             background: var(--blue-light);
             color: #1D4ED8;
+            border: 1px solid #BFDBFE;
         }
 
         .badge-edit {
             background: var(--yellow-light);
             color: #92400E;
+            border: 1px solid #FDE68A;
         }
 
         .badge-hapus {
             background: #FEE2E2;
             color: #B91C1C;
+            border: 1px solid #FECACA;
         }
 
         .badge-other {
             background: var(--bg);
             color: var(--text-muted);
+            border: 1px solid var(--border);
         }
 
         .activity-time {
             font-size: 11.5px;
             color: var(--text-muted);
+            margin-top: 4px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            flex-wrap: wrap;
+        }
+
+        .activity-qty-badge {
+            font-size: 11px;
+            font-weight: 700;
+            padding: 2px 7px;
+            border-radius: 6px;
+            display: inline-flex;
+            align-items: center;
+            gap: 2px;
+            white-space: nowrap;
+            margin-left: 5px;
+        }
+
+        .activity-qty-pos {
+            background: #D1FAE5;
+            color: #065F46;
+            border: 1px solid #A7F3D0;
+        }
+
+        .activity-qty-neg {
+            background: #FEE2E2;
+            color: #B91C1C;
+            border: 1px solid #FECACA;
+        }
+
+        .activity-meta-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            font-size: 11px;
+            color: #4B5563;
+            background: #F3F4F6;
+            padding: 1px 7px;
+            border-radius: 4px;
             margin-top: 3px;
+            border: 1px solid #E5E7EB;
+        }
+
+        .activity-desc-note {
+            color: var(--text-muted);
+            font-size: 11.5px;
+            margin-top: 2px;
+            word-break: break-word;
         }
 
 
@@ -1448,57 +1545,112 @@
                                 <span class="material-symbols-outlined">schedule</span>
                                 Aktivitas Terbaru
                             </div>
-                            <span style="font-size:12px;color:var(--text-muted);">Semua Pengguna</span>
+                            <a href="{{ route('stock-movements.index') }}" class="btn-lihat-semua" title="Buka Riwayat Stok Lengkap">
+                                Lihat Semua
+                                <span class="material-symbols-outlined">arrow_forward</span>
+                            </a>
                         </div>
 
                         @if ($latestActivities->count() > 0)
                             <div class="activity-list">
                                 @foreach ($latestActivities as $act)
                                     @php
-                                        $dotClass = match ($act->activity) {
-                                            'Tambah' => 'dot-tambah',
-                                            'Import' => 'dot-import',
-                                            'Edit' => 'dot-edit',
-                                            'Hapus' => 'dot-hapus',
-                                            default => 'dot-default',
-                                        };
-                                        $badgeClass = match ($act->activity) {
-                                            'Tambah' => 'badge-tambah',
-                                            'Import' => 'badge-import',
-                                            'Edit' => 'badge-edit',
-                                            'Hapus' => 'badge-hapus',
-                                            default => 'badge-other',
-                                        };
-                                        $verb = match ($act->activity) {
-                                            'Tambah' => 'menambahkan',
-                                            'Import' => 'mengimport data dari Excel untuk',
-                                            'Edit' => 'mengubah stok',
-                                            'Hapus' => 'menghapus',
-                                            default => 'memperbarui',
-                                        };
+                                        $actType = strtolower($act->activity ?? '');
+                                        $change = (int) ($act->quantity_change ?? 0);
+                                        $unit = $act->material->unit ?? '';
+
+                                        // Klasifikasi CRUD: Daftar Material, Stok Masuk, dan Stok Keluar
+                                        if ($actType === 'keluar' || ($change < 0 && $actType !== 'hapus')) {
+                                            $badgeText  = 'Stok Keluar';
+                                            $badgeClass = 'badge-keluar';
+                                            $dotClass   = 'dot-keluar';
+                                            $verb       = 'mencatat stok keluar';
+                                            $qtyBadge   = number_format($change, 0, ',', '.') . ($unit ? " {$unit}" : '');
+                                            $qtyClass   = 'activity-qty-neg';
+                                        } elseif (($actType === 'tambah' || $actType === 'masuk') && $change > 0) {
+                                            $badgeText  = 'Stok Masuk';
+                                            $badgeClass = 'badge-masuk';
+                                            $dotClass   = 'dot-masuk';
+                                            $verb       = 'menambahkan stok masuk untuk';
+                                            $qtyBadge   = '+' . number_format($change, 0, ',', '.') . ($unit ? " {$unit}" : '');
+                                            $qtyClass   = 'activity-qty-pos';
+                                        } elseif ($actType === 'tambah') {
+                                            $badgeText  = 'Tambah Material';
+                                            $badgeClass = 'badge-tambah';
+                                            $dotClass   = 'dot-tambah';
+                                            $verb       = 'mendaftarkan material baru';
+                                            $qtyBadge   = null;
+                                            $qtyClass   = '';
+                                        } elseif ($actType === 'edit') {
+                                            $badgeText  = 'Edit Material';
+                                            $badgeClass = 'badge-edit';
+                                            $dotClass   = 'dot-edit';
+                                            $verb       = 'memperbarui data master';
+                                            $qtyBadge   = null;
+                                            $qtyClass   = '';
+                                        } elseif ($actType === 'hapus') {
+                                            $badgeText  = 'Hapus Material';
+                                            $badgeClass = 'badge-hapus';
+                                            $dotClass   = 'dot-hapus';
+                                            $verb       = 'menghapus material';
+                                            $qtyBadge   = null;
+                                            $qtyClass   = '';
+                                        } elseif ($actType === 'import') {
+                                            $badgeText  = 'Import Material';
+                                            $badgeClass = 'badge-import';
+                                            $dotClass   = 'dot-import';
+                                            $verb       = 'mengimpor master data';
+                                            $qtyBadge   = null;
+                                            $qtyClass   = '';
+                                        } else {
+                                            $badgeText  = ucfirst($act->activity ?: 'Aktivitas');
+                                            $badgeClass = 'badge-other';
+                                            $dotClass   = 'dot-default';
+                                            $verb       = 'memperbarui';
+                                            $qtyBadge   = $change != 0 ? ($change > 0 ? "+{$change}" : "{$change}") . ($unit ? " {$unit}" : '') : null;
+                                            $qtyClass   = $change > 0 ? 'activity-qty-pos' : 'activity-qty-neg';
+                                        }
+
+                                        $displayDate = $act->created_at ?? $act->updated_at ?? now();
+                                        $matName = $act->material->name ?? ($act->material_name ?? 'Material');
                                     @endphp
                                     <div class="activity-item">
                                         <div class="activity-dot {{ $dotClass }}">
                                             <div class="activity-dot-inner"></div>
                                         </div>
                                         <div class="activity-row">
-                                            <div>
+                                            <div style="min-width:0;flex:1;">
                                                 <div class="activity-desc">
                                                     <strong>{{ $act->user->name ?? 'Pengguna' }}</strong>
                                                     {{ $verb }}
-                                                    <strong
-                                                        style="color:var(--text-dark);">{{ $act->material->name ?? ($act->material_name ?? 'Material') }}</strong>
-                                                    @if (!empty($act->description))
-                                                        <div
-                                                            style="color:var(--text-muted);font-size:11.5px;margin-top:2px;">
-                                                            {{ $act->description }}</div>
+                                                    <strong style="color:var(--text-dark);">{{ $matName }}</strong>
+                                                    @if ($qtyBadge)
+                                                        <span class="activity-qty-badge {{ $qtyClass }}">{{ $qtyBadge }}</span>
                                                     @endif
                                                 </div>
-                                                <div class="activity-time" style="margin-top:3px;">
-                                                    {{ $act->created_at->diffForHumans() }}</div>
+
+                                                @if (!empty($act->recipient))
+                                                    <div class="activity-meta-pill" title="Penerima / Unit Tujuan">
+                                                        <span class="material-symbols-outlined" style="font-size:12px;">person</span>
+                                                        Penerima: {{ $act->recipient }}
+                                                    </div>
+                                                @endif
+
+                                                @if (!empty($act->description))
+                                                    <div class="activity-desc-note">
+                                                        {{ $act->description }}
+                                                    </div>
+                                                @endif
+
+                                                <div class="activity-time">
+                                                    <span class="material-symbols-outlined" style="font-size:13px;vertical-align:middle;">schedule</span>
+                                                    {{ $displayDate->diffForHumans() }}
+                                                    <span style="opacity:0.75;">• {{ $displayDate->format('d/m/Y H:i') }} WITA</span>
+                                                </div>
                                             </div>
-                                            <span
-                                                class="activity-badge {{ $badgeClass }}">{{ $act->activity }}</span>
+                                            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0;">
+                                                <span class="activity-badge {{ $badgeClass }}">{{ $badgeText }}</span>
+                                            </div>
                                         </div>
                                     </div>
                                 @endforeach
