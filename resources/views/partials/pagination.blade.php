@@ -4,6 +4,30 @@
   dan ikon panah proporsional sesuai standar desain aplikasi.
 --}}
 @if ($paginator->hasPages())
+    <style>
+        .pagination-nav {
+            display: flex;
+            align-items: center;
+        }
+        .pagination-list {
+            display: inline-flex !important;
+            align-items: center !important;
+            gap: 4px !important;
+            list-style: none !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            flex-wrap: wrap !important;
+        }
+        .pagination-list li,
+        .pagination-list .page-item {
+            list-style: none !important;
+            list-style-type: none !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            display: inline-flex !important;
+            align-items: center !important;
+        }
+    </style>
     <nav class="pagination-nav" role="navigation" aria-label="Navigasi Halaman">
         <ul class="pagination-list">
             {{-- Tombol Sebelumnya (Previous) --}}

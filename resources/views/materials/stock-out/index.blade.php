@@ -577,6 +577,35 @@
             align-items: center;
         }
 
+        .pagination-nav {
+            display: flex;
+            align-items: center;
+        }
+
+        .pagination-list,
+        .pagination-nav ul,
+        .table-footer ul.pagination,
+        .table-footer ul {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            flex-wrap: wrap;
+        }
+
+        .pagination-list li,
+        .pagination-nav li,
+        .table-footer li.page-item,
+        .table-footer li {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: inline-flex;
+            align-items: center;
+        }
+
         /* Base Button & Link Pagination */
         .page-link,
         .table-footer .page-link {
@@ -670,6 +699,29 @@
             max-height: 16px !important;
             vertical-align: middle;
             display: inline-block;
+        }
+
+        @media (max-width: 640px) {
+            .table-footer {
+                flex-direction: column;
+                align-items: center;
+                gap: 12px;
+                text-align: center;
+            }
+            .table-footer-left {
+                flex-direction: column;
+                gap: 8px;
+                align-items: center;
+            }
+            .pagination-list {
+                justify-content: center;
+            }
+            .page-text {
+                display: none;
+            }
+            .page-prev, .page-next {
+                padding: 0 10px;
+            }
         }
 
         /* Empty State */
