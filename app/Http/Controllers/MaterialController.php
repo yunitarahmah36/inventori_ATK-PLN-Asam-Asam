@@ -168,19 +168,13 @@ class MaterialController extends Controller
     }
 
     /**
-     * Perbarui data master material.
-     * Validasi No. Material unik dengan mengecualikan material yang sedang diedit.
-     * Tidak mengubah kuantitas stok. Sinkronkan snapshot riwayat jika No/Nama berubah.
+     * Perbarui data master material (Nama Material dan Satuan).
+     * No. Material bersifat unik permanen dan tidak dapat diedit.
+     * Tidak mengubah kuantitas stok. Sinkronkan snapshot riwayat jika Nama Material berubah.
      */
     public function update(Request $request, Material $material)
     {
         $validated = $request->validate([
-            'material_number' => [
-                'required',
-                'string',
-                'max:50',
-                'unique:materials,material_number,' . $material->id,
-            ],
             'name' => [
                 'required',
                 'string',
@@ -201,41 +195,32 @@ class MaterialController extends Controller
                 'max:50',
             ],
         ], [
-            'material_number.required' => 'No. Material wajib diisi.',
-            'material_number.unique'   => 'No. Material sudah digunakan untuk material lain. Setiap material harus memiliki No. Material yang unik.',
-            'material_number.max'      => 'No. Material maksimal 50 karakter.',
-            'name.required'            => 'Nama Material wajib diisi.',
-            'name.max'                 => 'Nama Material maksimal 255 karakter.',
-            'unit.required'            => 'Satuan wajib diisi.',
-            'unit.max'                 => 'Satuan maksimal 50 karakter.',
+            'name.required' => 'Nama Material wajib diisi.',
+            'name.max'      => 'Nama Material maksimal 255 karakter.',
+            'unit.required' => 'Satuan wajib diisi.',
+            'unit.max'      => 'Satuan maksimal 50 karakter.',
         ]);
 
-        $oldNumber = $material->material_number;
-        $oldName   = $material->name;
+        $oldName = $material->name;
+        $newName = trim($validated['name']);
+        $newUnit = trim($validated['unit']);
 
-        $newNumber = trim($validated['material_number']);
-        $newName   = trim($validated['name']);
-        $newUnit   = trim($validated['unit']);
-
-        // Perbarui data master material tanpa mengubah kuantitas stok
+        // Perbarui data master material (material_number permanen dan tidak diubah)
         $material->update([
-            'material_number' => $newNumber,
-            'name'            => $newName,
-            'unit'            => $newUnit,
+            'name' => $newName,
+            'unit' => $newUnit,
         ]);
 
-        // Jika No. Material atau Nama Material berubah, perbarui juga snapshot pada riwayat pergerakan stok
-        // agar relasi dan histori tetap konsisten dan aman
-        if ($oldNumber !== $newNumber || $oldName !== $newName) {
+        // Jika Nama Material berubah, perbarui juga snapshot pada riwayat pergerakan stok
+        if ($oldName !== $newName) {
             StockMovement::where('material_id', $material->id)->update([
-                'material_number' => $newNumber,
-                'material_name'   => $newName,
+                'material_name' => $newName,
             ]);
         }
 
         return redirect()
             ->route('materials.index')
-            ->with('success', "Data master material \"{$newName}\" ({$newNumber}) berhasil diperbarui.");
+            ->with('success', "Data master material \"{$newName}\" ({$material->material_number}) berhasil diperbarui.");
     }
 
     /**

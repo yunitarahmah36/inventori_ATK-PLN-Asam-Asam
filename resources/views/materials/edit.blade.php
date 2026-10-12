@@ -463,21 +463,30 @@
 
                         <div class="form-grid">
 
-                            <!-- No Material -->
+                            <!-- No Material (Terkunci / Tidak Dapat Diedit) -->
                             <div class="form-group">
-                                <label for="material_number" class="form-label">
-                                    No. Material <span class="req">*</span>
+                                <label for="material_number" class="form-label" style="display: flex; align-items: center; justify-content: space-between;">
+                                    <span>No. Material</span>
+                                    <span style="font-size: 11px; font-weight: 600; color: #64748B; background: #F1F5F9; padding: 2px 8px; border-radius: 4px; display: inline-flex; align-items: center; gap: 4px;">
+                                        <span class="material-symbols-outlined" style="font-size: 13px;">lock</span>
+                                        Terkunci
+                                    </span>
                                 </label>
-                                <input type="text" id="material_number" name="material_number"
-                                    class="form-control @error('material_number') is-invalid @enderror"
-                                    value="{{ old('material_number', $material->material_number) }}" required
-                                    autocomplete="off">
-                                @error('material_number')
-                                    <span class="invalid-feedback">{{ $message }}</span>
-                                @enderror
-                                <span class="form-helper">
-                                    Kode unik material. Jika diubah, riwayat transaksi terkait akan tetap sinkron dan
-                                    aman.
+                                <div style="position: relative;">
+                                    <input type="text" id="material_number"
+                                        class="form-control"
+                                        value="{{ $material->material_number }}" 
+                                        readonly
+                                        disabled
+                                        style="background-color: #F8FAFC; color: #475569; font-weight: 600; cursor: not-allowed; border-color: #E2E8F0; padding-right: 38px;"
+                                        title="No. Material bersifat permanen dan tidak dapat diedit">
+                                    <span class="material-symbols-outlined" 
+                                          style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: #94A3B8; font-size: 18px; pointer-events: none;">
+                                        lock
+                                    </span>
+                                </div>
+                                <span class="form-helper" style="color: #64748B;">
+                                    No. Material adalah kode identitas unik permanen yang tidak dapat diubah setelah didaftarkan.
                                 </span>
                             </div>
 

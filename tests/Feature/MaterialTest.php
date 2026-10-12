@@ -238,7 +238,7 @@ class MaterialTest extends TestCase
         $this->assertEquals(30, $material->quantity); // Stok tetap 30, tidak terpengaruh!
     }
 
-    public function test_update_syncs_stock_movement_snapshots_when_material_number_or_name_changes(): void
+    public function test_update_syncs_stock_movement_snapshots_when_name_changes_and_keeps_material_number_immutable(): void
     {
         $admin = $this->createUser('Admin');
         $material = Material::create([
@@ -260,22 +260,27 @@ class MaterialTest extends TestCase
             'quantity_change' => 10,
         ]);
 
-        // Ubah nomor dan nama material
+        // Coba kirim data update dengan nama baru dan No. Material berbeda
         $response = $this->actingAs($admin)->put("/materials/{$material->id}", [
-            'material_number' => 'MAT006-REV',
+            'material_number' => 'MAT006-TAMPERED',
             'name'            => 'Lakban Bening Tebal',
             'unit'            => 'Roll',
         ]);
 
         $response->assertRedirect('/materials');
 
+        $material->refresh();
+        // No. Material tetap MAT006 (tidak dapat diubah)
+        $this->assertEquals('MAT006', $material->material_number);
+        $this->assertEquals('Lakban Bening Tebal', $material->name);
+
         $movement->refresh();
-        $this->assertEquals('MAT006-REV', $movement->material_number);
+        $this->assertEquals('MAT006', $movement->material_number);
         $this->assertEquals('Lakban Bening Tebal', $movement->material_name);
         $this->assertEquals($material->id, $movement->material_id);
     }
 
-    public function test_update_validates_unique_material_number_excluding_itself(): void
+    public function test_update_does_not_change_material_number_even_if_submitted(): void
     {
         $admin = $this->createUser('Admin');
         $mat1 = Material::create([
@@ -283,27 +288,20 @@ class MaterialTest extends TestCase
             'name'            => 'Barang Satu',
             'unit'            => 'Pcs',
         ]);
-        $mat2 = Material::create([
-            'material_number' => 'MAT002',
-            'name'            => 'Barang Dua',
-            'unit'            => 'Pcs',
+
+        $res = $this->actingAs($admin)->put("/materials/{$mat1->id}", [
+            'material_number' => 'MAT999',
+            'name'            => 'Barang Satu Update',
+            'unit'            => 'Box',
         ]);
 
-        // Update mat1 menggunakan nomor miliknya sendiri (harus berhasil)
-        $resSelf = $this->actingAs($admin)->put("/materials/{$mat1->id}", [
-            'material_number' => 'MAT001',
-            'name'            => 'Barang Satu Update',
-            'unit'            => 'Pcs',
-        ]);
-        $resSelf->assertSessionHasNoErrors();
+        $res->assertRedirect('/materials');
 
-        // Update mat1 menggunakan nomor milik mat2 (harus gagal validasi)
-        $resConflict = $this->actingAs($admin)->put("/materials/{$mat1->id}", [
-            'material_number' => 'MAT002',
-            'name'            => 'Barang Satu Update',
-            'unit'            => 'Pcs',
-        ]);
-        $resConflict->assertSessionHasErrors(['material_number']);
+        $mat1->refresh();
+        // Nomor material harus tetap MAT001
+        $this->assertEquals('MAT001', $mat1->material_number);
+        $this->assertEquals('Barang Satu Update', $mat1->name);
+        $this->assertEquals('Box', $mat1->unit);
     }
 
     public function test_destroy_deletes_permanently_if_no_stock_history(): void
