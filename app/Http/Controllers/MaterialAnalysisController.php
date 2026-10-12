@@ -256,7 +256,17 @@ class MaterialAnalysisController extends Controller
         // Filter dan Pencarian untuk Cards
         $search = $request->query('search', '');
         $filterStatus = $request->query('status', '');
-        $sortBy = $request->query('sort', 'stock_desc');
+
+        // Normalisasi alias status bila ada variasi parameter
+        if ($filterStatus === 'menipis') {
+            $filterStatus = 'low';
+        } elseif ($filterStatus === 'habis') {
+            $filterStatus = 'out';
+        } elseif ($filterStatus === 'aman') {
+            $filterStatus = 'safe';
+        }
+
+        $sortBy = $request->query('sort', $filterStatus === 'low' ? 'stock_asc' : 'stock_desc');
 
         $filteredGroups = $groups;
 
@@ -277,7 +287,7 @@ class MaterialAnalysisController extends Controller
         // Filter Status
         if (!empty($filterStatus)) {
             if ($filterStatus === 'low') {
-                $filteredGroups = $filteredGroups->where('status', 'Menipis');
+                $filteredGroups = $filteredGroups->whereIn('status', ['Menipis', 'Habis']);
             } elseif ($filterStatus === 'out') {
                 $filteredGroups = $filteredGroups->where('status', 'Habis');
             } elseif ($filterStatus === 'safe') {

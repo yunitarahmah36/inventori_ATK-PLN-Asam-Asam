@@ -113,4 +113,57 @@ class DashboardTest extends TestCase
         $response->assertSee('Umum');
         $response->assertSee('Tambah');
     }
+
+    public function test_dashboard_low_stock_banner_links_to_material_analysis_with_filter(): void
+    {
+        $admin = $this->createUser('Admin');
+        Material::create([
+            'material_number' => 'MAT-LOW',
+            'name'            => 'Pensil 2B Menipis',
+            'entry_date'      => now(),
+            'quantity'        => 5,
+            'unit'            => 'Pcs',
+            'created_by'      => $admin->id,
+        ]);
+
+        $response = $this->actingAs($admin)->get('/dashboard');
+        $response->assertStatus(200);
+        $response->assertSee('Peringatan: Terdapat 1 Jenis Material dengan Stok Menipis!');
+        $response->assertSee(route('material-analysis.index', ['status' => 'low']));
+        $response->assertSee('Lihat Stok Menipis');
+    }
+
+    public function test_material_analysis_filters_low_stock_correctly(): void
+    {
+        $admin = $this->createUser('Admin');
+
+        // Material stok menipis
+        Material::create([
+            'material_number' => 'MAT-LOW',
+            'name'            => 'Buku Tulis Tipis',
+            'entry_date'      => now(),
+            'quantity'        => 10,
+            'unit'            => 'Buku',
+            'created_by'      => $admin->id,
+        ]);
+
+        // Material stok aman (> 15)
+        Material::create([
+            'material_number' => 'MAT-SAFE',
+            'name'            => 'Kertas HVS Banyak',
+            'entry_date'      => now(),
+            'quantity'        => 100,
+            'unit'            => 'Rim',
+            'created_by'      => $admin->id,
+        ]);
+
+        // Akses halaman analisis material dengan status=low
+        $response = $this->actingAs($admin)->get('/material-analysis?status=low');
+        $response->assertStatus(200);
+        $response->assertSee('MAT-LOW');
+        $response->assertSee('Buku Tulis Tipis');
+        $response->assertDontSee('MAT-SAFE');
+        $response->assertDontSee('Kertas HVS Banyak');
+    }
 }
+

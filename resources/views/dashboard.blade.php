@@ -1290,8 +1290,8 @@
                                 </div>
                             </div>
                         </div>
-                        <a href="{{ route('materials.index', ['filter_stock' => 'low']) }}" class="stock-alert-btn">
-                            Lihat Semua Material Menipis
+                        <a href="{{ route('material-analysis.index', ['status' => 'low']) }}" class="stock-alert-btn" data-spa-link>
+                            Lihat Stok Menipis
                             <span class="material-symbols-outlined">arrow_forward</span>
                         </a>
                     </div>
@@ -1380,7 +1380,7 @@
                                 <span class="material-symbols-outlined">assignment_turned_in</span>
                                 Daftar Material
                                 @if ($lowStockCount > 0)
-                                    <a href="{{ route('materials.index', ['filter_stock' => 'low']) }}" class="badge-header-warning" title="Lihat semua material dengan stok menipis">
+                                    <a href="{{ route('material-analysis.index', ['status' => 'low']) }}" class="badge-header-warning" title="Lihat semua material dengan stok menipis" data-spa-link>
                                         <span class="material-symbols-outlined" style="font-size:13px;">warning</span>
                                         {{ $lowStockCount }} Menipis
                                     </a>
