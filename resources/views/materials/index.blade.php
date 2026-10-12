@@ -324,6 +324,16 @@
             border-color: #CBD5E1;
         }
 
+        .btn-danger {
+            background: var(--red);
+            color: #fff;
+            box-shadow: 0 2px 6px rgba(220, 38, 38, 0.25);
+        }
+
+        .btn-danger:hover {
+            background: #B91C1C;
+        }
+
         .btn-icon-only {
             width: 32px;
             height: 32px;
@@ -1325,9 +1335,10 @@
                     <div class="delete-modal-icon">
                         <span class="material-symbols-outlined">delete</span>
                     </div>
-                    <h3 id="deleteModalTitle">Hapus Material?</h3>
+                    <h3 id="deleteModalTitle">Hapus Data Material?</h3>
                     <p id="deleteModalMessage">
-                        Apakah Anda yakin ingin menghapus data material ini?
+                        Apakah Anda yakin ingin menghapus data material ini?<br>
+                        <span style="color:var(--text-muted);font-size:12.5px;margin-top:6px;display:block;">Data yang telah dihapus tidak dapat dikembalikan.</span>
                     </p>
                     <div class="delete-modal-actions">
                         <button type="button" class="delete-modal-cancel" id="deleteModalCancel">Batal</button>
@@ -1350,11 +1361,12 @@
                     </div>
                     <h3 id="bulkDeleteModalTitle">Hapus Material Terpilih?</h3>
                     <p id="bulkDeleteModalMessage">
-                        Material yang dipilih akan dihapus secara permanen dari master data. Riwayat transaksi stok terdahulu tetap terjaga secara aman.
+                        Apakah Anda yakin ingin menghapus material yang dipilih?<br>
+                        <span style="color:var(--text-muted);font-size:12.5px;margin-top:6px;display:block;">Data yang telah dihapus tidak dapat dikembalikan.</span>
                     </p>
                     <div class="delete-modal-actions">
                         <button type="button" class="delete-modal-cancel" id="bulkModalCancelBtn">Batal</button>
-                        <button type="button" class="delete-modal-confirm" id="bulkModalConfirmBtn">Ya, Hapus Semua</button>
+                        <button type="button" class="delete-modal-confirm" id="bulkModalConfirmBtn">Ya, Hapus</button>
                     </div>
                 </div>
             </div>
@@ -1391,9 +1403,9 @@
                         const name   = btn.dataset.name || '';
                         const number = btn.dataset.number || '';
 
-                        titleEl.textContent = 'Hapus Material?';
-                        msgEl.innerHTML = `Apakah Anda yakin ingin menghapus material <strong>"${name}"</strong> (${number}) secara permanen? Data akan dihapus dari master material, sedangkan riwayat pergerakan stok terdahulu tetap terjaga secara aman.`;
-                        confirmBtn.textContent = 'Ya, Hapus Material';
+                        titleEl.textContent = 'Hapus Data Material?';
+                        msgEl.innerHTML = `Apakah Anda yakin ingin menghapus data material <strong>"${name}"</strong> (${number})?<br><span style="color:var(--text-muted);font-size:12.5px;margin-top:6px;display:block;">Data yang telah dihapus tidak dapat dikembalikan.</span>`;
+                        confirmBtn.textContent = 'Ya, Hapus';
 
                         modal.classList.add('show');
                     });
@@ -1445,28 +1457,32 @@
                 const bulkCountBadge   = document.getElementById('bulkCountBadge');
                 const bulkDeleteBtn    = document.getElementById('bulkDeleteBtn');
                 const bulkCancelBtn2   = document.getElementById('bulkCancelBtn');
-                const btnDeleteAllData = document.getElementById('btnDeleteAllData');
                 const checkAll         = document.getElementById('checkAll');
-
-                let isDeleteAllAction = false;
 
                 function getChecked() {
                     return Array.from(document.querySelectorAll('.row-checkbox:checked'));
                 }
 
                 function updateToolbar() {
-                    const checked = getChecked();
-                    const count   = checked.length;
+                    const checked  = getChecked();
+                    const count    = checked.length;
+                    const allBoxes = document.querySelectorAll('.row-checkbox');
+
                     if (bulkToolbar) {
                         if (count > 0) {
                             bulkCountBadge.textContent = count;
+                            const toolbarLabel = bulkToolbar.querySelector('.bulk-toolbar-label');
+                            if (toolbarLabel) {
+                                toolbarLabel.textContent = (allBoxes.length > 1 && count === allBoxes.length)
+                                    ? 'seluruh material terpilih'
+                                    : 'material dipilih';
+                            }
                             bulkToolbar.classList.add('visible');
                         } else {
                             bulkToolbar.classList.remove('visible');
                         }
                     }
 
-                    const allBoxes = document.querySelectorAll('.row-checkbox');
                     if (checkAll && allBoxes.length > 0) {
                         checkAll.indeterminate = count > 0 && count < allBoxes.length;
                         checkAll.checked       = count > 0 && count === allBoxes.length;
@@ -1504,24 +1520,22 @@
                 // Klik "Hapus Terpilih" dari toolbar pilihan checkbox
                 if (bulkDeleteBtn) {
                     bulkDeleteBtn.addEventListener('click', function () {
-                        const count = getChecked().length;
+                        const count    = getChecked().length;
+                        const allBoxes = document.querySelectorAll('.row-checkbox');
                         if (count === 0) return;
 
-                        isDeleteAllAction = false;
-                        if (bulkModalTitle) bulkModalTitle.textContent = 'Hapus Material Terpilih?';
-                        bulkMsgEl.innerHTML = `Anda akan menghapus <strong>${count} material terpilih</strong> secara permanen dari master data.<br><br>Riwayat pergerakan stok terdahulu tetap dipertahankan secara aman.`;
-                        bulkConfirmBtn.textContent = `Ya, Hapus (${count})`;
-                        bulkModal.classList.add('show');
-                    });
-                }
+                        if (bulkAllInput) bulkAllInput.value = '0';
 
-                // Klik "Hapus Semua Data" dari Header Actions
-                if (btnDeleteAllData) {
-                    btnDeleteAllData.addEventListener('click', function () {
-                        isDeleteAllAction = true;
-                        if (bulkModalTitle) bulkModalTitle.textContent = 'Hapus Semua Data Material?';
-                        bulkMsgEl.innerHTML = `Apakah Anda yakin ingin menghapus <strong>SELURUH data master material</strong>?<br><br>Seluruh data master material akan dihapus permanen dari sistem. Riwayat transaksi stok terdahulu tetap tersimpan secara aman.`;
-                        bulkConfirmBtn.textContent = 'Ya, Hapus Semua Data';
+                        if (allBoxes.length > 1 && count === allBoxes.length) {
+                            if (bulkModalTitle) bulkModalTitle.textContent = 'Hapus Semua Material Terpilih?';
+                            bulkMsgEl.innerHTML = `Apakah Anda yakin ingin menghapus <strong>seluruh material terpilih (${count} material)</strong>?<br><span style="color:var(--text-muted);font-size:12.5px;margin-top:6px;display:block;">Data yang telah dihapus tidak dapat dikembalikan.</span>`;
+                            bulkConfirmBtn.textContent = `Ya, Hapus Semua (${count})`;
+                        } else {
+                            if (bulkModalTitle) bulkModalTitle.textContent = 'Hapus Material Terpilih?';
+                            bulkMsgEl.innerHTML = `Apakah Anda yakin ingin menghapus <strong>${count} material terpilih</strong>?<br><span style="color:var(--text-muted);font-size:12.5px;margin-top:6px;display:block;">Data yang telah dihapus tidak dapat dikembalikan.</span>`;
+                            bulkConfirmBtn.textContent = `Ya, Hapus (${count})`;
+                        }
+
                         bulkModal.classList.add('show');
                     });
                 }
@@ -1541,23 +1555,19 @@
                         // Bersihkan input ids[] lama dari bulkForm
                         bulkForm.querySelectorAll('input[name="ids[]"]').forEach(el => el.remove());
 
-                        if (isDeleteAllAction) {
-                            if (bulkAllInput) bulkAllInput.value = '1';
-                        } else {
-                            if (bulkAllInput) bulkAllInput.value = '0';
-                            const checkedBoxes = getChecked();
-                            if (checkedBoxes.length === 0) {
-                                bulkConfirmBtn.disabled = false;
-                                return;
-                            }
-                            checkedBoxes.forEach(cb => {
-                                const input = document.createElement('input');
-                                input.type  = 'hidden';
-                                input.name  = 'ids[]';
-                                input.value = cb.value;
-                                bulkForm.appendChild(input);
-                            });
+                        if (bulkAllInput) bulkAllInput.value = '0';
+                        const checkedBoxes = getChecked();
+                        if (checkedBoxes.length === 0) {
+                            bulkConfirmBtn.disabled = false;
+                            return;
                         }
+                        checkedBoxes.forEach(cb => {
+                            const input = document.createElement('input');
+                            input.type  = 'hidden';
+                            input.name  = 'ids[]';
+                            input.value = cb.value;
+                            bulkForm.appendChild(input);
+                        });
 
                         bulkForm.submit();
                     });

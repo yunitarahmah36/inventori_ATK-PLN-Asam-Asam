@@ -1415,7 +1415,8 @@
                 </div>
                 <h3 style="font-size:18px;font-weight:800;color:var(--text-dark);margin-bottom:8px;">Hapus Transaksi Stok Keluar?</h3>
                 <p style="font-size:13px;color:var(--text-mid);line-height:1.5;margin-bottom:16px;">
-                    Data transaksi pengeluaran material <strong id="deleteMaterialNameText">-</strong> sebanyak <strong id="deleteQuantityText">0 Unit</strong> akan dihapus, dan kuantitas stok akan <strong>dikembalikan</strong> ke data material.
+                    Apakah Anda yakin ingin menghapus transaksi pengeluaran material <strong id="deleteMaterialNameText">-</strong> sebanyak <strong id="deleteQuantityText">0 Unit</strong>?<br>
+                    <span style="color:var(--text-muted);font-size:12px;margin-top:6px;display:block;">Kuantitas stok akan otomatis dikembalikan ke data material.</span>
                 </p>
 
                 <form action="" method="POST" id="deleteStockOutForm">
