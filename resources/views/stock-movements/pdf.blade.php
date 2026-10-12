@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
 
-    <title>Riwayat Stok ATK</title>
+    <title>Riwayat Stok Material</title>
 
     <style>
         @page {
@@ -408,11 +408,11 @@
                 <td class="header-left">
 
                     <div class="title">
-                        RIWAYAT STOK ATK
+                        RIWAYAT STOK MATERIAL
                     </div>
 
                     <div class="subtitle">
-                        Sistem Inventori ATK PT PLN Indonesia Power UBP Asam Asam
+                        Sistem Informasi Inventori Material PT PLN Indonesia Power UBP Asam Asam
                     </div>
 
                 </td>
@@ -491,7 +491,7 @@
                         </div>
 
                         <div class="summary-date">
-                            Inventori ATK PLN
+                            Inventori Material PLN
                         </div>
 
                     </div>
@@ -811,7 +811,7 @@
 
                 <td>
                     Dokumen dibuat secara otomatis oleh
-                    Sistem Inventori ATK PT PLN Indonesia Power UBP Asam Asam.
+                    Sistem Informasi Inventori Material PT PLN Indonesia Power UBP Asam Asam.
                 </td>
 
                 <td class="footer-right">

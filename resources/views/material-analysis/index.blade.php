@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport"
         content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Analisis Material - Inventori ATK PT PLN Indonesia Power UBP Asam Asam</title>
+    <title>Analisis Material - Sistem Informasi Inventori Material PT PLN Indonesia Power UBP Asam Asam</title>
     <link rel="icon" type="image/png" href="{{ asset('images/pln_bulat.png') }}">
 
     <!-- Google Fonts: Inter -->
@@ -56,7 +56,7 @@
         html,
         body {
             height: 100%;
-            font-family: 'Inter', Arial, sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: var(--bg);
             color: var(--text-dark);
             overflow-x: hidden;

@@ -26,6 +26,10 @@
             padding: 0 !important;
             display: inline-flex !important;
             align-items: center !important;
+            font-family: inherit !important;
+        }
+        .pagination-list .page-link {
+            font-family: inherit !important;
         }
     </style>
     <nav class="pagination-nav" role="navigation" aria-label="Navigasi Halaman">

@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Stok Masuk - Inventori ATK PT PLN Indonesia Power UBP Asam Asam</title>
+    <title>Stok Masuk - Sistem Informasi Inventori Material PT PLN Indonesia Power UBP Asam Asam</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -43,15 +43,14 @@
             padding: 0;
         }
 
-        
-html,
-body {
-    height: 100%;
-    font-family: 'Inter', Arial, sans-serif;
-    background: var(--bg);
-    color: var(--text-dark);
-    overflow-x: hidden;
-}
+        html,
+        body {
+            height: 100%;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text-dark);
+            overflow-x: hidden;
+        }
 
 /* Scrollbar */
 ::-webkit-scrollbar {
@@ -1345,7 +1344,7 @@ body {
                                   name="description" 
                                   class="form-control-custom" 
                                   rows="3" 
-                                  placeholder="Contoh: Pengadaan ATK Triwulan IV / No. Surat Jalan: SJ-2026-10... (opsional)"></textarea>
+                                  placeholder="Contoh: Pengadaan Material Triwulan IV / No. Surat Jalan: SJ-2026-10... (opsional)"></textarea>
                     </div>
 
                     <div class="modal-actions-custom">

@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport"
         content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Tambah Material - Inventori ATK PT PLN Indonesia Power UBP Asam Asam</title>
+    <title>Tambah Material - Sistem Informasi Inventori Material PT PLN Indonesia Power UBP Asam Asam</title>
     <link rel="icon" type="image/png" href="{{ asset('images/pln_bulat.png') }}">
 
     <!-- Google Fonts: Inter -->
@@ -50,7 +50,7 @@
         html,
         body {
             height: 100%;
-            font-family: 'Inter', Arial, sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: var(--bg);
             color: var(--text-dark);
         }
@@ -416,7 +416,7 @@
                     </button>
                     <div class="topbar-left">
                         <h1>Tambah Material</h1>
-                        <p>Pendaftaran data master material ATK PT PLN Indonesia Power UBP Asam Asam</p>
+                        <p>Pendaftaran data master material PT PLN Indonesia Power UBP Asam Asam</p>
                     </div>
                 </div>
 
@@ -491,7 +491,7 @@
                                     <span class="invalid-feedback">{{ $message }}</span>
                                 @enderror
                                 <span class="form-helper">
-                                    Nama lengkap barang atau material ATK (wajib unik dan belum pernah didaftarkan sebelumnya).
+                                    Nama lengkap barang atau material (wajib unik dan belum pernah didaftarkan sebelumnya).
                                 </span>
                             </div>
 

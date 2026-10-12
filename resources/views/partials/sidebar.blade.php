@@ -14,7 +14,7 @@
 
     <!-- Logo PLN & Close Button Mobile -->
     <div class="sidebar-logo">
-        <a href="{{ route('dashboard') }}" class="sidebar-brand-link" title="Dashboard STOK ATK">
+        <a href="{{ route('dashboard') }}" class="sidebar-brand-link" title="Dashboard Inventori Material">
             <img 
                 src="{{ asset('images/logo-pln.png') }}" 
                 alt="Logo PLN"
@@ -22,7 +22,7 @@
                 loading="eager"
             >
             <div class="sidebar-logo-text">
-                <h1>STOK ATK</h1>
+                <h1>INVENTORI MATERIAL</h1>
                 <p>PT PLN Indonesia Power UBP Asam Asam</p>
             </div>
         </a>
@@ -208,6 +208,20 @@
     html {
         overflow-y: scroll;
         scrollbar-gutter: stable;
+    }
+
+    body,
+    .layout,
+    .sidebar,
+    .main {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    button,
+    input,
+    select,
+    textarea {
+        font-family: inherit;
     }
 
     /* Layout Wrapper Global */

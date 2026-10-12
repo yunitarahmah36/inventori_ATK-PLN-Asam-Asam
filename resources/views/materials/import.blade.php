@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport"
         content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Import Data Material - Inventori ATK PT PLN Indonesia Power UBP Asam Asam</title>
+    <title>Import Data Material - Sistem Informasi Inventori Material PT PLN Indonesia Power UBP Asam Asam</title>
     <link rel="icon" type="image/png" href="{{ asset('images/pln_bulat.png') }}">
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
@@ -49,7 +49,7 @@
         html,
         body {
             height: 100%;
-            font-family: 'Inter', Arial, sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: var(--bg);
             color: var(--text-dark);
         }
@@ -472,7 +472,7 @@
                 </button>
                 <div class="topbar-left">
                     <h1>Import Data Material</h1>
-                    <p>Pendaftaran master data material ATK PT PLN Indonesia Power UBP Asam Asam</p>
+                    <p>Pendaftaran master data material PT PLN Indonesia Power UBP Asam Asam</p>
                 </div>
             </div>
 

@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport"
         content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Dashboard - Inventori ATK PT PLN Indonesia Power UBP Asam Asam</title>
+    <title>Dashboard - Sistem Informasi Inventori Material PT PLN Indonesia Power UBP Asam Asam</title>
     <link rel="icon" type="image/png" href="{{ asset('images/pln_bulat.png') }}">
     <!-- Google Fonts: Inter -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
@@ -50,7 +50,7 @@
         html,
         body {
             height: 100%;
-            font-family: 'Inter', Arial, sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: var(--bg);
             color: var(--text-dark);
             overflow-x: hidden;
@@ -1173,7 +1173,7 @@
                     </button>
                     <div class="topbar-left">
                         <h1>Dashboard</h1>
-                        <p>Sistem Informasi Inventori ATK PT PLN Indonesia Power UBP Asam Asam</p>
+                        <p>Sistem Informasi Inventori Material PT PLN Indonesia Power UBP Asam Asam</p>
                     </div>
                 </div>
 
@@ -1231,7 +1231,7 @@
 
                         <h2>Selamat Datang Kembali, {{ Auth::user()->name }}</h2>
 
-                        <p>Sistem Manajemen Stok Material ATK PT PLN Indonesia Power UBP Asam Asam</p>
+                        <p>Sistem Informasi Inventori Material PT PLN Indonesia Power UBP Asam Asam</p>
 
                     </div>
 

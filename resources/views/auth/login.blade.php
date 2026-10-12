@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Stok Material ATK</title>
+    <title>Login - Sistem Informasi Inventori Material</title>
     <link rel="icon" type="image/png" href="{{ asset('images/pln_bulat.png') }}">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
     <style>
         /* Reset & Background */
@@ -13,7 +13,7 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Inter', sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         }
 
         body {
@@ -240,7 +240,7 @@
         </div>
 
         <!-- Judul -->
-        <h2>Stok Material ATK</h2>
+        <h2>Inventori Material</h2>
         <p class="subtitle">Silakan masuk ke akun Anda</p>
 
         <!-- Error Handling Laravel -->

@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport"
         content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Profil Pengguna - Inventori ATK PT PLN Indonesia Power UBP Asam Asam</title>
+    <title>Profil Pengguna - Sistem Informasi Inventori Material PT PLN Indonesia Power UBP Asam Asam</title>
     <link rel="icon" type="image/png" href="{{ asset('images/pln_bulat.png') }}">
 
     <!-- Google Fonts: Inter -->
@@ -82,7 +82,7 @@
         html,
         body {
             height: 100%;
-            font-family: 'Inter', Arial, sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: var(--bg);
             color: var(--text-dark);
             overflow-x: hidden;
@@ -1619,7 +1619,7 @@
                             <div class="empty-activity">
                                 <span class="material-symbols-outlined empty-activity-icon">inventory_2</span>
                                 <h4>Belum Ada Aktivitas</h4>
-                                <p>Anda belum melakukan transaksi mutasi atau penambahan stok material ATK.</p>
+                                <p>Anda belum melakukan transaksi mutasi atau penambahan stok material.</p>
                                 <a href="{{ route('materials.index') }}" class="btn btn-primary" data-spa-link>
                                     <span class="material-symbols-outlined">inventory_2</span>
                                     <span>Buka Data Material</span>
