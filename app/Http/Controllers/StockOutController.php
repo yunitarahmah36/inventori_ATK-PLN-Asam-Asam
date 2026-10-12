@@ -26,8 +26,8 @@ class StockOutController extends Controller
         $endDate   = $request->input('end_date');
         $perPage   = $request->input('per_page', 25);
 
-        // Ambil semua material master data aktif yang memiliki stok untuk pilihan dropdown form tambah
-        $allMaterials = Material::where('is_active', true)->where('quantity', '>', 0)->orderBy('name', 'asc')->get();
+        // Ambil semua material master data yang memiliki stok untuk pilihan dropdown form tambah
+        $allMaterials = Material::where('quantity', '>', 0)->orderBy('name', 'asc')->get();
 
         // Query transaksi stok keluar (aktivitas Keluar atau quantity_change negatif)
         $query = StockMovement::with(['material', 'user'])
@@ -120,12 +120,6 @@ class StockOutController extends Controller
             DB::transaction(function () use ($validated, $qtyOut) {
                 // Lock material row untuk mencegah race condition
                 $material = Material::lockForUpdate()->findOrFail($validated['material_id']);
-
-                if (!$material->is_active) {
-                    throw ValidationException::withMessages([
-                        'material_id' => "Material \"{$material->name}\" telah dinonaktifkan dan tidak dapat digunakan untuk transaksi stok baru.",
-                    ]);
-                }
 
                 $currentQty = (int) $material->quantity;
 

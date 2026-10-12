@@ -555,11 +555,6 @@
             background: #EFF6FF !important;
         }
 
-        .data-table tbody tr.row-inactive {
-            background: #FAFBFD;
-            opacity: 0.75;
-        }
-
         .badge-material-number {
             display: inline-block;
             font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
@@ -571,19 +566,6 @@
             color: var(--blue-dark);
             border: 1px solid #DBEAFE;
             letter-spacing: 0.02em;
-        }
-
-        .badge-status-inactive {
-            display: inline-block;
-            font-size: 10px;
-            font-weight: 700;
-            padding: 2px 6px;
-            border-radius: 4px;
-            background: #F3F4F6;
-            color: #6B7280;
-            border: 1px solid #E5E7EB;
-            margin-left: 6px;
-            text-transform: uppercase;
         }
 
         .cb-cell {
@@ -952,24 +934,12 @@
                             <span class="material-symbols-outlined">search</span>
                             <input type="text" name="search" value="{{ $search }}"
                                 placeholder="Cari No. Material atau Nama Material..." autocomplete="off">
-                        </div>
-
-                        <!-- Filter Status -->
-                        <div class="filter-select-group">
-                            <label for="status">Status:</label>
-                            <select id="status" name="status" onchange="document.getElementById('filterForm').submit()">
-                                <option value="all" {{ ($status ?? 'all') === 'all' ? 'selected' : '' }}>Semua Material</option>
-                                <option value="active" {{ ($status ?? '') === 'active' ? 'selected' : '' }}>Aktif</option>
-                                <option value="inactive" {{ ($status ?? '') === 'inactive' ? 'selected' : '' }}>Nonaktif</option>
-                            </select>
-                        </div>
-
                         <button type="submit" class="btn btn-primary" style="padding: 8px 14px;">
                             <span class="material-symbols-outlined" style="font-size:18px;">search</span>
                             Cari
                         </button>
 
-                        @if (!empty($search) || ($status ?? 'all') !== 'all')
+                        @if (!empty($search))
                             <a href="{{ route('materials.index', ['per_page' => $perPage]) }}" class="btn btn-outline"
                                 style="padding: 8px 14px;">
                                 <span class="material-symbols-outlined" style="font-size:18px;">restart_alt</span>
@@ -1014,7 +984,7 @@
                                         $startNumber = ($materials->currentPage() - 1) * $materials->perPage();
                                     @endphp
                                     @foreach ($materials as $index => $mat)
-                                        <tr data-id="{{ $mat->id }}" class="{{ !$mat->is_active ? 'row-inactive' : '' }}">
+                                        <tr data-id="{{ $mat->id }}">
                                             <td class="cb-cell">
                                                 <input type="checkbox" class="row-checkbox"
                                                         value="{{ $mat->id }}"
@@ -1026,9 +996,6 @@
                                             </td>
                                             <td style="font-weight: 600;">
                                                 {{ $mat->name }}
-                                                @if (!$mat->is_active)
-                                                    <span class="badge-status-inactive" title="Material dinonaktifkan (memiliki riwayat transaksi, tidak dapat dipilih untuk transaksi baru)">Nonaktif</span>
-                                                @endif
                                             </td>
                                             <td>
                                                 <span style="font-weight: 500; color: var(--text-mid);">{{ $mat->unit }}</span>
@@ -1147,26 +1114,26 @@
                     </p>
                     <div class="delete-modal-actions">
                         <button type="button" class="delete-modal-cancel" id="deleteModalCancel">Batal</button>
-                        <button type="button" class="delete-modal-confirm" id="deleteModalConfirm">Ya, Lanjutkan</button>
+                        <button type="button" class="delete-modal-confirm" id="deleteModalConfirm">Ya, Hapus</button>
                     </div>
                 </div>
             </div>
 
-            <!-- Form tersembunyi untuk submit hapus -->
+            <!-- Form tersembunyi untuk submit hapus satu -->
             <form id="deleteHiddenForm" method="POST" style="display:none;">
                 @csrf
                 @method('DELETE')
             </form>
 
-            <!-- POPUP KONFIRMASI HAPUS MASSAL -->
+            <!-- POPUP KONFIRMASI HAPUS MASSAL & HAPUS SEMUA DATA -->
             <div id="bulkDeleteModal" class="delete-modal">
                 <div class="delete-modal-box">
                     <div class="delete-modal-icon">
                         <span class="material-symbols-outlined">delete_sweep</span>
                     </div>
-                    <h3>Hapus Material Terpilih?</h3>
+                    <h3 id="bulkDeleteModalTitle">Hapus Material Terpilih?</h3>
                     <p id="bulkDeleteModalMessage">
-                        Material yang belum memiliki riwayat akan dihapus permanen, sedangkan material yang sudah memiliki riwayat stok akan dinonaktifkan secara aman.
+                        Material yang dipilih akan dihapus secara permanen dari master data. Riwayat transaksi stok terdahulu tetap terjaga secara aman.
                     </p>
                     <div class="delete-modal-actions">
                         <button type="button" class="delete-modal-cancel" id="bulkModalCancelBtn">Batal</button>
@@ -1175,17 +1142,18 @@
                 </div>
             </div>
 
-            <!-- Form tersembunyi untuk bulk delete -->
+            <!-- Form tersembunyi untuk bulk delete & hapus semua -->
             <form id="bulkDeleteHiddenForm" method="POST"
                   action="{{ route('materials.bulk-destroy') }}"
                   style="display:none;">
                 @csrf
+                <input type="hidden" name="all" id="bulkDeleteAllInput" value="0">
             </form>
 
             <script>
             (function () {
                 // ======================================================
-                // 1. HAPUS SATU (Single Delete with relation detection)
+                // 1. HAPUS SATU (Single Delete)
                 // ======================================================
                 const modal      = document.getElementById('deleteModal');
                 const cancelBtn  = document.getElementById('deleteModalCancel');
@@ -1197,25 +1165,18 @@
                 let pendingAction = null;
 
                 if (modal && cancelBtn && confirmBtn && hiddenForm) {
-                    document.querySelector('main.main').addEventListener('click', function (e) {
+                    document.addEventListener('click', function (e) {
                         const btn = e.target.closest('.btn-open-delete-modal');
                         if (!btn) return;
                         e.preventDefault();
 
                         pendingAction = btn.dataset.action;
-                        const name         = btn.dataset.name || '';
-                        const number       = btn.dataset.number || '';
-                        const hasRelations = btn.dataset.hasRelations === '1';
+                        const name   = btn.dataset.name || '';
+                        const number = btn.dataset.number || '';
 
-                        if (hasRelations) {
-                            titleEl.textContent = 'Nonaktifkan Material?';
-                            msgEl.innerHTML = `Material <strong>"${name}"</strong> (${number}) telah memiliki riwayat pergerakan stok.<br><br>Untuk menjaga keutuhan data riwayat, material ini akan <strong>dinonaktifkan</strong> dari sistem dan tidak dapat dipilih untuk transaksi stok baru.`;
-                            confirmBtn.textContent = 'Ya, Nonaktifkan';
-                        } else {
-                            titleEl.textContent = 'Hapus Material?';
-                            msgEl.innerHTML = `Apakah Anda yakin ingin menghapus material <strong>"${name}"</strong> (${number}) secara permanen? Data yang belum memiliki riwayat akan dihapus dari sistem.`;
-                            confirmBtn.textContent = 'Ya, Hapus Permanen';
-                        }
+                        titleEl.textContent = 'Hapus Material?';
+                        msgEl.innerHTML = `Apakah Anda yakin ingin menghapus material <strong>"${name}"</strong> (${number}) secara permanen? Data akan dihapus dari master material, sedangkan riwayat pergerakan stok terdahulu tetap terjaga secara aman.`;
+                        confirmBtn.textContent = 'Ya, Hapus Material';
 
                         modal.classList.add('show');
                     });
@@ -1254,18 +1215,23 @@
                 }
 
                 // ======================================================
-                // 2. HAPUS MASSAL (Bulk Delete)
+                // 2. HAPUS MASSAL & HAPUS SEMUA DATA (Bulk & All Delete)
                 // ======================================================
-                const bulkModal      = document.getElementById('bulkDeleteModal');
-                const bulkCancelBtn  = document.getElementById('bulkModalCancelBtn');
-                const bulkConfirmBtn = document.getElementById('bulkModalConfirmBtn');
-                const bulkMsgEl      = document.getElementById('bulkDeleteModalMessage');
-                const bulkForm       = document.getElementById('bulkDeleteHiddenForm');
-                const bulkToolbar    = document.getElementById('bulkToolbar');
-                const bulkCountBadge = document.getElementById('bulkCountBadge');
-                const bulkDeleteBtn  = document.getElementById('bulkDeleteBtn');
-                const bulkCancelToolbarBtn = document.getElementById('bulkCancelBtn');
-                const checkAll       = document.getElementById('checkAll');
+                const bulkModal        = document.getElementById('bulkDeleteModal');
+                const bulkModalTitle   = document.getElementById('bulkDeleteModalTitle');
+                const bulkCancelBtn    = document.getElementById('bulkModalCancelBtn');
+                const bulkConfirmBtn   = document.getElementById('bulkModalConfirmBtn');
+                const bulkMsgEl        = document.getElementById('bulkDeleteModalMessage');
+                const bulkForm         = document.getElementById('bulkDeleteHiddenForm');
+                const bulkAllInput     = document.getElementById('bulkDeleteAllInput');
+                const bulkToolbar      = document.getElementById('bulkToolbar');
+                const bulkCountBadge   = document.getElementById('bulkCountBadge');
+                const bulkDeleteBtn    = document.getElementById('bulkDeleteBtn');
+                const bulkCancelBtn2   = document.getElementById('bulkCancelBtn');
+                const btnDeleteAllData = document.getElementById('btnDeleteAllData');
+                const checkAll         = document.getElementById('checkAll');
+
+                let isDeleteAllAction = false;
 
                 function getChecked() {
                     return Array.from(document.querySelectorAll('.row-checkbox:checked'));
@@ -1274,15 +1240,17 @@
                 function updateToolbar() {
                     const checked = getChecked();
                     const count   = checked.length;
-                    if (count > 0) {
-                        bulkCountBadge.textContent = count;
-                        bulkToolbar.classList.add('visible');
-                    } else {
-                        bulkToolbar.classList.remove('visible');
+                    if (bulkToolbar) {
+                        if (count > 0) {
+                            bulkCountBadge.textContent = count;
+                            bulkToolbar.classList.add('visible');
+                        } else {
+                            bulkToolbar.classList.remove('visible');
+                        }
                     }
 
                     const allBoxes = document.querySelectorAll('.row-checkbox');
-                    if (checkAll) {
+                    if (checkAll && allBoxes.length > 0) {
                         checkAll.indeterminate = count > 0 && count < allBoxes.length;
                         checkAll.checked       = count > 0 && count === allBoxes.length;
                     }
@@ -1302,25 +1270,41 @@
                     });
                 }
 
-                document.querySelector('main.main').addEventListener('change', function (e) {
+                document.addEventListener('change', function (e) {
                     if (e.target.classList.contains('row-checkbox')) {
                         updateToolbar();
                     }
                 });
 
-                if (bulkCancelToolbarBtn) {
-                    bulkCancelToolbarBtn.addEventListener('click', function () {
+                if (bulkCancelBtn2) {
+                    bulkCancelBtn2.addEventListener('click', function () {
                         document.querySelectorAll('.row-checkbox').forEach(cb => cb.checked = false);
                         if (checkAll) { checkAll.checked = false; checkAll.indeterminate = false; }
                         updateToolbar();
                     });
                 }
 
+                // Klik "Hapus Terpilih" dari toolbar pilihan checkbox
                 if (bulkDeleteBtn) {
                     bulkDeleteBtn.addEventListener('click', function () {
                         const count = getChecked().length;
                         if (count === 0) return;
-                        bulkMsgEl.innerHTML = `Anda akan memproses <strong>${count} material terpilih</strong>.<br><br>Material yang sudah memiliki riwayat stok akan dinonaktifkan, sedangkan material yang belum pernah digunakan akan dihapus permanen.`;
+
+                        isDeleteAllAction = false;
+                        if (bulkModalTitle) bulkModalTitle.textContent = 'Hapus Material Terpilih?';
+                        bulkMsgEl.innerHTML = `Anda akan menghapus <strong>${count} material terpilih</strong> secara permanen dari master data.<br><br>Riwayat pergerakan stok terdahulu tetap dipertahankan secara aman.`;
+                        bulkConfirmBtn.textContent = `Ya, Hapus (${count})`;
+                        bulkModal.classList.add('show');
+                    });
+                }
+
+                // Klik "Hapus Semua Data" dari Header Actions
+                if (btnDeleteAllData) {
+                    btnDeleteAllData.addEventListener('click', function () {
+                        isDeleteAllAction = true;
+                        if (bulkModalTitle) bulkModalTitle.textContent = 'Hapus Semua Data Material?';
+                        bulkMsgEl.innerHTML = `Apakah Anda yakin ingin menghapus <strong>SELURUH data master material</strong>?<br><br>Seluruh data master material akan dihapus permanen dari sistem. Riwayat transaksi stok terdahulu tetap tersimpan secara aman.`;
+                        bulkConfirmBtn.textContent = 'Ya, Hapus Semua Data';
                         bulkModal.classList.add('show');
                     });
                 }
@@ -1333,22 +1317,30 @@
 
                 if (bulkConfirmBtn && bulkForm) {
                     bulkConfirmBtn.addEventListener('click', function () {
-                        const checkedBoxes = getChecked();
-                        if (checkedBoxes.length === 0) return;
-
                         bulkModal.classList.remove('show');
                         bulkConfirmBtn.disabled    = true;
                         bulkConfirmBtn.textContent = 'Memproses...';
 
+                        // Bersihkan input ids[] lama dari bulkForm
                         bulkForm.querySelectorAll('input[name="ids[]"]').forEach(el => el.remove());
 
-                        checkedBoxes.forEach(cb => {
-                            const input = document.createElement('input');
-                            input.type  = 'hidden';
-                            input.name  = 'ids[]';
-                            input.value = cb.value;
-                            bulkForm.appendChild(input);
-                        });
+                        if (isDeleteAllAction) {
+                            if (bulkAllInput) bulkAllInput.value = '1';
+                        } else {
+                            if (bulkAllInput) bulkAllInput.value = '0';
+                            const checkedBoxes = getChecked();
+                            if (checkedBoxes.length === 0) {
+                                bulkConfirmBtn.disabled = false;
+                                return;
+                            }
+                            checkedBoxes.forEach(cb => {
+                                const input = document.createElement('input');
+                                input.type  = 'hidden';
+                                input.name  = 'ids[]';
+                                input.value = cb.value;
+                                bulkForm.appendChild(input);
+                            });
+                        }
 
                         bulkForm.submit();
                     });
@@ -1361,8 +1353,8 @@
                 }
 
                 document.addEventListener('keydown', function (e) {
-                    if (e.key === 'Escape') {
-                        if (bulkModal) bulkModal.classList.remove('show');
+                    if (e.key === 'Escape' && bulkModal && bulkModal.classList.contains('show')) {
+                        bulkModal.classList.remove('show');
                     }
                 });
 

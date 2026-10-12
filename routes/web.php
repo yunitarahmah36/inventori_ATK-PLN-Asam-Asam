@@ -76,11 +76,11 @@ Route::middleware('auth')->group(function () {
     Route::post('/materials/import/cancel', [MaterialController::class, 'cancelImport'])
         ->name('materials.import.cancel');
 
-    Route::patch('/materials/{material}/reactivate', [MaterialController::class, 'reactivate'])
-        ->name('materials.reactivate');
-
     Route::post('/materials/bulk-destroy', [MaterialController::class, 'bulkDestroy'])
         ->name('materials.bulk-destroy');
+
+    Route::post('/materials/delete-all', [MaterialController::class, 'deleteAll'])
+        ->name('materials.delete-all');
 
     Route::post('/materials/{material}/stock-out', [MaterialController::class, 'stockOut'])
         ->name('materials.stock-out');

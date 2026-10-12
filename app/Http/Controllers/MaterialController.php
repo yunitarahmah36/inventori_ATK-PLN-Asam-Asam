@@ -21,7 +21,6 @@ class MaterialController extends Controller
     public function index(Request $request)
     {
         $search  = trim($request->input('search', ''));
-        $status  = $request->input('status', 'all'); // 'all', 'active', 'inactive'
         $perPage = $request->input('per_page', 25);
 
         $query = Material::query();
@@ -34,17 +33,10 @@ class MaterialController extends Controller
             });
         }
 
-        // Filter status aktif/nonaktif
-        if ($status === 'active') {
-            $query->where('is_active', true);
-        } elseif ($status === 'inactive') {
-            $query->where('is_active', false);
-        }
-
         // Urutkan berdasarkan No Material secara teratur
         $query->orderBy('material_number', 'asc')->orderBy('id', 'asc');
 
-        // Hitung total data sesuai filter
+        // Hitung total data sesuai filter pencarian
         $totalFiltered = (clone $query)->count();
 
         // Pagination sesuai pilihan dropdown
@@ -61,7 +53,6 @@ class MaterialController extends Controller
         return view('materials.index', compact(
             'materials',
             'search',
-            'status',
             'perPage',
             'totalFiltered'
         ));
@@ -209,34 +200,43 @@ class MaterialController extends Controller
     }
 
     /**
-     * Hapus material:
-     * - Jika material belum pernah digunakan dan tidak memiliki relasi: hapus permanen.
-     * - Jika material sudah memiliki riwayat stok: cegah penghapusan permanen dan lakukan penonaktifan.
+     * Hapus satu data master material.
+     * Riwayat stok terdahulu tetap dipertahankan secara aman dengan snapshot nama & nomor material.
      */
     public function destroy(Material $material)
     {
         try {
-            $hasRelations = $material->stockMovements()->exists();
+            $materialName   = $material->name;
+            $materialNumber = $material->material_number;
+            $qty            = (int) $material->quantity;
 
-            if ($hasRelations) {
-                // Material sudah memiliki riwayat stok -> cegah hapus permanen, lakukan penonaktifan
-                $material->update([
-                    'is_active' => false,
+            DB::transaction(function () use ($material, $materialName, $materialNumber, $qty) {
+                // Pastikan snapshot riwayat stok terdahulu terisi
+                $material->stockMovements()->update([
+                    'material_name'   => $materialName,
+                    'material_number' => $materialNumber,
                 ]);
 
-                return redirect()
-                    ->route('materials.index')
-                    ->with('success', "Material \"{$material->name}\" ({$material->material_number}) memiliki riwayat pergerakan stok, sehingga dinonaktifkan dari sistem untuk menjaga keutuhan riwayat data.");
-            } else {
-                // Belum pernah digunakan dan tidak memiliki relasi riwayat stok -> hapus permanen
-                $name   = $material->name;
-                $number = $material->material_number;
-                $material->delete();
+                // Catat riwayat aktivitas stok untuk aksi hapus
+                StockMovement::create([
+                    'material_id'     => null,
+                    'material_name'   => $materialName,
+                    'material_number' => $materialNumber,
+                    'user_id'         => Auth::id(),
+                    'activity'        => 'Hapus',
+                    'quantity_before' => $qty,
+                    'quantity_after'  => 0,
+                    'quantity_change' => -$qty,
+                    'description'     => 'Material dihapus dari master data',
+                ]);
 
-                return redirect()
-                    ->route('materials.index')
-                    ->with('success', "Material \"{$name}\" ({$number}) berhasil dihapus dari sistem.");
-            }
+                // Hapus data material dari tabel materials
+                $material->delete();
+            });
+
+            return redirect()
+                ->route('materials.index')
+                ->with('success', "Material \"{$materialName}\" ({$materialNumber}) berhasil dihapus dari sistem.");
         } catch (\Exception $e) {
             return redirect()
                 ->route('materials.index')
@@ -245,74 +245,87 @@ class MaterialController extends Controller
     }
 
     /**
-     * Aktifkan kembali material yang sebelumnya dinonaktifkan.
-     */
-    public function reactivate(Material $material)
-    {
-        $material->update([
-            'is_active' => true,
-        ]);
-
-        return redirect()
-            ->route('materials.index')
-            ->with('success', "Material \"{$material->name}\" ({$material->material_number}) berhasil diaktifkan kembali.");
-    }
-
-    /**
-     * Hapus beberapa material sekaligus secara aman.
+     * Hapus beberapa material sekaligus atau seluruh material master data.
      */
     public function bulkDestroy(Request $request)
     {
+        $deleteAll = $request->boolean('all', false);
         $ids = $request->input('ids', []);
 
-        if (empty($ids) || !is_array($ids)) {
+        if (!$deleteAll && (empty($ids) || !is_array($ids))) {
             return redirect()
                 ->route('materials.index')
                 ->with('error', 'Tidak ada material yang dipilih.');
         }
 
-        $materials = Material::whereIn('id', $ids)->get();
+        $query = Material::query();
+        if (!$deleteAll) {
+            $query->whereIn('id', $ids);
+        }
+
+        $materials = $query->get();
 
         if ($materials->isEmpty()) {
             return redirect()
                 ->route('materials.index')
-                ->with('error', 'Tidak ada material yang dipilih.');
+                ->with('error', 'Tidak ada material yang dapat dihapus.');
         }
 
-        $deletedCount     = 0;
-        $deactivatedCount = 0;
+        $deletedCount = 0;
 
         try {
-            DB::transaction(function () use ($materials, &$deletedCount, &$deactivatedCount) {
+            DB::transaction(function () use ($materials, &$deletedCount) {
                 foreach ($materials as $mat) {
-                    if ($mat->stockMovements()->exists()) {
-                        $mat->update(['is_active' => false]);
-                        $deactivatedCount++;
-                    } else {
-                        $mat->delete();
-                        $deletedCount++;
-                    }
+                    $matName   = $mat->name;
+                    $matNumber = $mat->material_number;
+                    $qty       = (int) $mat->quantity;
+
+                    // Pastikan snapshot nama & nomor pada riwayat stok tersimpan
+                    $mat->stockMovements()->update([
+                        'material_name'   => $matName,
+                        'material_number' => $matNumber,
+                    ]);
+
+                    // Catat riwayat aktivitas stok untuk aksi hapus
+                    StockMovement::create([
+                        'material_id'     => null,
+                        'material_name'   => $matName,
+                        'material_number' => $matNumber,
+                        'user_id'         => Auth::id(),
+                        'activity'        => 'Hapus',
+                        'quantity_before' => $qty,
+                        'quantity_after'  => 0,
+                        'quantity_change' => -$qty,
+                        'description'     => 'Material dihapus dari master data',
+                    ]);
+
+                    // Hapus data material
+                    $mat->delete();
+                    $deletedCount++;
                 }
             });
 
-            $msgParts = [];
-            if ($deletedCount > 0) {
-                $msgParts[] = "{$deletedCount} material berhasil dihapus permanen";
-            }
-            if ($deactivatedCount > 0) {
-                $msgParts[] = "{$deactivatedCount} material dinonaktifkan (memiliki riwayat stok)";
-            }
-
-            $message = implode(', ', $msgParts) . '.';
+            $msg = $deleteAll
+                ? "Seluruh data material ({$deletedCount} material) berhasil dihapus dari sistem."
+                : "{$deletedCount} material berhasil dihapus dari sistem.";
 
             return redirect()
                 ->route('materials.index')
-                ->with('success', $message);
+                ->with('success', $msg);
         } catch (\Exception $e) {
             return redirect()
                 ->route('materials.index')
-                ->with('error', "Gagal memproses penghapusan material terpilih: " . $e->getMessage());
+                ->with('error', "Gagal memproses penghapusan material: " . $e->getMessage());
         }
+    }
+
+    /**
+     * Hapus seluruh master data material.
+     */
+    public function deleteAll(Request $request)
+    {
+        $request->merge(['all' => 1]);
+        return $this->bulkDestroy($request);
     }
 
     /**
@@ -470,12 +483,6 @@ class MaterialController extends Controller
      */
     public function stockOut(Request $request, Material $material)
     {
-        if (!$material->is_active) {
-            return redirect()
-                ->route('materials.index')
-                ->with('error', "Material \"{$material->name}\" telah dinonaktifkan dan tidak dapat digunakan untuk transaksi stok keluar.");
-        }
-
         $validated = $request->validate([
             'quantity'    => 'required|integer|min:1',
             'exit_date'   => 'required|date',
@@ -497,10 +504,6 @@ class MaterialController extends Controller
         try {
             DB::transaction(function () use ($material, $validated, $qtyOut) {
                 $lockedMaterial = Material::lockForUpdate()->findOrFail($material->id);
-
-                if (!$lockedMaterial->is_active) {
-                    throw new \Exception("Material ini telah dinonaktifkan.");
-                }
 
                 $currentQty = (int) $lockedMaterial->quantity;
 

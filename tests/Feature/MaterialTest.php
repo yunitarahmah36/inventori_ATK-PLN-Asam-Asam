@@ -270,7 +270,7 @@ class MaterialTest extends TestCase
         ]);
     }
 
-    public function test_destroy_deactivates_material_if_has_stock_history_to_protect_relations(): void
+    public function test_destroy_deletes_material_and_preserves_stock_history(): void
     {
         $admin = $this->createUser('Admin');
         $material = Material::create([
@@ -278,12 +278,11 @@ class MaterialTest extends TestCase
             'name'            => 'Barang Dengan Riwayat',
             'quantity'        => 15,
             'unit'            => 'Pcs',
-            'is_active'       => true,
             'created_by'      => $admin->id,
         ]);
 
         // Buat relasi riwayat stok
-        StockMovement::create([
+        $movement = StockMovement::create([
             'material_id'     => $material->id,
             'material_name'   => $material->name,
             'material_number' => $material->material_number,
@@ -298,45 +297,54 @@ class MaterialTest extends TestCase
         $response->assertRedirect('/materials');
         $response->assertSessionHas('success');
 
-        // Material TIDAK dihapus dari database, melainkan dinonaktifkan
-        $this->assertDatabaseHas('materials', [
-            'id'        => $material->id,
-            'is_active' => false,
+        // Material dihapus dari tabel materials
+        $this->assertDatabaseMissing('materials', [
+            'id' => $material->id,
         ]);
 
-        // Riwayat pergerakan stok tetap utuh
+        // Riwayat pergerakan stok tetap utuh dan snapshot terjaga
+        $movement->refresh();
+        $this->assertNull($movement->material_id);
+        $this->assertEquals('Barang Dengan Riwayat', $movement->material_name);
+        $this->assertEquals('MAT011', $movement->material_number);
+
+        // Tercatat pula log aktivitas 'Hapus'
         $this->assertDatabaseHas('stock_movements', [
-            'material_id' => $material->id,
+            'activity'        => 'Hapus',
+            'material_number' => 'MAT011',
         ]);
     }
 
-    public function test_deactivated_material_cannot_be_selected_for_stock_in_or_stock_out(): void
+    public function test_bulk_destroy_deletes_selected_materials(): void
     {
         $admin = $this->createUser('Admin');
-        $material = Material::create([
-            'material_number' => 'MAT012',
-            'name'            => 'Barang Nonaktif',
-            'quantity'        => 5,
-            'unit'            => 'Pcs',
-            'is_active'       => false, // Nonaktif
-            'created_by'      => $admin->id,
+        $mat1 = Material::create(['material_number' => 'MAT021', 'name' => 'Barang A', 'unit' => 'Pcs']);
+        $mat2 = Material::create(['material_number' => 'MAT022', 'name' => 'Barang B', 'unit' => 'Pcs']);
+        $mat3 = Material::create(['material_number' => 'MAT023', 'name' => 'Barang C', 'unit' => 'Pcs']);
+
+        $response = $this->actingAs($admin)->post('/materials/bulk-destroy', [
+            'ids' => [$mat1->id, $mat2->id],
         ]);
 
-        // Coba catat stok masuk manual
-        $resStockIn = $this->actingAs($admin)->post('/materials/stock-in', [
-            'material_id' => $material->id,
-            'quantity'    => 10,
-            'entry_date'  => '2026-10-09',
-        ]);
-        $resStockIn->assertSessionHasErrors(['material_id']);
+        $response->assertRedirect('/materials');
+        $response->assertSessionHas('success');
 
-        // Coba catat stok keluar
-        $resStockOut = $this->actingAs($admin)->post('/materials/stock-out', [
-            'material_id' => $material->id,
-            'quantity'    => 2,
-            'exit_date'   => '2026-10-09',
-        ]);
-        $resStockOut->assertSessionHasErrors(['material_id']);
+        $this->assertDatabaseMissing('materials', ['id' => $mat1->id]);
+        $this->assertDatabaseMissing('materials', ['id' => $mat2->id]);
+        $this->assertDatabaseHas('materials', ['id' => $mat3->id]);
+    }
+
+    public function test_delete_all_removes_all_master_materials(): void
+    {
+        $admin = $this->createUser('Admin');
+        Material::create(['material_number' => 'MAT031', 'name' => 'Barang X', 'unit' => 'Pcs']);
+        Material::create(['material_number' => 'MAT032', 'name' => 'Barang Y', 'unit' => 'Pcs']);
+
+        $response = $this->actingAs($admin)->post('/materials/delete-all');
+        $response->assertRedirect('/materials');
+        $response->assertSessionHas('success');
+
+        $this->assertEquals(0, Material::count());
     }
 
     public function test_export_downloads_master_materials_excel_file(): void

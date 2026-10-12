@@ -18,13 +18,11 @@ class Material extends Model
         'quantity',
         'unit',
         'description',
-        'is_active',
         'created_by',
     ];
 
     protected $casts = [
         'entry_date' => 'date',
-        'is_active'   => 'boolean',
     ];
 
     public function creator(): BelongsTo
