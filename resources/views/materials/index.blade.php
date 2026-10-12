@@ -351,79 +351,262 @@
             border-color: var(--red);
         }
 
-        /* FILTER CARD */
-        .filter-card {
+        /* ============================================================
+           SEARCH & FILTER CARD
+        ============================================================ */
+        .search-card {
             background: var(--white);
             border-radius: var(--radius);
             border: 1px solid var(--border);
-            box-shadow: var(--shadow);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
             padding: 16px 20px;
             margin-bottom: 20px;
-        }
-
-        .filter-form {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-
-        .search-box {
-            position: relative;
-            flex: 1;
-            min-width: 260px;
-        }
-
-        .search-box .material-symbols-outlined {
-            position: absolute;
-            left: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 20px;
-            color: var(--text-muted);
-            pointer-events: none;
-        }
-
-        .search-box input {
-            width: 100%;
-            padding: 9px 12px 9px 38px;
-            border-radius: 8px;
-            border: 1px solid var(--border);
-            font-size: 13px;
-            color: var(--text-dark);
-            background: #fff;
-            outline: none;
             transition: var(--transition);
         }
 
-        .search-box input:focus {
-            border-color: var(--blue);
-            box-shadow: 0 0 0 3px rgba(0, 87, 184, 0.12);
+        .search-card:hover {
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06);
         }
 
-        .filter-select-group {
+        .search-form {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .search-input-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+        }
+
+        .search-input-wrapper {
+            position: relative;
+            flex: 1;
+            display: flex;
+            align-items: center;
+        }
+
+        .search-input-wrapper .search-icon {
+            position: absolute;
+            left: 14px;
+            font-size: 20px;
+            color: #94A3B8;
+            pointer-events: none;
+            transition: color 0.2s ease;
+        }
+
+        .search-input-wrapper input {
+            width: 100%;
+            height: 42px;
+            padding: 0 40px 0 44px;
+            border-radius: 9px;
+            border: 1.5px solid var(--border);
+            font-size: 13.5px;
+            color: var(--text-dark);
+            background: #F8FAFC;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        .search-input-wrapper input:hover {
+            background: #FFFFFF;
+            border-color: #CBD5E1;
+        }
+
+        .search-input-wrapper input:focus {
+            background: #FFFFFF;
+            border-color: var(--blue);
+            box-shadow: 0 0 0 3.5px rgba(0, 87, 184, 0.12);
+        }
+
+        .search-input-wrapper:focus-within .search-icon {
+            color: var(--blue);
+        }
+
+        .btn-clear-search {
+            position: absolute;
+            right: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+            border: none;
+            background: #E2E8F0;
+            color: #64748B;
+            border-radius: 50%;
+            cursor: pointer;
+            padding: 0;
+            transition: all 0.2s ease;
+        }
+
+        .btn-clear-search:hover {
+            background: #CBD5E1;
+            color: var(--text-dark);
+        }
+
+        .btn-clear-search .material-symbols-outlined {
+            font-size: 16px;
+        }
+
+        .search-buttons {
             display: flex;
             align-items: center;
             gap: 8px;
-            font-size: 13px;
-            color: var(--text-mid);
+            flex-shrink: 0;
+        }
+
+        .btn-search {
+            height: 42px;
+            padding: 0 18px;
+            border-radius: 9px;
+            font-size: 13.5px;
             font-weight: 600;
-        }
-
-        .filter-select-group select {
-            padding: 9px 14px;
-            border-radius: 8px;
-            border: 1px solid var(--border);
-            font-size: 13px;
-            color: var(--text-dark);
-            background: #fff;
-            outline: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            background: var(--blue);
+            color: #FFFFFF;
+            border: 1.5px solid var(--blue);
             cursor: pointer;
-            transition: var(--transition);
+            box-shadow: 0 2px 4px rgba(0, 87, 184, 0.18);
+            transition: all 0.2s ease;
         }
 
-        .filter-select-group select:focus {
-            border-color: var(--blue);
+        .btn-search:hover {
+            background: var(--blue-dark);
+            border-color: var(--blue-dark);
+            box-shadow: 0 4px 8px rgba(0, 59, 115, 0.25);
+            transform: translateY(-1px);
+        }
+
+        .btn-search:active {
+            transform: translateY(0);
+        }
+
+        .btn-search .material-symbols-outlined {
+            font-size: 19px;
+        }
+
+        .btn-reset {
+            height: 42px;
+            padding: 0 16px;
+            border-radius: 9px;
+            font-size: 13.5px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #F1F5F9;
+            color: #475569;
+            border: 1.5px solid #E2E8F0;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-reset:hover {
+            background: #E2E8F0;
+            color: var(--text-dark);
+            border-color: #CBD5E1;
+        }
+
+        .btn-reset .material-symbols-outlined {
+            font-size: 18px;
+            color: #64748B;
+        }
+
+        /* Search Status Bar & Badge */
+        .search-status-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 12.5px;
+            padding-top: 2px;
+        }
+
+        .search-result-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 5px 14px;
+            background: rgba(0, 87, 184, 0.08);
+            border: 1px solid rgba(0, 87, 184, 0.18);
+            border-radius: 20px;
+            color: var(--blue-dark);
+            font-size: 12.5px;
+        }
+
+        .search-result-pill strong {
+            color: var(--blue);
+            font-weight: 700;
+        }
+
+        .search-result-pill .result-count {
+            color: #64748B;
+            font-size: 12px;
+        }
+
+        .search-result-pill .pill-icon {
+            font-size: 16px;
+            color: var(--blue);
+        }
+
+        .search-result-pill .pill-remove {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: rgba(0, 87, 184, 0.15);
+            color: var(--blue-dark);
+            text-decoration: none;
+            margin-left: 2px;
+            transition: all 0.15s ease;
+        }
+
+        .search-result-pill .pill-remove:hover {
+            background: var(--red);
+            color: #FFFFFF;
+        }
+
+        .search-result-pill .pill-remove .material-symbols-outlined {
+            font-size: 13px;
+        }
+
+        .search-meta-info {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: #64748B;
+            font-size: 12.5px;
+            font-weight: 500;
+        }
+
+        .search-meta-info .material-symbols-outlined {
+            font-size: 17px;
+            color: #94A3B8;
+        }
+
+        .search-meta-info strong {
+            color: var(--text-dark);
+        }
+
+        @media (max-width: 640px) {
+            .search-input-group {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .search-buttons {
+                width: 100%;
+            }
+            .btn-search, .btn-reset {
+                flex: 1;
+                justify-content: center;
+            }
         }
 
         /* BULK TOOLBAR */
@@ -924,28 +1107,62 @@
                     </div>
                 </div>
 
-                <!-- Filter & Search Bar -->
-                <div class="filter-card">
-                    <form method="GET" action="{{ route('materials.index') }}" class="filter-form" id="filterForm">
+                <!-- Search & Filter Card -->
+                <div class="search-card">
+                    <form method="GET" action="{{ route('materials.index') }}" class="search-form" id="searchForm">
                         <input type="hidden" name="per_page" value="{{ $perPage }}">
 
-                        <!-- Input Pencarian -->
-                        <div class="search-box">
-                            <span class="material-symbols-outlined">search</span>
-                            <input type="text" name="search" value="{{ $search }}"
-                                placeholder="Cari No. Material atau Nama Material..." autocomplete="off">
-                        <button type="submit" class="btn btn-primary" style="padding: 8px 14px;">
-                            <span class="material-symbols-outlined" style="font-size:18px;">search</span>
-                            Cari
-                        </button>
+                        <!-- Input Pencarian & Tombol Aksi -->
+                        <div class="search-input-group">
+                            <div class="search-input-wrapper">
+                                <span class="material-symbols-outlined search-icon">search</span>
+                                <input type="text"
+                                       name="search"
+                                       id="searchInput"
+                                       value="{{ $search }}"
+                                       placeholder="Cari No. Material atau Nama Material..."
+                                       autocomplete="off"
+                                       spellcheck="false">
+                                @if (!empty($search))
+                                    <button type="button" class="btn-clear-search" id="btnClearSearch" title="Hapus teks pencarian">
+                                        <span class="material-symbols-outlined">close</span>
+                                    </button>
+                                @endif
+                            </div>
 
-                        @if (!empty($search))
-                            <a href="{{ route('materials.index', ['per_page' => $perPage]) }}" class="btn btn-outline"
-                                style="padding: 8px 14px;">
-                                <span class="material-symbols-outlined" style="font-size:18px;">restart_alt</span>
-                                Reset
-                            </a>
-                        @endif
+                            <div class="search-buttons">
+                                <button type="submit" class="btn btn-search">
+                                    <span class="material-symbols-outlined">search</span>
+                                    <span>Cari</span>
+                                </button>
+
+                                @if (!empty($search))
+                                    <a href="{{ route('materials.index', ['per_page' => $perPage]) }}" class="btn btn-reset" title="Kembalikan semua data">
+                                        <span class="material-symbols-outlined">restart_alt</span>
+                                        <span>Reset</span>
+                                    </a>
+                                @endif
+                            </div>
+                        </div>
+
+                        <!-- Bar Status & Ringkasan Pencarian -->
+                        <div class="search-status-bar">
+                            @if (!empty($search))
+                                <div class="search-result-pill">
+                                    <span class="material-symbols-outlined pill-icon">filter_alt</span>
+                                    <span>Menampilkan hasil pencarian untuk: <strong>"{{ $search }}"</strong></span>
+                                    <span class="result-count">({{ $materials->total() }} material ditemukan)</span>
+                                    <a href="{{ route('materials.index', ['per_page' => $perPage]) }}" class="pill-remove" title="Hapus filter pencarian">
+                                        <span class="material-symbols-outlined">close</span>
+                                    </a>
+                                </div>
+                            @else
+                                <div class="search-meta-info">
+                                    <span class="material-symbols-outlined">inventory_2</span>
+                                    <span>Total <strong>{{ $materials->total() }}</strong> Master Material terdaftar</span>
+                                </div>
+                            @endif
+                        </div>
                     </form>
                 </div>
 
@@ -1357,6 +1574,18 @@
                         bulkModal.classList.remove('show');
                     }
                 });
+
+                // Clear button untuk input pencarian
+                const btnClearSearch = document.getElementById('btnClearSearch');
+                const searchInput    = document.getElementById('searchInput');
+                if (btnClearSearch && searchInput) {
+                    btnClearSearch.addEventListener('click', function () {
+                        searchInput.value = '';
+                        searchInput.focus();
+                        const searchForm = document.getElementById('searchForm');
+                        if (searchForm) searchForm.submit();
+                    });
+                }
 
             })();
 
