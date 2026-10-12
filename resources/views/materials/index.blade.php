@@ -1196,9 +1196,9 @@
                             Import Excel
                         </a>
 
-                        <a href="{{ route('materials.export', array_merge(['per_page' => $perPage], request()->query())) }}" class="btn btn-outline">
-                            <span class="material-symbols-outlined" style="font-size:19px;">download</span>
-                            Export Excel
+                        <a href="{{ route('materials.export', array_merge(request()->query(), ['per_page' => $perPage, 'sort' => $sort])) }}" class="btn btn-outline" title="Export Excel sesuai filter dan urutan yang tampil">
+                            <span class="material-symbols-outlined">download</span>
+                            <span>Export Excel</span>
                         </a>
                     </div>
                 </div>

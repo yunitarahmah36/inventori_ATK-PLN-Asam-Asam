@@ -356,11 +356,14 @@ class MaterialController extends Controller
      */
     public function export(Request $request)
     {
-        $search = trim($request->input('search', ''));
+        $search  = trim($request->input('search', ''));
+        $sort    = $request->input('sort', 'latest');
+        $perPage = $request->input('per_page', null);
+        $page    = (int) $request->input('page', 1);
         $filename = 'Data_Master_Material_ATK_PLN_' . date('Ymd_His') . '.xlsx';
 
         return Excel::download(
-            new MaterialsExport($search),
+            new MaterialsExport($search, $sort, $perPage, $page),
             $filename
         );
     }

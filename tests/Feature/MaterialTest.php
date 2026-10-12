@@ -414,4 +414,31 @@ class MaterialTest extends TestCase
         $materialsOldest = $responseOldest->viewData('materials');
         $this->assertEquals($mat1->id, $materialsOldest->first()->id); // Buku Tulis A
     }
+
+    public function test_export_respects_sorting_and_per_page_limit(): void
+    {
+        $admin = $this->createUser('Admin');
+
+        Material::create(['material_number' => 'MAT001', 'name' => 'Kertas A4', 'unit' => 'Rim']);
+        Material::create(['material_number' => 'MAT002', 'name' => 'Buku Tulis', 'unit' => 'Pcs']);
+        Material::create(['material_number' => 'MAT003', 'name' => 'Amplop Putih', 'unit' => 'Pcs']);
+
+        // Uji collection export langsung dengan parameter sort name_asc dan limit per_page 2
+        $export = new \App\Exports\MaterialsExport(null, 'name_asc', 2, 1);
+        $collection = $export->collection();
+
+        // 5 baris pertama: 3 judul/info + 1 baris kosong + 1 header (index 0..4)
+        // Data dimulai pada index 5
+        $firstDataRow = $collection->get(5);
+        $secondDataRow = $collection->get(6);
+
+        $this->assertEquals('Amplop Putih', $firstDataRow[2]); // Urutan A-Z pertama
+        $this->assertEquals('Buku Tulis', $secondDataRow[2]);  // Urutan A-Z kedua
+        $this->assertNull($collection->get(7)); // Hanya 2 data yang diexport karena limit per_page = 2
+
+        // Uji endpoint HTTP export dengan query string
+        $response = $this->actingAs($admin)->get('/materials/export?sort=name_asc&per_page=2');
+        $response->assertStatus(200);
+        $response->assertHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    }
 }

@@ -16,19 +16,27 @@ use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 class MaterialsExport implements FromCollection, WithStyles, WithColumnWidths, WithEvents
 {
     protected $search;
+    protected $sort;
+    protected $perPage;
+    protected $page;
 
-    public function __construct($search = null)
+    public function __construct($search = null, $sort = 'latest', $perPage = null, $page = 1)
     {
-        $this->search = $search;
+        $this->search  = $search;
+        $this->sort    = $sort ?: 'latest';
+        $this->perPage = $perPage;
+        $this->page    = (int) ($page ?: 1);
     }
 
     /**
-     * Kumpulan data yang akan diekspor: hanya data master material (No. Material, Nama Material, Satuan)
+     * Kumpulan data yang akan diekspor: hanya data master material (No. Material, Nama Material, Satuan).
+     * Sesuai filter pencarian, filter pengurutan (A-Z, terbaru, dll), dan batasan baris data yang tampil.
      */
     public function collection()
     {
         $query = Material::query();
 
+        // 1. Filter Pencarian
         if (!empty($this->search)) {
             $query->where(function ($q) {
                 $q->where('material_number', 'like', "%{$this->search}%")
@@ -36,7 +44,42 @@ class MaterialsExport implements FromCollection, WithStyles, WithColumnWidths, W
             });
         }
 
-        $materials = $query->orderBy('material_number', 'asc')->get();
+        // 2. Filter Pengurutan (sama persis dengan tampilan di web)
+        switch ($this->sort) {
+            case 'oldest':
+                $query->orderBy('created_at', 'asc')->orderBy('id', 'asc');
+                break;
+            case 'name_asc':
+                $query->orderBy('name', 'asc')->orderBy('id', 'asc');
+                break;
+            case 'name_desc':
+                $query->orderBy('name', 'desc')->orderBy('id', 'desc');
+                break;
+            case 'number_asc':
+                $query->orderBy('material_number', 'asc')->orderBy('id', 'asc');
+                break;
+            case 'number_desc':
+                $query->orderBy('material_number', 'desc')->orderBy('id', 'desc');
+                break;
+            case 'latest':
+            default:
+                $query->orderBy('created_at', 'desc')->orderBy('id', 'desc');
+                break;
+        }
+
+        $startNumber = 0;
+
+        // 3. Batasi jumlah data jika filter per_page aktif (misal 10, 20, 25, 50, dsb)
+        if (!empty($this->perPage) && $this->perPage !== 'all' && $this->perPage !== 'Semua') {
+            $limit = (int) $this->perPage;
+            if ($limit > 0) {
+                $page = max(1, $this->page);
+                $query->forPage($page, $limit);
+                $startNumber = ($page - 1) * $limit;
+            }
+        }
+
+        $materials = $query->get();
 
         $data = collect();
 
@@ -81,7 +124,7 @@ class MaterialsExport implements FromCollection, WithStyles, WithColumnWidths, W
         // 3. BARIS DATA
         foreach ($materials as $index => $mat) {
             $data->push([
-                $index + 1,
+                $startNumber + $index + 1,
                 $mat->material_number,
                 $mat->name,
                 $mat->unit,
