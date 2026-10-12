@@ -30,12 +30,9 @@ class StockInController extends Controller
         // Ambil semua material master data untuk pilihan dropdown form manual
         $allMaterials = Material::orderBy('name', 'asc')->get();
 
-        // Query pergerakan stok masuk (aktivitas Tambah atau perubahan stok positif)
+        // Query pergerakan stok masuk (transaksi dengan penambahan kuantitas stok fisik)
         $query = StockMovement::with(['material', 'user'])
-            ->where(function ($q) {
-                $q->where('activity', 'Tambah')
-                  ->orWhere('quantity_change', '>', 0);
-            });
+            ->where('quantity_change', '>', 0);
 
         // Filter pencarian
         if (!empty($search)) {

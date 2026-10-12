@@ -3,6 +3,7 @@
 namespace App\Imports;
 
 use App\Models\Material;
+use App\Models\StockMovement;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -356,7 +357,22 @@ class MaterialsImport implements ToCollection, WithHeadingRow, SkipsEmptyRows
 
         if (!empty($toInsert)) {
             DB::transaction(function () use ($toInsert) {
-                Material::insert($toInsert);
+                $userId = Auth::id();
+                foreach ($toInsert as $item) {
+                    $material = Material::create($item);
+
+                    StockMovement::create([
+                        'material_id'     => $material->id,
+                        'material_name'   => $material->name,
+                        'material_number' => $material->material_number,
+                        'user_id'         => $userId,
+                        'activity'        => 'Import',
+                        'quantity_before' => 0,
+                        'quantity_after'  => 0,
+                        'quantity_change' => 0,
+                        'description'     => "Pendaftaran material baru via import Excel: {$material->name} ({$material->material_number}).",
+                    ]);
+                }
             });
             $this->importedCount = count($toInsert);
         }

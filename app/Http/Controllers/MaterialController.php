@@ -144,7 +144,7 @@ class MaterialController extends Controller
         $materialName   = trim($validated['name']);
         $unit           = trim($validated['unit']);
 
-        Material::create([
+        $material = Material::create([
             'material_number' => $materialNumber,
             'name'            => $materialName,
             'unit'            => $unit,
@@ -152,6 +152,19 @@ class MaterialController extends Controller
             'quantity'        => 0,
             'is_active'       => true,
             'created_by'      => Auth::id(),
+        ]);
+
+        // Catat riwayat aktivitas pendaftaran master material ke Riwayat Stok
+        StockMovement::create([
+            'material_id'     => $material->id,
+            'material_name'   => $materialName,
+            'material_number' => $materialNumber,
+            'user_id'         => Auth::id(),
+            'activity'        => 'Tambah',
+            'quantity_before' => 0,
+            'quantity_after'  => 0,
+            'quantity_change' => 0,
+            'description'     => "Pendaftaran material baru: {$materialName} ({$materialNumber}) ke sistem.",
         ]);
 
         return redirect()
@@ -202,6 +215,7 @@ class MaterialController extends Controller
         ]);
 
         $oldName = $material->name;
+        $oldUnit = $material->unit;
         $newName = trim($validated['name']);
         $newUnit = trim($validated['unit']);
 
@@ -217,6 +231,31 @@ class MaterialController extends Controller
                 'material_name' => $newName,
             ]);
         }
+
+        // Susun keterangan perubahan yang informatif untuk riwayat stok
+        $changes = [];
+        if ($oldName !== $newName) {
+            $changes[] = "Nama material diubah dari '{$oldName}' menjadi '{$newName}'";
+        }
+        if ($oldUnit !== $newUnit) {
+            $changes[] = "Satuan diubah dari '{$oldUnit}' menjadi '{$newUnit}'";
+        }
+        $editDesc = !empty($changes)
+            ? implode(', ', $changes) . '.'
+            : "Pembaruan identitas data master material {$newName}.";
+
+        // Catat riwayat aktivitas edit material ke Riwayat Stok
+        StockMovement::create([
+            'material_id'     => $material->id,
+            'material_name'   => $newName,
+            'material_number' => $material->material_number,
+            'user_id'         => Auth::id(),
+            'activity'        => 'Edit',
+            'quantity_before' => (int) $material->quantity,
+            'quantity_after'  => (int) $material->quantity,
+            'quantity_change' => 0,
+            'description'     => $editDesc,
+        ]);
 
         return redirect()
             ->route('materials.index')
@@ -476,33 +515,46 @@ class MaterialController extends Controller
 
         $now = now();
         $userId = Auth::id();
-        $toInsert = [];
+        $count = 0;
 
-        foreach ($newItems as $item) {
-            $toInsert[] = [
-                'material_number' => trim($item['material_number']),
-                'name'            => trim($item['name']),
-                'unit'            => trim($item['unit']),
-                'entry_date'      => $now->toDateString(),
-                'quantity'        => 0,
-                'is_active'       => true,
-                'created_by'      => $userId,
-                'created_at'      => $now,
-                'updated_at'      => $now,
-            ];
-        }
+        DB::transaction(function () use ($newItems, $now, $userId, &$count) {
+            foreach ($newItems as $item) {
+                $matNumber = trim($item['material_number']);
+                $matName   = trim($item['name']);
+                $matUnit   = trim($item['unit']);
 
-        DB::transaction(function () use ($toInsert) {
-            Material::insert($toInsert);
+                $material = Material::create([
+                    'material_number' => $matNumber,
+                    'name'            => $matName,
+                    'unit'            => $matUnit,
+                    'entry_date'      => $now->toDateString(),
+                    'quantity'        => 0,
+                    'is_active'       => true,
+                    'created_by'      => $userId,
+                ]);
+
+                // Catat riwayat aktivitas import master material ke Riwayat Stok
+                StockMovement::create([
+                    'material_id'     => $material->id,
+                    'material_name'   => $matName,
+                    'material_number' => $matNumber,
+                    'user_id'         => $userId,
+                    'activity'        => 'Import',
+                    'quantity_before' => 0,
+                    'quantity_after'  => 0,
+                    'quantity_change' => 0,
+                    'description'     => "Pendaftaran material baru via import Excel: {$matName} ({$matNumber}).",
+                ]);
+
+                $count++;
+            }
         });
 
         session()->forget('import_preview');
 
-        $count = count($toInsert);
-
         return redirect()
             ->route('materials.index')
-            ->with('success', "Berhasil mengimpor {$count} data master material baru ke sistem tanpa mengubah stok.");
+            ->with('success', "Berhasil mengimpor {$count} data master material baru ke sistem.");
     }
 
     /**

@@ -108,7 +108,7 @@ class MaterialTest extends TestCase
         $resNumber->assertDontSee('Pulpen Pilot G2');
     }
 
-    public function test_store_creates_master_material_without_altering_stock_or_creating_movement(): void
+    public function test_store_creates_master_material_and_records_stock_movement(): void
     {
         $admin = $this->createUser('Admin');
 
@@ -130,9 +130,12 @@ class MaterialTest extends TestCase
             'is_active'       => true,
         ]);
 
-        // Pastikan TIDAK membuat catatan di stock_movements (stok tidak tersentuh)
-        $this->assertDatabaseMissing('stock_movements', [
+        // Pastikan tercatat di riwayat stok (stock_movements) dengan aktivitas Tambah
+        $this->assertDatabaseHas('stock_movements', [
             'material_number' => 'MAT010',
+            'material_name'   => 'Spidol Snowman Hitam',
+            'activity'        => 'Tambah',
+            'quantity_change' => 0,
         ]);
     }
 

@@ -88,8 +88,8 @@ class MaterialImportAndAnalysisTest extends TestCase
         $this->assertEquals('Rim', $mat1->unit);
         $this->assertEquals(0, $mat1->quantity); // Stok master data awal 0
 
-        // Pastikan tidak ada riwayat pergerakan stok otomatis
-        $this->assertEquals(0, StockMovement::count());
+        // Pastikan riwayat pergerakan stok tercatat dengan aktivitas Import
+        $this->assertEquals(2, StockMovement::where('activity', 'Import')->count());
     }
 
     public function test_import_skips_duplicates_and_never_modifies_existing_stock(): void
