@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Imports\MaterialsImport;
 use App\Models\Material;
 use App\Models\StockMovement;
 use App\Models\User;
@@ -26,10 +27,13 @@ class MaterialImportAndAnalysisTest extends TestCase
         ]);
     }
 
+    /**
+     * Buat file Excel 3 kolom sesuai template baru: No. Material, Nama Material, Satuan
+     */
     private function createExcelUpload(array $dataRows): UploadedFile
     {
         $rows = array_merge([
-            ['No Material', 'Nama Material', 'Tanggal Masuk', 'Jumlah Item', 'Satuan', 'Deskripsi'],
+            ['No. Material', 'Nama Material', 'Satuan'],
         ], $dataRows);
 
         $spreadsheet = new Spreadsheet();
@@ -49,280 +53,224 @@ class MaterialImportAndAnalysisTest extends TestCase
         );
     }
 
-    public function test_import_allows_same_material_number_with_same_name_normalized_preventing_duplicate_data(): void
+    public function test_import_first_time_creates_new_master_materials_without_altering_stock(): void
     {
         $admin = $this->createUser();
 
-        // Material sudah ada di database
+        $file = $this->createExcelUpload([
+            ['MAT001', 'Kertas HVS A4 70gr', 'Rim'],
+            ['MAT002', 'Spidol Boardmarker Hitam', 'Pcs'],
+        ]);
+
+        // Upload file untuk analisis preview
+        $response = $this->actingAs($admin)->post('/materials/import', [
+            'file' => $file,
+        ]);
+
+        $response->assertRedirect('/materials/import');
+        $this->assertTrue(session()->has('import_preview'));
+
+        $preview = session('import_preview');
+        $this->assertEquals(2, $preview['new_count']);
+        $this->assertEquals(0, $preview['duplicate_count']);
+        $this->assertEquals(0, $preview['conflict_count']);
+
+        // Konfirmasi import
+        $confirmResponse = $this->actingAs($admin)->post('/materials/import/confirm');
+        $confirmResponse->assertRedirect('/materials');
+        $confirmResponse->assertSessionHas('success');
+
+        $this->assertEquals(2, Material::count());
+
+        $mat1 = Material::where('material_number', 'MAT001')->first();
+        $this->assertNotNull($mat1);
+        $this->assertEquals('Kertas HVS A4 70gr', $mat1->name);
+        $this->assertEquals('Rim', $mat1->unit);
+        $this->assertEquals(0, $mat1->quantity); // Stok master data awal 0
+
+        // Pastikan tidak ada riwayat pergerakan stok otomatis
+        $this->assertEquals(0, StockMovement::count());
+    }
+
+    public function test_import_skips_duplicates_and_never_modifies_existing_stock(): void
+    {
+        $admin = $this->createUser();
+
+        // Material sudah terdaftar dengan stok 50
         Material::create([
             'material_number' => 'MAT001',
-            'name'            => 'Tempat Pensil',
-            'entry_date'      => '2026-10-01',
-            'quantity'        => 10,
-            'unit'            => 'Pcs',
+            'name'            => 'Kertas HVS A4 70gr',
+            'unit'            => 'Rim',
+            'quantity'        => 50,
+            'is_active'       => true,
             'created_by'      => $admin->id,
         ]);
 
-        // File Excel mengunggah No Material yang sama dengan nama berhuruf besar dan spasi berlebih
+        // Upload file dengan data yang sama
         $file = $this->createExcelUpload([
-            ['MAT001', '  TEMPAT   PENSIL ', '2026-10-09', 15, 'Pcs', 'Penambahan stok'],
+            ['MAT001', 'Kertas HVS A4 70gr', 'Rim'],
         ]);
 
         $response = $this->actingAs($admin)->post('/materials/import', [
             'file' => $file,
         ]);
 
-        $response->assertRedirect('/materials');
-        $response->assertSessionHas('success');
+        $response->assertRedirect('/materials/import');
+        $preview = session('import_preview');
 
-        // Pastikan tidak ada data ganda (tetap 1 baris di tabel materials)
-        $this->assertEquals(1, Material::count());
+        $this->assertEquals(0, $preview['new_count']);
+        $this->assertEquals(1, $preview['duplicate_count']);
+        $this->assertEquals(0, $preview['conflict_count']);
 
-        // Pastikan stok bertambah: 10 + 15 = 25
-        $material = Material::first();
-        $this->assertEquals(25, $material->quantity);
-
-        // Pastikan riwayat pergerakan stok tercatat
-        $this->assertDatabaseHas('stock_movements', [
-            'material_id'     => $material->id,
-            'material_number' => 'MAT001',
-            'activity'        => 'Import',
-            'quantity_before' => 10,
-            'quantity_after'  => 25,
-            'quantity_change' => 15,
-        ]);
+        // Konfirmasi tidak menambah data baru
+        $mat = Material::where('material_number', 'MAT001')->first();
+        $this->assertEquals(50, $mat->quantity); // Stok tidak boleh berubah
+        $this->assertEquals(1, Material::count()); // Tidak menduplikasi record
     }
 
-    public function test_import_allows_multiple_rows_of_same_no_material_with_normalized_name_in_file(): void
+    public function test_import_mixed_data_imports_new_and_skips_duplicates(): void
     {
         $admin = $this->createUser();
 
-        $file = $this->createExcelUpload([
-            ['MAT010', 'TEMPAT PENSIL', '2026-10-09', 5, 'Pcs', 'Baris 2'],
-            ['MAT010', 'tempat pensil', '2026-10-09', 8, 'Pcs', 'Baris 3'],
-        ]);
-
-        $response = $this->actingAs($admin)->post('/materials/import', [
-            'file' => $file,
-        ]);
-
-        $response->assertRedirect('/materials');
-        $response->assertSessionHas('success');
-
-        // Cegah data ganda: hanya 1 record di tabel materials
-        $this->assertEquals(1, Material::count());
-
-        // Total stok digabungkan: 5 + 8 = 13
-        $mat = Material::where('material_number', 'MAT010')->first();
-        $this->assertNotNull($mat);
-        $this->assertEquals(13, $mat->quantity);
-    }
-
-    public function test_import_rejects_duplicate_material_number_with_different_name_against_database(): void
-    {
-        $admin = $this->createUser();
-
+        // Material lama sudah ada
         Material::create([
             'material_number' => 'MAT001',
-            'name'            => 'Tempat Pensil',
-            'entry_date'      => '2026-10-01',
-            'quantity'        => 10,
-            'unit'            => 'Pcs',
-            'created_by'      => $admin->id,
-        ]);
-
-        $file = $this->createExcelUpload([
-            ['MAT001', 'Buku Gambar', '2026-10-09', 5, 'Box', 'Barang baru'],
-        ]);
-
-        $response = $this->actingAs($admin)->post('/materials/import', [
-            'file' => $file,
-        ]);
-
-        $response->assertSessionHas('import_errors');
-        $errors = session('import_errors');
-
-        $this->assertTrue(collect($errors)->contains(function ($msg) {
-            return str_contains($msg, "sudah terdaftar di sistem untuk material 'Tempat Pensil'")
-                && str_contains($msg, "tertulis 'Buku Gambar'")
-                && str_contains($msg, 'No Material yang sama tidak boleh digunakan untuk nama material yang berbeda');
-        }));
-
-        // Database tidak berubah
-        $this->assertEquals(1, Material::count());
-    }
-
-    public function test_import_rejects_in_file_duplicate_material_number_with_different_name(): void
-    {
-        $admin = $this->createUser();
-
-        $file = $this->createExcelUpload([
-            ['MAT005', 'Spidol Hitam', '2026-10-09', 10, 'Pcs', 'Baris 2'],
-            ['MAT005', 'Spidol Merah', '2026-10-09', 10, 'Pcs', 'Baris 3'],
-        ]);
-
-        $response = $this->actingAs($admin)->post('/materials/import', [
-            'file' => $file,
-        ]);
-
-        $response->assertSessionHas('import_errors');
-        $errors = session('import_errors');
-
-        $this->assertTrue(collect($errors)->contains(function ($msg) {
-            return str_contains($msg, 'sama dengan Baris 2 tetapi memiliki nama material berbeda')
-                && str_contains($msg, 'Spidol Merah')
-                && str_contains($msg, 'Spidol Hitam');
-        }));
-
-        // Tidak ada yang diimport
-        $this->assertEquals(0, Material::count());
-    }
-
-    public function test_manual_store_allows_same_no_material_for_normalized_same_name_and_prevents_duplicate_data(): void
-    {
-        $admin = $this->createUser();
-
-        Material::create([
-            'material_number' => 'MAT001',
-            'name'            => 'Tempat Pensil',
-            'entry_date'      => '2026-10-01',
-            'quantity'        => 10,
-            'unit'            => 'Pcs',
-            'created_by'      => $admin->id,
-        ]);
-
-        // Input manual dengan huruf kapital dan spasi berlebih
-        $response = $this->actingAs($admin)->post('/materials', [
-            'material_number' => 'MAT001',
-            'name'            => '   TEMPAT   PENSIL  ',
-            'entry_date'      => '2026-10-09',
+            'name'            => 'Kertas HVS A4',
+            'unit'            => 'Rim',
             'quantity'        => 20,
-            'unit'            => 'Pcs',
-            'description'     => 'Tambah stok manual',
+            'is_active'       => true,
         ]);
 
-        $response->assertRedirect('/materials');
-        $response->assertSessionHas('success');
-
-        // Mencegah data ganda
-        $this->assertEquals(1, Material::count());
-
-        $mat = Material::first();
-        $this->assertEquals(30, $mat->quantity);
-
-        $this->assertDatabaseHas('stock_movements', [
-            'material_id'     => $mat->id,
-            'material_number' => 'MAT001',
-            'activity'        => 'Tambah',
-            'quantity_before' => 10,
-            'quantity_after'  => 30,
-            'quantity_change' => 20,
+        // File berisi campuran: MAT001 (lama/duplikat), MAT002 (baru), MAT003 (baru)
+        $file = $this->createExcelUpload([
+            ['MAT001', 'Kertas HVS A4', 'Rim'],
+            ['MAT002', 'Buku Ekspedisi', 'Buku'],
+            ['MAT003', 'Tinta Printer Epson', 'Botol'],
         ]);
+
+        $response = $this->actingAs($admin)->post('/materials/import', [
+            'file' => $file,
+        ]);
+
+        $preview = session('import_preview');
+        $this->assertEquals(2, $preview['new_count']);
+        $this->assertEquals(1, $preview['duplicate_count']);
+
+        // Konfirmasi simpan data baru
+        $this->actingAs($admin)->post('/materials/import/confirm');
+
+        $this->assertEquals(3, Material::count());
+        $this->assertDatabaseHas('materials', ['material_number' => 'MAT002']);
+        $this->assertDatabaseHas('materials', ['material_number' => 'MAT003']);
+
+        // Stok material lama tetap tidak berubah
+        $mat1 = Material::where('material_number', 'MAT001')->first();
+        $this->assertEquals(20, $mat1->quantity);
     }
 
-    public function test_manual_store_rejects_same_no_material_with_different_name(): void
+    public function test_import_detects_conflict_when_same_material_number_has_different_name(): void
     {
         $admin = $this->createUser();
 
+        // Di database: MAT001 adalah "Kertas HVS A4"
         Material::create([
             'material_number' => 'MAT001',
-            'name'            => 'Tempat Pensil',
-            'entry_date'      => '2026-10-01',
+            'name'            => 'Kertas HVS A4',
+            'unit'            => 'Rim',
             'quantity'        => 10,
-            'unit'            => 'Pcs',
-            'created_by'      => $admin->id,
         ]);
 
-        $response = $this->actingAs($admin)->post('/materials', [
-            'material_number' => 'MAT001',
-            'name'            => 'Penghapus Karet',
-            'entry_date'      => '2026-10-09',
-            'quantity'        => 5,
-            'unit'            => 'Buah',
+        // Di Excel: MAT001 ditulis sebagai "Spidol Hitam" (KONFLIK!)
+        $file = $this->createExcelUpload([
+            ['MAT001', 'Spidol Hitam', 'Pcs'],
+            ['MAT002', 'Penggaris 30cm', 'Pcs'],
         ]);
 
-        $response->assertSessionHasErrors(['material_number']);
+        $response = $this->actingAs($admin)->post('/materials/import', [
+            'file' => $file,
+        ]);
 
-        // Data tidak berubah
-        $this->assertEquals(1, Material::count());
-        $this->assertEquals(10, Material::first()->quantity);
+        $preview = session('import_preview');
+        $this->assertEquals(1, $preview['conflict_count']);
+        $this->assertEquals(1, $preview['new_count']); // MAT002 tetap dikenali sebagai baru
+
+        // Cek pesan konflik
+        $this->assertNotEmpty($preview['conflicts']);
+        $this->assertStringContainsString('MAT001', $preview['conflicts'][0]['reason']);
+
+        // Konfirmasi hanya mengimpor MAT002, menolak MAT001
+        $this->actingAs($admin)->post('/materials/import/confirm');
+
+        $this->assertEquals(2, Material::count());
+        $this->assertDatabaseHas('materials', ['material_number' => 'MAT002', 'name' => 'Penggaris 30cm']);
+        $this->assertDatabaseHas('materials', ['material_number' => 'MAT001', 'name' => 'Kertas HVS A4']);
     }
 
-    public function test_material_analysis_does_not_merge_materials_with_same_name_and_different_material_number(): void
+    public function test_materials_are_not_merged_by_name_alone(): void
+    {
+        $admin = $this->createUser();
+
+        // Di database: MAT001 dengan nama "Pulpen Standard"
+        Material::create([
+            'material_number' => 'MAT001',
+            'name'            => 'Pulpen Standard',
+            'unit'            => 'Pcs',
+        ]);
+
+        // Di Excel: MAT002 dengan nama "Pulpen Standard" (No. Material berbeda, TIDAK boleh digabung)
+        $file = $this->createExcelUpload([
+            ['MAT002', 'Pulpen Standard', 'Pcs'],
+        ]);
+
+        $this->actingAs($admin)->post('/materials/import', [
+            'file' => $file,
+        ]);
+
+        $preview = session('import_preview');
+        $this->assertEquals(1, $preview['new_count']); // Diakui sebagai material baru terpisah
+
+        $this->actingAs($admin)->post('/materials/import/confirm');
+
+        $this->assertEquals(2, Material::count());
+        $this->assertDatabaseHas('materials', ['material_number' => 'MAT001', 'name' => 'Pulpen Standard']);
+        $this->assertDatabaseHas('materials', ['material_number' => 'MAT002', 'name' => 'Pulpen Standard']);
+    }
+
+    public function test_import_notifies_when_all_data_is_already_registered(): void
     {
         $admin = $this->createUser();
 
         Material::create([
             'material_number' => 'MAT001',
-            'name'            => 'Map Dokumen',
-            'entry_date'      => '2026-10-01',
-            'quantity'        => 15,
-            'unit'            => 'Pcs',
-            'created_by'      => $admin->id,
+            'name'            => 'Kertas HVS A4',
+            'unit'            => 'Rim',
         ]);
-
         Material::create([
             'material_number' => 'MAT002',
-            'name'            => 'Map Dokumen',
-            'entry_date'      => '2026-10-02',
-            'quantity'        => 25,
+            'name'            => 'Spidol Snowman',
             'unit'            => 'Pcs',
-            'created_by'      => $admin->id,
         ]);
 
-        $response = $this->actingAs($admin)->get('/material-analysis');
-        $response->assertStatus(200);
-
-        // Keduanya tampil terpisah sebagai dua entitas unik
-        $response->assertSee('MAT001');
-        $response->assertSee('MAT002');
-        $response->assertSee('2 Data Material');
-    }
-
-    public function test_edit_form_renders_readonly_quantity_and_update_does_not_change_quantity(): void
-    {
-        $admin = $this->createUser();
-
-        $material = Material::create([
-            'material_number' => 'MAT099',
-            'name'            => 'Gunting Kertas',
-            'entry_date'      => '2026-10-01',
-            'quantity'        => 42,
-            'unit'            => 'Buah',
-            'created_by'      => $admin->id,
+        $file = $this->createExcelUpload([
+            ['MAT001', 'Kertas HVS A4', 'Rim'],
+            ['MAT002', 'Spidol Snowman', 'Pcs'],
         ]);
 
-        // Cek halaman edit: field quantity harus readonly dan menampilkan 42
-        $formResponse = $this->actingAs($admin)->get("/materials/{$material->id}/edit");
-        $formResponse->assertStatus(200);
-        $formResponse->assertSee('readonly');
-        $formResponse->assertSee('value="42"', false);
-
-        // Kirim update (bahkan jika ada nilai kuantitas lain yang dikirim)
-        $updateResponse = $this->actingAs($admin)->put("/materials/{$material->id}", [
-            'material_number' => 'MAT099',
-            'name'            => 'Gunting Kertas Stainless',
-            'entry_date'      => '2026-10-05',
-            'quantity'        => 999, // Nilai yang dicoba diubah harus diabaikan!
-            'unit'            => 'Buah',
-            'description'     => 'Keterangan baru',
+        $response = $this->actingAs($admin)->post('/materials/import', [
+            'file' => $file,
         ]);
 
-        $updateResponse->assertRedirect('/materials');
-        $updateResponse->assertSessionHas('success');
+        $response->assertRedirect('/materials/import');
+        $preview = session('import_preview');
 
-        $material->refresh();
-        $this->assertEquals('Gunting Kertas Stainless', $material->name);
-        // Pastikan stok tetap 42 (tidak berubah menjadi 999)
-        $this->assertEquals(42, $material->quantity);
+        $this->assertEquals(0, $preview['new_count']);
+        $this->assertEquals(2, $preview['duplicate_count']);
+        $this->assertEquals(0, $preview['conflict_count']);
 
-        // Pastikan StockMovement mencatat quantity_change = 0
-        $this->assertDatabaseHas('stock_movements', [
-            'material_id'     => $material->id,
-            'activity'        => 'Edit',
-            'quantity_before' => 42,
-            'quantity_after'  => 42,
-            'quantity_change' => 0,
-        ]);
+        // Mengunjungi halaman import menampilkan pemberitahuan bahwa tidak ada data baru
+        $pageResponse = $this->actingAs($admin)->get('/materials/import');
+        $pageResponse->assertStatus(200);
+        $pageResponse->assertSee('Tidak Ada Data Baru');
+        $pageResponse->assertSee('Seluruh 2 data material dalam file Excel sudah terdaftar di sistem.');
     }
 }

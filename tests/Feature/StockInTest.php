@@ -474,10 +474,10 @@ class StockInTest extends TestCase
             'unit'            => 'Buku',
         ]);
 
-        $response = $this->actingAs($user)->get(route('materials.index'));
+        $response = $this->actingAs($user)->get(route('materials.stock-out.index'));
         $response->assertStatus(200);
-        $response->assertSee('btn-open-stock-out-modal');
-        $response->assertSee(route('materials.stock-out', $material->id));
+        $response->assertSee('MAT011');
+        $response->assertSee('Buku Folio Bergaris');
     }
 
     public function test_stock_in_pagination_renders_cleanly_with_custom_template_and_spa_links(): void

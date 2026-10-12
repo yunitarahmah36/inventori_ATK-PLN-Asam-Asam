@@ -57,12 +57,12 @@ class StockOutTest extends TestCase
             'description'     => 'Stok ATK',
         ]);
 
-        $response = $this->actingAs($user)->get(route('materials.index'));
+        $response = $this->actingAs($user)->get(route('materials.stock-out.index'));
 
         $response->assertStatus(200);
-        $response->assertSee('btn-open-stock-out-modal');
+        $response->assertSee('btnOpenCreateModal');
         $response->assertSee('Stok Keluar');
-        $response->assertSee('stockOutModal');
+        $response->assertSee('createStockOutModal');
         $response->assertSee('Catat Stok Keluar');
         $response->assertSee('Simpan Stok Keluar');
     }
@@ -247,7 +247,10 @@ class StockOutTest extends TestCase
         // Akses halaman edit
         $responseEdit = $this->actingAs($user)->get(route('materials.edit', $material->id));
         $responseEdit->assertStatus(200);
-        $responseEdit->assertSee('readonly');
+        $responseEdit->assertSee('No. Material');
+        $responseEdit->assertSee('Nama Material');
+        $responseEdit->assertSee('Satuan');
+        $responseEdit->assertDontSee('name="quantity"', false);
 
         // Coba submit update dengan manipulasi quantity di payload
         $responseUpdate = $this->actingAs($user)->put(route('materials.update', $material->id), [

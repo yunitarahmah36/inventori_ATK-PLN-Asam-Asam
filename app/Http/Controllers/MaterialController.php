@@ -3,27 +3,26 @@
 namespace App\Http\Controllers;
 
 use App\Exports\MaterialsExport;
+use App\Exports\MaterialsTemplateExport;
+use App\Imports\MaterialsImport;
 use App\Models\Material;
 use App\Models\StockMovement;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
-use App\Imports\MaterialsImport;
-use App\Exports\MaterialsTemplateExport;
 
 class MaterialController extends Controller
 {
     /**
-     * Tampilkan daftar material dengan pencarian, filter tanggal, dan pagination.
+     * Tampilkan daftar master data material dengan pencarian dan pagination.
+     * Hanya menampilkan identitas material (No. Material, Nama Material, Satuan, dan Aksi).
      */
     public function index(Request $request)
     {
-        $search      = trim($request->input('search', ''));
-        $startDate   = $request->input('start_date');
-        $endDate     = $request->input('end_date');
-        $perPage     = $request->input('per_page', 25);
-        $filterStock = $request->input('filter_stock');
+        $search  = trim($request->input('search', ''));
+        $status  = $request->input('status', 'all'); // 'all', 'active', 'inactive'
+        $perPage = $request->input('per_page', 25);
 
         $query = Material::query();
 
@@ -31,39 +30,28 @@ class MaterialController extends Controller
         if (!empty($search)) {
             $query->where(function ($q) use ($search) {
                 $q->where('material_number', 'like', "%{$search}%")
-                    ->orWhere('name', 'like', "%{$search}%");
+                  ->orWhere('name', 'like', "%{$search}%");
             });
         }
 
-        // Filter tanggal masuk
-        if (!empty($startDate)) {
-            $query->whereDate('entry_date', '>=', $startDate);
+        // Filter status aktif/nonaktif
+        if ($status === 'active') {
+            $query->where('is_active', true);
+        } elseif ($status === 'inactive') {
+            $query->where('is_active', false);
         }
 
-        if (!empty($endDate)) {
-            $query->whereDate('entry_date', '<=', $endDate);
-        }
+        // Urutkan berdasarkan No Material secara teratur
+        $query->orderBy('material_number', 'asc')->orderBy('id', 'asc');
 
-        // Filter stok menipis (<= 15 unit)
-        if ($filterStock === 'low') {
-            $query->where('quantity', '<=', 15);
-            $query->orderBy('quantity', 'asc')->orderBy('entry_date', 'asc');
-        } else {
-            // Urutkan dari yang terbaru
-            $query->latest('entry_date')->latest('id');
-        }
-
-        // Total data sesuai filter
+        // Hitung total data sesuai filter
         $totalFiltered = (clone $query)->count();
 
-        // Pagination sesuai dropdown
+        // Pagination sesuai pilihan dropdown
         if ($perPage === 'all' || $perPage === 'Semua') {
             $perPageValue = $totalFiltered > 0 ? $totalFiltered : 25;
         } else {
-            $perPageValue = in_array(
-                (int) $perPage,
-                [10, 25, 50, 100, 250]
-            )
+            $perPageValue = in_array((int) $perPage, [10, 25, 50, 100, 250])
                 ? (int) $perPage
                 : 25;
         }
@@ -73,71 +61,34 @@ class MaterialController extends Controller
         return view('materials.index', compact(
             'materials',
             'search',
-            'startDate',
-            'endDate',
+            'status',
             'perPage',
-            'filterStock',
             'totalFiltered'
         ));
     }
 
     /**
-     * Tampilkan form penambahan material baru.
+     * Tampilkan form penambahan master material baru (No. Material, Nama Material, Satuan).
      */
     public function create()
     {
-        // Generate saran No Material otomatis
+        // Generate saran No Material otomatis berikutnya
         $latestMaterial = Material::orderBy('id', 'desc')->first();
-
         $suggestedNumber = 'MAT001';
 
-        if (
-            $latestMaterial &&
-            preg_match(
-                '/^MAT(\d+)$/i',
-                $latestMaterial->material_number,
-                $matches
-            )
-        ) {
+        if ($latestMaterial && preg_match('/^MAT(\d+)$/i', $latestMaterial->material_number, $matches)) {
             $nextNum = ((int) $matches[1]) + 1;
-
-            $suggestedNumber = 'MAT' .
-                str_pad($nextNum, 3, '0', STR_PAD_LEFT);
+            $suggestedNumber = 'MAT' . str_pad($nextNum, 3, '0', STR_PAD_LEFT);
         }
 
-        $existingMaterials = Material::orderBy('material_number', 'asc')->get();
-
-        $existingMaterialsMap = $existingMaterials->mapWithKeys(function ($em) {
-            return [
-                strtoupper(trim($em->material_number)) => [
-                    'number' => (string) $em->material_number,
-                    'name'   => (string) $em->name,
-                    'unit'   => (string) $em->unit,
-                    'desc'   => (string) ($em->description ?? ''),
-                    'stock'  => (int) $em->quantity,
-                ]
-            ];
-        });
-
-        return view('materials.create', compact('suggestedNumber', 'existingMaterials', 'existingMaterialsMap'));
+        return view('materials.create', compact('suggestedNumber'));
     }
 
     /**
-     * Normalisasi nama material dengan mengabaikan huruf besar/kecil dan spasi berlebih.
-     */
-    public static function normalizeName(?string $name): string
-    {
-        if ($name === null) {
-            return '';
-        }
-        $cleaned = preg_replace('/\s+/u', ' ', trim($name));
-        return mb_strtolower($cleaned, 'UTF-8');
-    }
-
-    /**
-     * Simpan material baru ke database dan catat riwayat stok.
-     * Jika No Material dan nama material sama (setelah normalisasi), jangan ditolak sebagai duplikat;
-     * cukup cegah pembuatan data ganda dengan menambahkan stok ke material yang sudah ada.
+     * Simpan data master material baru.
+     * Semua kolom (No. Material, Nama Material, Satuan) wajib diisi.
+     * No. Material harus unik.
+     * Penambahan data master tidak menambah atau mengubah kuantitas stok.
      */
     public function store(Request $request)
     {
@@ -146,108 +97,49 @@ class MaterialController extends Controller
                 'required',
                 'string',
                 'max:50',
-                function ($attribute, $value, $fail) use ($request) {
-                    $matNumber = trim((string) $value);
-                    $existing = Material::whereRaw('LOWER(TRIM(material_number)) = ?', [strtolower($matNumber)])->first();
-                    if ($existing) {
-                        $inputName = (string) $request->input('name');
-                        $normalizedInputName = self::normalizeName($inputName);
-                        $normalizedExistingName = self::normalizeName($existing->name);
-
-                        if ($normalizedInputName === '' || $normalizedInputName !== $normalizedExistingName) {
-                            $fail("No Material '{$matNumber}' sudah digunakan untuk material '{$existing->name}'. No Material yang sama tidak boleh digunakan untuk nama material yang berbeda.");
-                        }
-                    }
-                },
+                'unique:materials,material_number',
             ],
-            'name'            => 'required|string|max:255',
-            'entry_date'      => 'required|date',
-            'quantity'        => 'required|integer|min:0',
-            'unit'            => 'required|string|max:50',
-            'description'     => 'nullable|string|max:1000',
+            'name' => [
+                'required',
+                'string',
+                'max:255',
+            ],
+            'unit' => [
+                'required',
+                'string',
+                'max:50',
+            ],
         ], [
-            'material_number.required' => 'No Material wajib diisi.',
+            'material_number.required' => 'No. Material wajib diisi.',
+            'material_number.unique'   => 'No. Material sudah terdaftar. Setiap material harus memiliki No. Material yang unik.',
+            'material_number.max'      => 'No. Material maksimal 50 karakter.',
             'name.required'            => 'Nama Material wajib diisi.',
-            'entry_date.required'      => 'Tanggal Masuk wajib diisi.',
-            'entry_date.date'          => 'Format tanggal tidak valid.',
-            'quantity.required'        => 'Jumlah Item wajib diisi.',
-            'quantity.integer'         => 'Jumlah Item harus berupa angka.',
-            'quantity.min'             => 'Jumlah Item tidak boleh bernilai negatif.',
+            'name.max'                 => 'Nama Material maksimal 255 karakter.',
             'unit.required'            => 'Satuan wajib diisi.',
+            'unit.max'                 => 'Satuan maksimal 50 karakter.',
         ]);
 
-        $matNumber = trim($validated['material_number']);
-        $inputName = trim($validated['name']);
-        $normalizedInputName = self::normalizeName($inputName);
+        $materialNumber = trim($validated['material_number']);
+        $materialName   = trim($validated['name']);
+        $unit           = trim($validated['unit']);
 
-        // Cari apakah No Material sudah ada di database
-        $existing = Material::whereRaw('LOWER(TRIM(material_number)) = ?', [strtolower($matNumber)])->first();
-
-        if ($existing) {
-            // No Material dan nama material sama setelah normalisasi:
-            // Cegah pembuatan data ganda dengan menambahkan stok ke data yang sudah ada
-            $qtyBefore = (int) $existing->quantity;
-            $addQty    = (int) $validated['quantity'];
-            $qtyAfter  = $qtyBefore + $addQty;
-
-            $existing->update([
-                'quantity'    => $qtyAfter,
-                'entry_date'  => $validated['entry_date'] > $existing->entry_date ? $validated['entry_date'] : $existing->entry_date,
-                'description' => $validated['description'] ?: $existing->description,
-            ]);
-
-            StockMovement::create([
-                'material_id'     => $existing->id,
-                'material_name'   => $existing->name,
-                'material_number' => $existing->material_number,
-                'user_id'         => Auth::id(),
-                'activity'        => 'Tambah',
-                'quantity_before' => $qtyBefore,
-                'quantity_after'  => $qtyAfter,
-                'quantity_change' => $addQty,
-                'description'     => $validated['description']
-                    ?: 'Penambahan stok material',
-            ]);
-
-            return redirect()
-                ->route('materials.index')
-                ->with('success', 'Stok material berhasil ditambahkan ke data material yang sudah ada.');
-        }
-
-        // Jika material belum ada, buat record material baru
-        $material = Material::create([
-            'material_number' => $matNumber,
-            'name'            => $inputName,
-            'entry_date'      => $validated['entry_date'],
-            'quantity'        => (int) $validated['quantity'],
-            'unit'            => $validated['unit'],
-            'description'     => $validated['description'] ?? null,
+        Material::create([
+            'material_number' => $materialNumber,
+            'name'            => $materialName,
+            'unit'            => $unit,
+            'entry_date'      => now()->toDateString(),
+            'quantity'        => 0,
+            'is_active'       => true,
             'created_by'      => Auth::id(),
         ]);
 
-        // Catat riwayat aktivitas stok
-        $movement = new StockMovement([
-            'material_id'     => $material->id,
-            'material_name'   => $material->name,
-            'material_number' => $material->material_number,
-            'user_id'         => Auth::id(),
-            'activity'        => 'Tambah',
-            'quantity_before' => 0,
-            'quantity_after'  => $material->quantity,
-            'quantity_change' => $material->quantity,
-            'description'     => $validated['description']
-                ?: 'Penambahan material baru',
-        ]);
-        $movement->created_at = $material->entry_date ? \Carbon\Carbon::parse($material->entry_date)->setTime(now()->hour, now()->minute, now()->second) : now();
-        $movement->save();
-
         return redirect()
             ->route('materials.index')
-            ->with('success', 'Material berhasil ditambahkan.');
+            ->with('success', "Material \"{$materialName}\" ({$materialNumber}) berhasil didaftarkan ke data master material.");
     }
 
     /**
-     * Tampilkan form untuk mengedit material.
+     * Tampilkan form untuk mengedit master material (No. Material, Nama Material, Satuan).
      */
     public function edit(Material $material)
     {
@@ -255,7 +147,9 @@ class MaterialController extends Controller
     }
 
     /**
-     * Perbarui data material dan catat riwayat stok.
+     * Perbarui data master material.
+     * Validasi No. Material unik dengan mengecualikan material yang sedang diedit.
+     * Tidak mengubah kuantitas stok. Sinkronkan snapshot riwayat jika No/Nama berubah.
      */
     public function update(Request $request, Material $material)
     {
@@ -264,75 +158,324 @@ class MaterialController extends Controller
                 'required',
                 'string',
                 'max:50',
-                function ($attribute, $value, $fail) use ($request, $material) {
-                    $matNumber = trim((string) $value);
-                    $other = Material::where('id', '!=', $material->id)
-                        ->whereRaw('LOWER(TRIM(material_number)) = ?', [strtolower($matNumber)])
-                        ->first();
-                    if ($other) {
-                        $inputName = (string) $request->input('name');
-                        $normalizedInputName = self::normalizeName($inputName);
-                        $normalizedOtherName = self::normalizeName($other->name);
-
-                        if ($normalizedInputName !== $normalizedOtherName) {
-                            $fail("No Material '{$matNumber}' sudah digunakan untuk material '{$other->name}'. No Material yang sama tidak boleh digunakan untuk nama material yang berbeda.");
-                        } else {
-                            $fail("No Material '{$matNumber}' sudah terdaftar pada entri material lain.");
-                        }
-                    }
-                },
+                'unique:materials,material_number,' . $material->id,
             ],
-            'name'        => 'required|string|max:255',
-            'entry_date'  => 'required|date',
-            'quantity'    => 'required|integer|min:0',
-            'unit'        => 'required|string|max:50',
-            'description' => 'nullable|string|max:1000',
+            'name' => [
+                'required',
+                'string',
+                'max:255',
+            ],
+            'unit' => [
+                'required',
+                'string',
+                'max:50',
+            ],
         ], [
-            'material_number.required' => 'No Material wajib diisi.',
+            'material_number.required' => 'No. Material wajib diisi.',
+            'material_number.unique'   => 'No. Material sudah digunakan untuk material lain. Setiap material harus memiliki No. Material yang unik.',
+            'material_number.max'      => 'No. Material maksimal 50 karakter.',
             'name.required'            => 'Nama Material wajib diisi.',
-            'entry_date.required'      => 'Tanggal Masuk wajib diisi.',
-            'entry_date.date'          => 'Format tanggal tidak valid.',
-            'quantity.required'        => 'Jumlah Item wajib diisi.',
-            'quantity.integer'         => 'Jumlah Item harus berupa angka.',
-            'quantity.min'             => 'Jumlah Item tidak boleh bernilai negatif.',
+            'name.max'                 => 'Nama Material maksimal 255 karakter.',
             'unit.required'            => 'Satuan wajib diisi.',
+            'unit.max'                 => 'Satuan maksimal 50 karakter.',
         ]);
 
-        $currentQty = (int) $material->quantity;
+        $oldNumber = $material->material_number;
+        $oldName   = $material->name;
 
-        // Update informasi material tanpa mengubah kuantitas stok (stok hanya lewat Stok Masuk & Stok Keluar)
+        $newNumber = trim($validated['material_number']);
+        $newName   = trim($validated['name']);
+        $newUnit   = trim($validated['unit']);
+
+        // Perbarui data master material tanpa mengubah kuantitas stok
         $material->update([
-            'material_number' => $validated['material_number'],
-            'name'            => $validated['name'],
-            'entry_date'      => $validated['entry_date'],
-            'unit'            => $validated['unit'],
-            'description'     => $validated['description'] ?? null,
+            'material_number' => $newNumber,
+            'name'            => $newName,
+            'unit'            => $newUnit,
         ]);
 
-        // Catat riwayat aktivitas stok (perubahan stok = 0)
-        StockMovement::create([
-            'material_id'     => $material->id,
-            'material_name'   => $material->name,
-            'material_number' => $material->material_number,
-            'user_id'         => Auth::id(),
-            'activity'        => 'Edit',
-            'quantity_before' => $currentQty,
-            'quantity_after'  => $currentQty,
-            'quantity_change' => 0,
-            'description'     => 'Pembaruan informasi data material',
+        // Jika No. Material atau Nama Material berubah, perbarui juga snapshot pada riwayat pergerakan stok
+        // agar relasi dan histori tetap konsisten dan aman
+        if ($oldNumber !== $newNumber || $oldName !== $newName) {
+            StockMovement::where('material_id', $material->id)->update([
+                'material_number' => $newNumber,
+                'material_name'   => $newName,
+            ]);
+        }
+
+        return redirect()
+            ->route('materials.index')
+            ->with('success', "Data master material \"{$newName}\" ({$newNumber}) berhasil diperbarui.");
+    }
+
+    /**
+     * Hapus material:
+     * - Jika material belum pernah digunakan dan tidak memiliki relasi: hapus permanen.
+     * - Jika material sudah memiliki riwayat stok: cegah penghapusan permanen dan lakukan penonaktifan.
+     */
+    public function destroy(Material $material)
+    {
+        try {
+            $hasRelations = $material->stockMovements()->exists();
+
+            if ($hasRelations) {
+                // Material sudah memiliki riwayat stok -> cegah hapus permanen, lakukan penonaktifan
+                $material->update([
+                    'is_active' => false,
+                ]);
+
+                return redirect()
+                    ->route('materials.index')
+                    ->with('success', "Material \"{$material->name}\" ({$material->material_number}) memiliki riwayat pergerakan stok, sehingga dinonaktifkan dari sistem untuk menjaga keutuhan riwayat data.");
+            } else {
+                // Belum pernah digunakan dan tidak memiliki relasi riwayat stok -> hapus permanen
+                $name   = $material->name;
+                $number = $material->material_number;
+                $material->delete();
+
+                return redirect()
+                    ->route('materials.index')
+                    ->with('success', "Material \"{$name}\" ({$number}) berhasil dihapus dari sistem.");
+            }
+        } catch (\Exception $e) {
+            return redirect()
+                ->route('materials.index')
+                ->with('error', "Gagal memproses penghapusan material: " . $e->getMessage());
+        }
+    }
+
+    /**
+     * Aktifkan kembali material yang sebelumnya dinonaktifkan.
+     */
+    public function reactivate(Material $material)
+    {
+        $material->update([
+            'is_active' => true,
         ]);
 
         return redirect()
             ->route('materials.index')
-            ->with('success', 'Material berhasil diperbarui.');
+            ->with('success', "Material \"{$material->name}\" ({$material->material_number}) berhasil diaktifkan kembali.");
     }
 
     /**
-     * Catat pengeluaran stok material (Stok Keluar), kurangi jumlah stok,
-     * dan catat riwayat pergerakan stok menggunakan database transaction.
+     * Hapus beberapa material sekaligus secara aman.
+     */
+    public function bulkDestroy(Request $request)
+    {
+        $ids = $request->input('ids', []);
+
+        if (empty($ids) || !is_array($ids)) {
+            return redirect()
+                ->route('materials.index')
+                ->with('error', 'Tidak ada material yang dipilih.');
+        }
+
+        $materials = Material::whereIn('id', $ids)->get();
+
+        if ($materials->isEmpty()) {
+            return redirect()
+                ->route('materials.index')
+                ->with('error', 'Tidak ada material yang dipilih.');
+        }
+
+        $deletedCount     = 0;
+        $deactivatedCount = 0;
+
+        try {
+            DB::transaction(function () use ($materials, &$deletedCount, &$deactivatedCount) {
+                foreach ($materials as $mat) {
+                    if ($mat->stockMovements()->exists()) {
+                        $mat->update(['is_active' => false]);
+                        $deactivatedCount++;
+                    } else {
+                        $mat->delete();
+                        $deletedCount++;
+                    }
+                }
+            });
+
+            $msgParts = [];
+            if ($deletedCount > 0) {
+                $msgParts[] = "{$deletedCount} material berhasil dihapus permanen";
+            }
+            if ($deactivatedCount > 0) {
+                $msgParts[] = "{$deactivatedCount} material dinonaktifkan (memiliki riwayat stok)";
+            }
+
+            $message = implode(', ', $msgParts) . '.';
+
+            return redirect()
+                ->route('materials.index')
+                ->with('success', $message);
+        } catch (\Exception $e) {
+            return redirect()
+                ->route('materials.index')
+                ->with('error', "Gagal memproses penghapusan material terpilih: " . $e->getMessage());
+        }
+    }
+
+    /**
+     * Export master data material ke file Excel (.xlsx) dengan hanya 4 kolom (No, No. Material, Nama Material, Satuan).
+     */
+    public function export(Request $request)
+    {
+        $search = trim($request->input('search', ''));
+        $filename = 'Data_Master_Material_ATK_PLN_' . date('Ymd_His') . '.xlsx';
+
+        return Excel::download(
+            new MaterialsExport($search),
+            $filename
+        );
+    }
+
+    /**
+     * Download template Excel format baru (hanya 3 kolom: No. Material, Nama Material, Satuan).
+     */
+    public function downloadTemplate()
+    {
+        return Excel::download(
+            new MaterialsTemplateExport(),
+            'Template_Master_Material_ATK_PLN.xlsx'
+        );
+    }
+
+    /**
+     * Tampilkan halaman import Excel.
+     */
+    public function importForm()
+    {
+        $preview = session('import_preview');
+        return view('materials.import', compact('preview'));
+    }
+
+    /**
+     * Analisis dan pratinjau data file Excel sebelum konfirmasi import:
+     * - Menghitung data baru, duplikat, dan konflik.
+     * - Menyimpan hasil pratinjau ke sesi untuk konfirmasi pengguna.
+     */
+    public function import(Request $request)
+    {
+        $request->validate([
+            'file' => [
+                'required',
+                'file',
+                'mimes:xlsx,xls',
+                'max:5120',
+            ],
+        ], [
+            'file.required' => 'File Excel wajib dipilih sebelum melakukan import.',
+            'file.file'     => 'File yang dipilih tidak valid. Pastikan file tidak rusak.',
+            'file.mimes'    => 'Format file tidak didukung. Gunakan file Excel dengan ekstensi .xlsx atau .xls.',
+            'file.max'      => 'Ukuran file terlalu besar. Maksimal 5 MB.',
+        ]);
+
+        try {
+            $file = $request->file('file');
+            $preview = MaterialsImport::parseFile($file);
+
+            // Jika langsung meminta konfirmasi atau dipanggil secara terprogram
+            if ($request->boolean('confirm_now')) {
+                return $this->processConfirmedImport($preview['new_items']);
+            }
+
+            // Simpan data pratinjau ke dalam sesi pengguna
+            session(['import_preview' => $preview]);
+
+            return redirect()
+                ->route('materials.import.form')
+                ->with('info_preview', true);
+        } catch (\Exception $e) {
+            return redirect()
+                ->route('materials.import.form')
+                ->withInput()
+                ->with('error', $e->getMessage());
+        }
+    }
+
+    /**
+     * Konfirmasi import: Simpan data baru yang valid ke dalam database.
+     * Tidak mengubah kuantitas stok atau membuat catatan riwayat stok.
+     */
+    public function confirmImport(Request $request)
+    {
+        $preview = session('import_preview');
+
+        if (empty($preview) || empty($preview['new_items'])) {
+            return redirect()
+                ->route('materials.import.form')
+                ->with('error', 'Tidak ada data material baru yang siap diimpor. Seluruh data sudah terdaftar atau file belum diunggah.');
+        }
+
+        return $this->processConfirmedImport($preview['new_items']);
+    }
+
+    /**
+     * Batalkan pratinjau import dan bersihkan sesi.
+     */
+    public function cancelImport()
+    {
+        session()->forget('import_preview');
+
+        return redirect()
+            ->route('materials.import.form')
+            ->with('info', 'Pratinjau import dibatalkan. Anda dapat mengunggah file baru.');
+    }
+
+    /**
+     * Proses penyimpanan baris material baru ke database.
+     */
+    protected function processConfirmedImport(array $newItems)
+    {
+        if (empty($newItems)) {
+            session()->forget('import_preview');
+            return redirect()
+                ->route('materials.index')
+                ->with('info', 'Tidak ada data material baru yang ditambahkan karena seluruh data sudah terdaftar.');
+        }
+
+        $now = now();
+        $userId = Auth::id();
+        $toInsert = [];
+
+        foreach ($newItems as $item) {
+            $toInsert[] = [
+                'material_number' => trim($item['material_number']),
+                'name'            => trim($item['name']),
+                'unit'            => trim($item['unit']),
+                'entry_date'      => $now->toDateString(),
+                'quantity'        => 0,
+                'is_active'       => true,
+                'created_by'      => $userId,
+                'created_at'      => $now,
+                'updated_at'      => $now,
+            ];
+        }
+
+        DB::transaction(function () use ($toInsert) {
+            Material::insert($toInsert);
+        });
+
+        session()->forget('import_preview');
+
+        $count = count($toInsert);
+
+        return redirect()
+            ->route('materials.index')
+            ->with('success', "Berhasil mengimpor {$count} data master material baru ke sistem tanpa mengubah stok.");
+    }
+
+    /**
+     * Handler pencatatan stok keluar langsung jika dipanggil dari modal cepat (kompatibilitas).
      */
     public function stockOut(Request $request, Material $material)
     {
+        if (!$material->is_active) {
+            return redirect()
+                ->route('materials.index')
+                ->with('error', "Material \"{$material->name}\" telah dinonaktifkan dan tidak dapat digunakan untuk transaksi stok keluar.");
+        }
+
         $validated = $request->validate([
             'quantity'    => 'required|integer|min:1',
             'exit_date'   => 'required|date',
@@ -353,12 +496,14 @@ class MaterialController extends Controller
 
         try {
             DB::transaction(function () use ($material, $validated, $qtyOut) {
-                // Lock data material untuk mencegah race condition
                 $lockedMaterial = Material::lockForUpdate()->findOrFail($material->id);
+
+                if (!$lockedMaterial->is_active) {
+                    throw new \Exception("Material ini telah dinonaktifkan.");
+                }
 
                 $currentQty = (int) $lockedMaterial->quantity;
 
-                // Validasi agar jumlah keluar tidak melebihi stok yang tersedia
                 if ($qtyOut > $currentQty) {
                     throw \Illuminate\Validation\ValidationException::withMessages([
                         'quantity' => "Jumlah keluar ({$qtyOut} {$lockedMaterial->unit}) melebihi stok yang tersedia ({$currentQty} {$lockedMaterial->unit}).",
@@ -367,19 +512,16 @@ class MaterialController extends Controller
 
                 $newQty = $currentQty - $qtyOut;
 
-                // Update stok material
                 $lockedMaterial->update([
                     'quantity' => $newQty,
                 ]);
 
-                // Tanggal dan waktu pergerakan stok keluar
                 $exitDateTime = \Carbon\Carbon::parse($validated['exit_date'])->setTime(
                     now()->hour,
                     now()->minute,
                     now()->second
                 );
 
-                // Catat ke Riwayat Pergerakan Material
                 StockMovement::create([
                     'material_id'     => $lockedMaterial->id,
                     'material_name'   => $lockedMaterial->name,
@@ -408,282 +550,10 @@ class MaterialController extends Controller
     }
 
     /**
-     * Hapus data material dari tabel materials, namun tetap mempertahankan riwayat stok.
+     * Normalisasi nama material.
      */
-    public function destroy(Material $material)
+    public static function normalizeName(?string $name): string
     {
-        try {
-            $materialName   = $material->name;
-            $materialNumber = $material->material_number;
-
-            DB::transaction(function () use ($material, $materialName, $materialNumber) {
-                // Pastikan riwayat stok sebelumnya memiliki snapshot nama dan no material
-                $material->stockMovements()->update([
-                    'material_name'   => $materialName,
-                    'material_number' => $materialNumber,
-                ]);
-
-                // Catat riwayat aktivitas stok untuk aksi hapus
-                StockMovement::create([
-                    'material_id'     => $material->id,
-                    'material_name'   => $materialName,
-                    'material_number' => $materialNumber,
-                    'user_id'         => Auth::id(),
-                    'activity'        => 'Hapus',
-                    'quantity_before' => (int) $material->quantity,
-                    'quantity_after'  => 0,
-                    'quantity_change' => - ((int) $material->quantity),
-                    'description'     => 'Material dihapus dari sistem',
-                ]);
-
-                // Hapus data material dari tabel materials (stock_movements akan diset material_id = null oleh FK)
-                $material->delete();
-            });
-
-            return redirect()
-                ->route('materials.index')
-                ->with('success', "Material \"{$materialName}\" berhasil dihapus.");
-        } catch (\Exception $e) {
-            return redirect()
-                ->route('materials.index')
-                ->with('error', "Gagal menghapus material: " . $e->getMessage());
-        }
-    }
-
-    /**
-     * Hapus beberapa material sekaligus dari tabel materials, namun tetap mempertahankan riwayat stok.
-     */
-    public function bulkDestroy(Request $request)
-    {
-        $ids = $request->input('ids', []);
-
-        if (empty($ids) || !is_array($ids)) {
-            return redirect()
-                ->route('materials.index')
-                ->with('error', 'Tidak ada material yang dipilih.');
-        }
-
-        $materials = Material::whereIn('id', $ids)->get();
-
-        if ($materials->isEmpty()) {
-            return redirect()
-                ->route('materials.index')
-                ->with('error', 'Tidak ada material yang dipilih.');
-        }
-
-        $count = $materials->count();
-
-        try {
-            DB::transaction(function () use ($materials) {
-                foreach ($materials as $mat) {
-                    $mat->stockMovements()->update([
-                        'material_name'   => $mat->name,
-                        'material_number' => $mat->material_number,
-                    ]);
-
-                    StockMovement::create([
-                        'material_id'     => $mat->id,
-                        'material_name'   => $mat->name,
-                        'material_number' => $mat->material_number,
-                        'user_id'         => Auth::id(),
-                        'activity'        => 'Hapus',
-                        'quantity_before' => (int) $mat->quantity,
-                        'quantity_after'  => 0,
-                        'quantity_change' => - ((int) $mat->quantity),
-                        'description'     => 'Material dihapus dari sistem',
-                    ]);
-
-                    $mat->delete();
-                }
-            });
-
-            return redirect()
-                ->route('materials.index')
-                ->with('success', "{$count} material berhasil dihapus.");
-        } catch (\Exception $e) {
-            return redirect()
-                ->route('materials.index')
-                ->with('error', "Gagal menghapus material: " . $e->getMessage());
-        }
-    }
-
-    /**
-     * Export data material ke file Excel (.xlsx).
-     */
-    public function export(Request $request)
-    {
-        $search      = trim($request->input('search', ''));
-        $startDate   = $request->input('start_date');
-        $endDate     = $request->input('end_date');
-        $perPage     = $request->input('per_page', 25);
-        $page        = $request->input('page', 1);
-        $filterStock = $request->input('filter_stock');
-
-        $filename = 'Data_Material_ATK_PLN_' . date('Ymd_His') . '.xlsx';
-
-        return Excel::download(
-            new MaterialsExport(
-                $search,
-                $startDate,
-                $endDate,
-                $perPage,
-                $page,
-                $filterStock
-            ),
-            $filename
-        );
-    }
-
-    public function downloadTemplate()
-    {
-        return Excel::download(
-            new MaterialsTemplateExport(),
-            'Template_Import_Material_ATK_PLN.xlsx'
-        );
-    }
-
-    /**
-     * Proses import data material dari Excel.
-     */
-    public function importForm()
-    {
-        return view('materials.import');
-    }
-
-    public function import(Request $request)
-    {
-        $request->validate([
-            'file' => [
-                'required',
-                'file',
-                'mimes:xlsx,xls',
-                'max:5120',
-            ],
-        ], [
-            'file.required' => 'File Excel wajib dipilih sebelum melakukan import.',
-            'file.file'     => 'File yang dipilih tidak valid. Pastikan file tidak rusak.',
-            'file.mimes'    => 'Format file tidak didukung. Gunakan file Excel dengan ekstensi .xlsx atau .xls.',
-            'file.max'      => 'Ukuran file terlalu besar. Maksimal 5 MB.',
-        ]);
-
-        try {
-
-            Excel::import(
-                new MaterialsImport(),
-                $request->file('file')
-            );
-
-            return redirect()
-                ->route('materials.index')
-                ->with(
-                    'success',
-                    'Data material berhasil diimport dari Excel.'
-                );
-        } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
-
-            // Ambil error validasi per baris dari Excel
-            $failures = $e->failures();
-            $errors   = [];
-
-            foreach ($failures as $failure) {
-                $baris = $failure->row();
-                foreach ($failure->errors() as $pesan) {
-                    $errors[] = "Baris {$baris}: {$pesan}";
-                }
-            }
-
-            return redirect()
-                ->back()
-                ->withInput()
-                ->with('import_errors', $errors)
-                ->with('error_type', 'validation');
-        } catch (\Illuminate\Validation\ValidationException $e) {
-
-            $errors = [];
-            foreach ($e->errors() as $field => $messages) {
-                foreach ($messages as $pesan) {
-                    $errors[] = $pesan;
-                }
-            }
-
-            return redirect()
-                ->back()
-                ->withInput()
-                ->with('import_errors', $errors)
-                ->with('error_type', 'validation');
-        } catch (\PhpOffice\PhpSpreadsheet\Exception $e) {
-
-            return redirect()
-                ->back()
-                ->withInput()
-                ->with('error', 'File Excel tidak dapat dibaca. Pastikan file tidak rusak dan formatnya sesuai.')
-                ->with('error_type', 'file');
-        } catch (\Exception $e) {
-
-            // Terjemahkan pesan teknis ke bahasa yang mudah dipahami
-            $message = $e->getMessage();
-            $friendlyMessage = $this->translateImportError($message);
-
-            return redirect()
-                ->back()
-                ->withInput()
-                ->with('error', $friendlyMessage)
-                ->with('error_type', 'general');
-        }
-    }
-
-    /**
-     * Terjemahkan pesan error teknis menjadi pesan yang ramah pengguna.
-     */
-    private function translateImportError(string $message): string
-    {
-        // Kolom tidak ditemukan / header salah
-        if (
-            str_contains($message, 'Undefined array key') ||
-            str_contains($message, 'undefined index') ||
-            str_contains($message, 'does not exist')
-        ) {
-            return 'Import gagal. Nama kolom di file Excel tidak sesuai. Pastikan kolom yang ada adalah: No Material, Nama Material, Tanggal Masuk, Jumlah Item, Satuan, Deskripsi. Gunakan template yang tersedia.';
-        }
-
-        // File kosong / tidak ada data
-        if (
-            str_contains($message, 'empty') ||
-            str_contains($message, 'no rows')
-        ) {
-            return 'Import gagal. File Excel yang diunggah tidak memiliki data. Pastikan file berisi minimal satu baris data.';
-        }
-
-        // Format tanggal salah
-        if (
-            str_contains($message, 'date') ||
-            str_contains($message, 'DateTime') ||
-            str_contains($message, 'createFromFormat')
-        ) {
-            return 'Import gagal. Format tanggal di kolom "Tanggal Masuk" tidak dikenali. Gunakan format DD/MM/YYYY (contoh: 01/07/2025).';
-        }
-
-        // No material duplikat
-        if (
-            str_contains($message, 'Duplicate entry') ||
-            str_contains($message, 'SQLSTATE[23000]') ||
-            str_contains($message, 'unique constraint') ||
-            str_contains($message, 'Integrity constraint')
-        ) {
-            return 'Import gagal. Terdapat No Material di file yang sudah terdaftar di sistem. Periksa kembali kolom No Material dan pastikan setiap nomor unik.';
-        }
-
-        // File tidak bisa dibuka / korup
-        if (
-            str_contains($message, 'zip') ||
-            str_contains($message, 'reader') ||
-            str_contains($message, 'Invalid file') ||
-            str_contains($message, 'not a valid')
-        ) {
-            return 'Import gagal. File Excel tidak dapat dibuka. Kemungkinan file rusak atau formatnya tidak didukung. Coba simpan ulang file Excel Anda dan upload kembali.';
-        }
-
-        // Fallback umum
-        return 'Import gagal. Periksa kembali format file dan data yang diunggah. Pastikan semua kolom terisi dengan benar dan gunakan template yang tersedia.';
+        return MaterialsImport::normalizeName($name);
     }
 }

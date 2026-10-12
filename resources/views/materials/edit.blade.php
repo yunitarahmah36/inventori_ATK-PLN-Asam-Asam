@@ -185,13 +185,13 @@
             text-transform: uppercase;
         }
 
-        /* PAGE CONTENT */
+        /* Content Area */
         .page-content {
-            padding: 24px 28px 80px;
+            padding: 28px;
             flex: 1;
-            max-width: 900px;
-            width: 100%;
+            max-width: 760px;
             margin: 0 auto;
+            width: 100%;
         }
 
         .btn-back {
@@ -201,20 +201,22 @@
             font-size: 13px;
             font-weight: 600;
             color: var(--text-muted);
-            margin-bottom: 16px;
-            transition: color var(--transition);
+            margin-bottom: 18px;
+            transition: var(--transition);
         }
 
         .btn-back:hover {
             color: var(--blue);
+            transform: translateX(-2px);
         }
 
+        /* Form Card */
         .form-card {
             background: var(--white);
             border-radius: var(--radius);
             border: 1px solid var(--border);
             box-shadow: var(--shadow);
-            padding: 28px;
+            padding: 32px;
         }
 
         .form-card-header {
@@ -224,35 +226,35 @@
         }
 
         .form-card-header h2 {
-            font-size: 19px;
+            font-size: 18px;
             font-weight: 800;
             color: var(--blue-dark);
+            margin-bottom: 4px;
         }
 
         .form-card-header p {
             font-size: 13px;
             color: var(--text-muted);
-            margin-top: 4px;
         }
 
         .alert-error {
-            background: var(--red-light);
+            background: #FEF2F2;
             border: 1px solid #FECACA;
             color: #991B1B;
-            padding: 14px 18px;
             border-radius: 8px;
-            margin-bottom: 22px;
+            padding: 12px 16px;
             font-size: 13px;
+            margin-bottom: 20px;
         }
 
         .alert-error ul {
-            margin-top: 6px;
-            padding-left: 20px;
+            margin: 6px 0 0 16px;
+            padding: 0;
         }
 
         .form-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: 1fr;
             gap: 20px;
         }
 
@@ -262,17 +264,13 @@
             gap: 6px;
         }
 
-        .form-group.full-width {
-            grid-column: 1 / -1;
-        }
-
         .form-label {
             font-size: 13px;
             font-weight: 700;
-            color: var(--text-mid);
+            color: var(--text-dark);
         }
 
-        .form-label span.req {
+        .form-label .req {
             color: var(--red);
         }
 
@@ -283,31 +281,32 @@
             border: 1px solid var(--border);
             font-size: 13.5px;
             color: var(--text-dark);
-            background: #FAFBFD;
+            background: #fff;
             outline: none;
             transition: var(--transition);
         }
 
         .form-control:focus {
             border-color: var(--blue);
-            background: #fff;
-            box-shadow: 0 0 0 3px rgba(0, 87, 184, 0.1);
+            box-shadow: 0 0 0 3px rgba(0, 87, 184, 0.12);
         }
 
         .form-control.is-invalid {
             border-color: var(--red);
-            background: #FFF5F5;
+            background: #FFFBFB;
         }
 
         .invalid-feedback {
-            font-size: 11.5px;
+            font-size: 12px;
             color: var(--red);
-            font-weight: 500;
+            margin-top: 2px;
         }
 
         .form-helper {
-            font-size: 11.5px;
+            font-size: 12px;
             color: var(--text-muted);
+            margin-top: 2px;
+            line-height: 1.4;
         }
 
         .form-actions {
@@ -315,7 +314,7 @@
             align-items: center;
             justify-content: flex-end;
             gap: 12px;
-            margin-top: 30px;
+            margin-top: 28px;
             padding-top: 20px;
             border-top: 1px solid var(--border);
         }
@@ -354,13 +353,30 @@
         }
 
         @media (max-width: 768px) {
-            .main { margin-left: 0; }
-            .btn-hamburger { display: flex; }
-            .topbar { padding: 0 16px; }
-            .page-content { padding: 16px; }
-            .form-grid { grid-template-columns: 1fr; }
-            .form-actions { flex-direction: column-reverse; }
-            .form-actions .btn { width: 100%; justify-content: center; }
+            .main {
+                margin-left: 0;
+            }
+
+            .btn-hamburger {
+                display: flex;
+            }
+
+            .topbar {
+                padding: 0 16px;
+            }
+
+            .page-content {
+                padding: 16px;
+            }
+
+            .form-actions {
+                flex-direction: column-reverse;
+            }
+
+            .form-actions .btn {
+                width: 100%;
+                justify-content: center;
+            }
         }
     </style>
 </head>
@@ -407,7 +423,7 @@
                 <div class="form-card">
                     <div class="form-card-header">
                         <h2>Edit Data Material</h2>
-                        <p>Perbarui informasi data material <strong>{{ $material->name }}</strong> ({{ $material->material_number }}).</p>
+                        <p>Perbarui identitas data master material <strong>{{ $material->name }}</strong> ({{ $material->material_number }}).</p>
                     </div>
 
                     @if ($errors->any())
@@ -430,7 +446,7 @@
                             <!-- No Material -->
                             <div class="form-group">
                                 <label for="material_number" class="form-label">
-                                    No Material <span class="req">*</span>
+                                    No. Material <span class="req">*</span>
                                 </label>
                                 <input 
                                     type="text" 
@@ -439,10 +455,14 @@
                                     class="form-control @error('material_number') is-invalid @enderror"
                                     value="{{ old('material_number', $material->material_number) }}" 
                                     required
+                                    autocomplete="off"
                                 >
                                 @error('material_number')
                                     <span class="invalid-feedback">{{ $message }}</span>
                                 @enderror
+                                <span class="form-helper">
+                                    Kode unik material. Jika diubah, riwayat transaksi terkait akan tetap sinkron dan aman.
+                                </span>
                             </div>
 
                             <!-- Nama Material -->
@@ -457,50 +477,14 @@
                                     class="form-control @error('name') is-invalid @enderror"
                                     value="{{ old('name', $material->name) }}" 
                                     required
+                                    autocomplete="off"
                                 >
                                 @error('name')
                                     <span class="invalid-feedback">{{ $message }}</span>
                                 @enderror
-                            </div>
-
-                            <!-- Tanggal Masuk -->
-                            <div class="form-group">
-                                <label for="entry_date" class="form-label">
-                                    Tanggal Masuk <span class="req">*</span>
-                                </label>
-                                <input 
-                                    type="date" 
-                                    id="entry_date" 
-                                    name="entry_date" 
-                                    class="form-control @error('entry_date') is-invalid @enderror"
-                                    value="{{ old('entry_date', $material->entry_date ? $material->entry_date->format('Y-m-d') : '') }}" 
-                                    required
-                                >
-                                @error('entry_date')
-                                    <span class="invalid-feedback">{{ $message }}</span>
-                                @enderror
-                            </div>
-
-                            <!-- Jumlah Item -->
-                            <div class="form-group">
-                                <label for="quantity" class="form-label">
-                                    Jumlah Item (Stok)
-                                </label>
-                                <input 
-                                    type="number" 
-                                    id="quantity" 
-                                    name="quantity" 
-                                    class="form-control"
-                                    value="{{ $material->quantity }}" 
-                                    readonly
-                                    tabindex="-1"
-                                    style="background-color: #F8FAFC; color: #475569; cursor: not-allowed; border-color: #E2E8F0;"
-                                    title="Jumlah stok tidak dapat diubah di form edit. Gunakan fitur Stok Masuk / Stok Keluar."
-                                >
-                                <small style="display:block;margin-top:6px;font-size:12px;color:var(--text-muted);line-height:1.4;">
-                                    <span class="material-symbols-outlined" style="font-size:14px;vertical-align:-2px;color:var(--blue);">info</span>
-                                    Stok saat ini bersifat <strong>readonly</strong>. Perubahan stok hanya dapat dilakukan melalui fitur <strong>Stok Masuk</strong> dan <strong>Stok Keluar</strong>.
-                                </small>
+                                <span class="form-helper">
+                                    Nama barang material ATK.
+                                </span>
                             </div>
 
                             <!-- Satuan -->
@@ -516,37 +500,28 @@
                                     class="form-control @error('unit') is-invalid @enderror"
                                     value="{{ old('unit', $material->unit) }}" 
                                     required
+                                    autocomplete="off"
                                 >
                                 <datalist id="unit-suggestions">
-                                    <option value="Rim">
                                     <option value="Pcs">
-                                    <option value="Buah">
+                                    <option value="Unit">
+                                    <option value="Rim">
                                     <option value="Box">
                                     <option value="Pack">
-                                    <option value="Lusin">
-                                    <option value="Rol">
+                                    <option value="Roll">
+                                    <option value="Meter">
                                     <option value="Lembar">
+                                    <option value="Buah">
+                                    <option value="Lusin">
                                     <option value="Botol">
+                                    <option value="Set">
                                 </datalist>
                                 @error('unit')
                                     <span class="invalid-feedback">{{ $message }}</span>
                                 @enderror
-                            </div>
-
-                            <!-- Deskripsi -->
-                            <div class="form-group full-width">
-                                <label for="description" class="form-label">
-                                    Deskripsi / Keterangan (Opsional)
-                                </label>
-                                <textarea 
-                                    id="description" 
-                                    name="description" 
-                                    rows="3" 
-                                    class="form-control @error('description') is-invalid @enderror"
-                                >{{ old('description', $material->description) }}</textarea>
-                                @error('description')
-                                    <span class="invalid-feedback">{{ $message }}</span>
-                                @enderror
+                                <span class="form-helper">
+                                    Satuan takaran material (misal: Pcs, Unit, Rim, Meter, Roll).
+                                </span>
                             </div>
 
                         </div>
@@ -557,7 +532,7 @@
                             </a>
                             <button type="submit" class="btn btn-primary">
                                 <span class="material-symbols-outlined" style="font-size:18px;">save</span>
-                                Perbarui Material
+                                Simpan Perubahan
                             </button>
                         </div>
 
@@ -565,42 +540,28 @@
                 </div>
 
             </div>
+
+            <script>
+                function openSidebar() {
+                    document.getElementById('sidebar').classList.add('open');
+                    document.getElementById('drawerBackdrop').classList.add('open');
+                    document.body.style.overflow = 'hidden';
+                }
+
+                function closeSidebar() {
+                    document.getElementById('sidebar').classList.remove('open');
+                    document.getElementById('drawerBackdrop').classList.remove('open');
+                    document.body.style.overflow = '';
+                }
+
+                window.addEventListener('resize', function() {
+                    if (window.innerWidth > 768) {
+                        closeSidebar();
+                    }
+                });
+            </script>
         </main>
     </div>
-
-    <script>
-        function openSidebar() {
-            document.getElementById('sidebar').classList.add('open');
-            document.getElementById('drawerBackdrop').classList.add('open');
-            document.body.style.overflow = 'hidden';
-        }
-
-        function closeSidebar() {
-            document.getElementById('sidebar').classList.remove('open');
-            document.getElementById('drawerBackdrop').classList.remove('open');
-            document.body.style.overflow = '';
-        }
-
-        function toggleSubmenu(e, id) {
-            if (e) e.preventDefault();
-            const menu = document.getElementById(id);
-            const arrow = document.getElementById('arrow-material');
-            if (!menu) return;
-
-            menu.classList.toggle('show');
-            const isOpen = menu.classList.contains('show');
-
-            if (arrow) {
-                arrow.textContent = isOpen ? 'expand_less' : 'expand_more';
-            }
-        }
-
-        window.addEventListener('resize', function () {
-            if (window.innerWidth > 768) {
-                closeSidebar();
-            }
-        });
-    </script>
 </body>
 
 </html>

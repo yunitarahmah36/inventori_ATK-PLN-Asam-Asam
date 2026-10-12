@@ -70,6 +70,15 @@ Route::middleware('auth')->group(function () {
     Route::post('/materials/import', [MaterialController::class, 'import'])
         ->name('materials.import');
 
+    Route::post('/materials/import/confirm', [MaterialController::class, 'confirmImport'])
+        ->name('materials.import.confirm');
+
+    Route::post('/materials/import/cancel', [MaterialController::class, 'cancelImport'])
+        ->name('materials.import.cancel');
+
+    Route::patch('/materials/{material}/reactivate', [MaterialController::class, 'reactivate'])
+        ->name('materials.reactivate');
+
     Route::post('/materials/bulk-destroy', [MaterialController::class, 'bulkDestroy'])
         ->name('materials.bulk-destroy');
 

@@ -27,8 +27,8 @@ class StockInController extends Controller
         $endDate   = $request->input('end_date');
         $perPage   = $request->input('per_page', 25);
 
-        // Ambil semua material master data untuk pilihan dropdown form manual
-        $allMaterials = Material::orderBy('name', 'asc')->get();
+        // Ambil semua material master data aktif untuk pilihan dropdown form manual
+        $allMaterials = Material::where('is_active', true)->orderBy('name', 'asc')->get();
 
         // Query pergerakan stok masuk (aktivitas Tambah atau perubahan stok positif)
         $query = StockMovement::with(['material', 'user'])
@@ -118,6 +118,12 @@ class StockInController extends Controller
             DB::transaction(function () use ($validated, $qtyIn) {
                 // Kunci data material untuk menjaga konsistensi
                 $material = Material::lockForUpdate()->findOrFail($validated['material_id']);
+
+                if (!$material->is_active) {
+                    throw ValidationException::withMessages([
+                        'material_id' => "Material \"{$material->name}\" telah dinonaktifkan dan tidak dapat menerima pencatatan stok baru.",
+                    ]);
+                }
 
                 $qtyBefore = (int) $material->quantity;
                 $qtyAfter  = $qtyBefore + $qtyIn;

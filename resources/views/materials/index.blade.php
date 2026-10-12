@@ -18,9 +18,6 @@
         rel="stylesheet">
 
     <style id="page-style">
-        /* ============================================================
-           RESET & CSS VARIABLES
-        ============================================================ */
         *,
         *::before,
         *::after {
@@ -44,7 +41,7 @@
             --red: #DC2626;
             --red-light: #FEE2E2;
             --green: #10B981;
-            --green-light: #D1FAE5;
+            --green-light: #ECFDF5;
             --sidebar-w: 260px;
             --header-h: 68px;
             --radius: 12px;
@@ -58,7 +55,6 @@
             font-family: 'Inter', Arial, sans-serif;
             background: var(--bg);
             color: var(--text-dark);
-            overflow-x: hidden;
         }
 
         a {
@@ -67,37 +63,17 @@
         }
 
         button,
+        input,
         select,
-        input {
+        textarea {
             font-family: inherit;
         }
 
-        /* Scrollbar */
-        ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: #CBD5E1;
-            border-radius: 10px;
-        }
-
-        /* ============================================================
-           LAYOUT
-        ============================================================ */
         .layout {
             display: flex;
             min-height: 100vh;
         }
 
-        /* ============================================================
-           MAIN CONTENT
-        ============================================================ */
         .main {
             margin-left: var(--sidebar-w);
             flex: 1;
@@ -107,9 +83,6 @@
             min-height: 100vh;
         }
 
-        /* ============================================================
-           TOPBAR
-        ============================================================ */
         .topbar {
             position: sticky;
             top: 0;
@@ -145,7 +118,6 @@
             margin-bottom: 0;
         }
 
-        /* Hamburger (mobile only) */
         .btn-hamburger {
             display: none;
             align-items: center;
@@ -164,11 +136,6 @@
             background: var(--bg);
         }
 
-        .btn-hamburger .material-symbols-outlined {
-            font-size: 22px;
-        }
-
-        /* Topbar Right: user profile */
         .topbar-user {
             display: flex;
             align-items: center;
@@ -232,35 +199,31 @@
             text-transform: uppercase;
         }
 
-        /* ============================================================
-           PAGE CONTENT
-        ============================================================ */
         .page-content {
-            padding: 24px 28px 80px;
+            padding: 28px;
             flex: 1;
         }
 
-        /* Flash Message */
+        /* ALERTS */
         .alert {
             display: flex;
             align-items: center;
             justify-content: space-between;
+            gap: 12px;
             padding: 14px 18px;
             border-radius: var(--radius);
             margin-bottom: 20px;
             font-size: 13.5px;
-            font-weight: 600;
-            animation: fadeIn 0.3s ease;
+            line-height: 1.5;
         }
 
         .alert-success {
-            background: var(--green-light);
+            background: #ECFDF5;
             color: #065F46;
             border: 1px solid #A7F3D0;
         }
 
-        .alert-error,
-        .alert-danger {
+        .alert-error {
             background: var(--red-light);
             color: #991B1B;
             border: 1px solid #FECACA;
@@ -269,50 +232,43 @@
         .alert-close {
             background: none;
             border: none;
-            cursor: pointer;
             color: inherit;
+            cursor: pointer;
+            padding: 0;
             display: flex;
             align-items: center;
+            opacity: 0.7;
         }
 
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(-6px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        .alert-close:hover {
+            opacity: 1;
         }
 
-        /* Header Card */
+        /* HEADER CARD */
         .header-card {
             background: var(--white);
             border-radius: var(--radius);
-            padding: 22px 24px;
             border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+            padding: 20px 24px;
+            margin-bottom: 20px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            flex-wrap: wrap;
             gap: 16px;
-            box-shadow: var(--shadow);
-            margin-bottom: 20px;
+            flex-wrap: wrap;
         }
 
         .header-card-title h2 {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: 800;
             color: var(--blue-dark);
-            letter-spacing: -0.3px;
+            margin-bottom: 3px;
         }
 
         .header-card-title p {
             font-size: 13px;
             color: var(--text-muted);
-            margin-top: 3px;
         }
 
         .header-actions {
@@ -322,13 +278,13 @@
             flex-wrap: wrap;
         }
 
-        /* Buttons */
+        /* BUTTONS */
         .btn {
             display: inline-flex;
             align-items: center;
-            gap: 7px;
+            gap: 6px;
             padding: 9px 16px;
-            border-radius: 9px;
+            border-radius: 8px;
             font-size: 13px;
             font-weight: 600;
             cursor: pointer;
@@ -345,7 +301,6 @@
 
         .btn-primary:hover {
             background: var(--blue-dark);
-            color: #fff;
         }
 
         .btn-yellow {
@@ -365,63 +320,45 @@
         }
 
         .btn-outline:hover {
-            background: #F9FAFB;
+            background: #F8FAFC;
             border-color: #CBD5E1;
-            color: var(--text-dark);
         }
 
         .btn-icon-only {
-            padding: 6px;
-            border-radius: 7px;
+            width: 32px;
+            height: 32px;
+            padding: 0;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-        }
-
-        .btn-stock-out {
-            background: #FEF3C7;
-            color: #D97706;
-            border: 1px solid #FDE68A;
-        }
-
-        .btn-stock-out:hover {
-            background: #D97706;
-            color: #fff;
-            border-color: #D97706;
-        }
-
-        .btn-edit {
-            background: var(--blue-light);
-            color: var(--blue);
-            border: 1px solid #BFDBFE;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            background: #fff;
+            color: var(--text-mid);
+            cursor: pointer;
+            transition: var(--transition);
         }
 
         .btn-edit:hover {
-            background: var(--blue);
-            color: #fff;
-        }
-
-        .btn-delete {
-            background: var(--red-light);
-            color: var(--red);
-            border: 1px solid #FECACA;
+            background: var(--blue-light);
+            color: var(--blue);
+            border-color: var(--blue);
         }
 
         .btn-delete:hover {
-            background: var(--red);
-            color: #fff;
+            background: var(--red-light);
+            color: var(--red);
+            border-color: var(--red);
         }
 
-        /* ============================================================
-           FILTER & SEARCH BAR
-        ============================================================ */
+        /* FILTER CARD */
         .filter-card {
             background: var(--white);
             border-radius: var(--radius);
-            padding: 16px 20px;
             border: 1px solid var(--border);
-            margin-bottom: 20px;
             box-shadow: var(--shadow);
+            padding: 16px 20px;
+            margin-bottom: 20px;
         }
 
         .filter-form {
@@ -434,7 +371,7 @@
         .search-box {
             position: relative;
             flex: 1;
-            min-width: 240px;
+            min-width: 260px;
         }
 
         .search-box .material-symbols-outlined {
@@ -442,8 +379,8 @@
             left: 12px;
             top: 50%;
             transform: translateY(-50%);
+            font-size: 20px;
             color: var(--text-muted);
-            font-size: 19px;
             pointer-events: none;
         }
 
@@ -454,65 +391,32 @@
             border: 1px solid var(--border);
             font-size: 13px;
             color: var(--text-dark);
+            background: #fff;
             outline: none;
             transition: var(--transition);
-            background: #FAFBFD;
         }
 
         .search-box input:focus {
             border-color: var(--blue);
-            background: #fff;
-            box-shadow: 0 0 0 3px rgba(0, 87, 184, 0.1);
-        }
-
-        .date-input-group {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .date-input-group label {
-            font-size: 12px;
-            font-weight: 600;
-            color: var(--text-muted);
-            white-space: nowrap;
-        }
-
-        .date-input-group input[type="date"] {
-            padding: 8px 10px;
-            border-radius: 8px;
-            border: 1px solid var(--border);
-            font-size: 12.5px;
-            color: var(--text-dark);
-            background: #FAFBFD;
-            outline: none;
-        }
-
-        .date-input-group input[type="date"]:focus {
-            border-color: var(--blue);
-            background: #fff;
+            box-shadow: 0 0 0 3px rgba(0, 87, 184, 0.12);
         }
 
         .filter-select-group {
             display: flex;
             align-items: center;
             gap: 8px;
-        }
-
-        .filter-select-group label {
-            font-size: 12px;
+            font-size: 13px;
+            color: var(--text-mid);
             font-weight: 600;
-            color: var(--text-muted);
-            white-space: nowrap;
         }
 
         .filter-select-group select {
-            padding: 8px 10px;
+            padding: 9px 14px;
             border-radius: 8px;
             border: 1px solid var(--border);
-            font-size: 12.5px;
+            font-size: 13px;
             color: var(--text-dark);
-            background: #FAFBFD;
+            background: #fff;
             outline: none;
             cursor: pointer;
             transition: var(--transition);
@@ -520,111 +424,87 @@
 
         .filter-select-group select:focus {
             border-color: var(--blue);
-            background: #fff;
         }
 
-        /* Active Filter Alert Bar */
-        .active-filter-alert {
-            display: flex;
+        /* BULK TOOLBAR */
+        .bulk-toolbar {
+            display: none;
             align-items: center;
-            justify-content: space-between;
             gap: 12px;
-            background: #FFFBEB;
-            border: 1px solid #FCD34D;
-            border-left: 4px solid #F59E0B;
+            padding: 10px 20px;
+            background: var(--blue-dark);
             border-radius: var(--radius);
-            padding: 12px 18px;
-            margin-bottom: 16px;
-            box-shadow: 0 1px 6px rgba(245, 158, 11, 0.1);
+            margin-bottom: 14px;
+            box-shadow: 0 4px 18px rgba(0,0,0,0.18);
+            animation: bulkToolbarIn 0.18s ease-out;
         }
 
-        .active-filter-info {
+        .bulk-toolbar.visible {
             display: flex;
-            align-items: center;
-            gap: 8px;
+        }
+
+        @keyframes bulkToolbarIn {
+            from { opacity: 0; transform: translateY(-6px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .bulk-count-badge {
+            background: var(--yellow);
+            color: var(--blue-dark);
+            font-size: 12px;
+            font-weight: 800;
+            padding: 3px 10px;
+            border-radius: 20px;
+            white-space: nowrap;
+        }
+
+        .bulk-toolbar-label {
             font-size: 13px;
-            color: #92400E;
+            font-weight: 600;
+            color: rgba(255,255,255,0.85);
+            flex: 1;
         }
 
-        .active-filter-info .material-symbols-outlined {
-            color: #D97706;
-            font-size: 20px;
-        }
-
-        .btn-clear-filter {
+        .btn-bulk-delete {
             display: inline-flex;
             align-items: center;
-            gap: 4px;
-            font-size: 12px;
-            font-weight: 600;
-            color: #B45309;
-            background: #FEF3C7;
-            border: 1px solid #FDE68A;
-            border-radius: 6px;
-            padding: 5px 12px;
-            text-decoration: none;
-            transition: all var(--transition);
-            white-space: nowrap;
-        }
-
-        .btn-clear-filter:hover {
-            background: #FDE68A;
-            color: #78350F;
-        }
-
-        .btn-clear-filter .material-symbols-outlined {
-            font-size: 15px;
-        }
-
-        /* Table Row Highlights for Low Stock */
-        table.data-table tbody tr.row-low-stock {
-            background: #FFFDF5;
-        }
-
-        table.data-table tbody tr.row-low-stock:hover {
-            background: #FFFBEB;
-        }
-
-        table.data-table tbody tr.row-critical-stock {
-            background: #FFF8F8;
-        }
-
-        table.data-table tbody tr.row-critical-stock:hover {
-            background: #FEF2F2;
-        }
-
-        .qty-badge.qty-low {
-            color: #D97706;
-        }
-
-        .qty-badge.qty-critical {
-            color: #DC2626;
-        }
-
-        .stock-pill {
-            font-size: 10.5px;
+            gap: 6px;
+            padding: 8px 16px;
+            background: var(--red);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 13px;
             font-weight: 700;
-            padding: 2px 7px;
-            border-radius: 12px;
-            white-space: nowrap;
-            display: inline-block;
+            cursor: pointer;
+            transition: background 0.15s ease;
         }
 
-        .stock-pill.pill-warning {
-            background: #FEF3C7;
-            color: #B45309;
-            border: 1px solid #FCD34D;
+        .btn-bulk-delete:hover {
+            background: #B91C1C;
         }
 
-        .stock-pill.pill-critical {
-            background: #FEE2E2;
-            color: #B91C1C;
-            border: 1px solid #FCA5A5;
+        .btn-bulk-cancel {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 14px;
+            background: rgba(255,255,255,0.1);
+            color: rgba(255,255,255,0.8);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.15s ease;
         }
 
-        /* ============================================================
-           DATA TABLE CARD
-        ============================================================ */
+        .btn-bulk-cancel:hover {
+            background: rgba(255,255,255,0.18);
+            color: #fff;
+        }
+
+        /* TABLE */
         .table-card {
             background: var(--white);
             border-radius: var(--radius);
@@ -638,190 +518,126 @@
             overflow-x: auto;
         }
 
-        table.data-table {
+        .data-table {
             width: 100%;
             border-collapse: collapse;
             font-size: 13px;
             text-align: left;
         }
 
-        table.data-table thead {
+        .data-table thead tr {
             background: #F8FAFC;
             border-bottom: 2px solid var(--border);
         }
 
-        table.data-table th {
-            padding: 13px 18px;
-            font-weight: 700;
-            color: var(--text-mid);
+        .data-table th {
+            padding: 13px 16px;
             font-size: 12px;
+            font-weight: 700;
+            color: var(--blue-dark);
             text-transform: uppercase;
-            letter-spacing: 0.6px;
+            letter-spacing: 0.03em;
             white-space: nowrap;
         }
 
-        table.data-table tbody tr {
+        .data-table td {
+            padding: 14px 16px;
             border-bottom: 1px solid var(--border);
-            transition: background var(--transition);
-        }
-
-        table.data-table tbody tr:hover {
-            background: #F9FBFF;
-        }
-
-        table.data-table td {
-            padding: 14px 18px;
             vertical-align: middle;
             color: var(--text-dark);
         }
 
-        /* Badges */
-        .badge-material-number {
-            display: inline-block;
-            font-weight: 700;
-            font-size: 12px;
-            color: var(--blue-dark);
-            background: var(--blue-light);
-            padding: 3px 9px;
-            border-radius: 6px;
-            border: 1px solid #BFDBFE;
-            letter-spacing: 0.4px;
+        .data-table tbody tr:hover {
+            background: #F8FAFC;
         }
 
-        .qty-badge {
+        .data-table tbody tr.row-selected {
+            background: #EFF6FF !important;
+        }
+
+        .data-table tbody tr.row-inactive {
+            background: #FAFBFD;
+            opacity: 0.75;
+        }
+
+        .badge-material-number {
+            display: inline-block;
+            font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+            font-size: 12px;
             font-weight: 700;
-            color: var(--blue);
-            font-size: 14px;
+            padding: 4px 8px;
+            border-radius: 6px;
+            background: #EFF6FF;
+            color: var(--blue-dark);
+            border: 1px solid #DBEAFE;
+            letter-spacing: 0.02em;
+        }
+
+        .badge-status-inactive {
+            display: inline-block;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 4px;
+            background: #F3F4F6;
+            color: #6B7280;
+            border: 1px solid #E5E7EB;
+            margin-left: 6px;
+            text-transform: uppercase;
+        }
+
+        .cb-cell {
+            width: 44px;
+            text-align: center;
         }
 
         .actions-cell {
             display: flex;
             align-items: center;
+            justify-content: center;
             gap: 6px;
         }
 
-       
-        /* Empty State */
-        .empty-state {
-            padding: 56px 20px;
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .empty-state .material-symbols-outlined {
-            font-size: 54px;
-            color: #94A3B8;
-            margin-bottom: 14px;
-        }
-
-        .empty-state h3 {
-            font-size: 16px;
-            font-weight: 700;
-            color: var(--text-dark);
-            margin-bottom: 6px;
-        }
-
-        .empty-state p {
-            font-size: 13px;
-            color: var(--text-muted);
-            max-width: 420px;
-            margin-bottom: 18px;
-            line-height: 1.5;
-        }
-
-        .empty-actions {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 14px;
-    flex-wrap: wrap;
-    margin-top: 4px;
-}
-
-.empty-actions .btn {
-    min-width: 170px;
-    height: 42px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    padding: 0 18px;
-    border-radius: 9px;
-    font-size: 13px;
-    font-weight: 600;
-}
-
-.empty-actions .material-symbols-outlined {
-    font-size: 20px !important;
-    line-height: 1;
-    margin: 0 !important;
-}
-
-.empty-actions .btn-primary .material-symbols-outlined {
-    color: #fff;
-}
-
-.empty-actions .btn-yellow .material-symbols-outlined {
-    color: var(--blue-dark);
-}
-
-        /* ============================================================
-           PAGINATION & FOOTER
-        ============================================================ */
+        /* TABLE FOOTER */
         .table-footer {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 14px 20px;
-            background: #FAFBFD;
+            padding: 16px 20px;
+            background: #fff;
             border-top: 1px solid var(--border);
+            gap: 16px;
             flex-wrap: wrap;
-            gap: 12px;
         }
 
         .table-footer-left {
             display: flex;
             align-items: center;
-            gap: 16px;
+            gap: 20px;
             flex-wrap: wrap;
         }
 
         .data-info {
             font-size: 12.5px;
             color: var(--text-muted);
-            font-weight: 500;
-        }
-
-        .data-info strong {
-            color: var(--text-dark);
-            font-weight: 700;
         }
 
         .per-page-select {
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 8px;
             font-size: 12.5px;
             color: var(--text-muted);
         }
 
         .per-page-select select {
-            padding: 5px 8px;
+            padding: 6px 10px;
             border-radius: 6px;
             border: 1px solid var(--border);
             font-size: 12px;
             color: var(--text-dark);
             background: #fff;
             cursor: pointer;
-            outline: none;
-            font-weight: 600;
-        }
-
-        .per-page-select select:focus {
-            border-color: var(--blue);
         }
 
         .pagination-simple {
@@ -834,44 +650,156 @@
             display: inline-flex;
             align-items: center;
             gap: 4px;
-            padding: 7px 14px;
-            border-radius: 7px;
-            font-size: 12.5px;
-            font-weight: 600;
-            background: var(--white);
-            color: var(--text-dark);
+            padding: 6px 12px;
+            border-radius: 6px;
             border: 1px solid var(--border);
-            cursor: pointer;
+            background: #fff;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-dark);
             transition: var(--transition);
         }
 
         .btn-page:hover:not(.disabled) {
             background: var(--blue-light);
-            border-color: #BFDBFE;
             color: var(--blue);
+            border-color: var(--blue);
         }
 
         .btn-page.disabled {
             opacity: 0.45;
             cursor: not-allowed;
-            pointer-events: none;
-            background: #F1F5F9;
         }
 
-        /* ============================================================
-           DRAWER & BOTTOM NAV (Mobile)
-        ============================================================ */
-        .drawer-backdrop {
-            display: none;
+        /* EMPTY STATE */
+        .empty-state {
+            padding: 60px 20px;
+            text-align: center;
+        }
+
+        .empty-state .material-symbols-outlined {
+            font-size: 48px;
+            color: #94A3B8;
+            margin-bottom: 12px;
+        }
+
+        .empty-state h3 {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 6px;
+        }
+
+        .empty-state p {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 18px;
+        }
+
+        .empty-actions {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        /* DELETE MODAL */
+        .delete-modal {
             position: fixed;
             inset: 0;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 199;
+            background: rgba(15, 23, 42, 0.5);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 99999;
+            padding: 20px;
         }
 
-        /* ============================================================
-           RESPONSIVE (Max 768px)
-        ============================================================ */
+        .delete-modal.show {
+            display: flex;
+        }
+
+        .delete-modal-box {
+            width: 100%;
+            max-width: 440px;
+            background: #fff;
+            border-radius: 16px;
+            padding: 28px;
+            text-align: center;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+            animation: modalIn 0.2s ease-out;
+        }
+
+        @keyframes modalIn {
+            from { opacity: 0; transform: translateY(10px) scale(0.97); }
+            to   { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .delete-modal-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: var(--red-light);
+            color: var(--red);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+        }
+
+        .delete-modal-icon .material-symbols-outlined {
+            font-size: 30px;
+        }
+
+        .delete-modal-box h3 {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+        }
+
+        .delete-modal-box p {
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.5;
+            margin-bottom: 22px;
+        }
+
+        .delete-modal-actions {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .delete-modal-cancel {
+            padding: 9px 18px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: #fff;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-mid);
+            cursor: pointer;
+        }
+
+        .delete-modal-confirm {
+            padding: 9px 18px;
+            border-radius: 8px;
+            border: none;
+            background: var(--red);
+            font-size: 13px;
+            font-weight: 700;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        .delete-modal-confirm:hover {
+            background: #B91C1C;
+        }
+
         @media (max-width: 768px) {
             .main {
                 margin-left: 0;
@@ -885,16 +813,8 @@
                 padding: 0 16px;
             }
 
-            .topbar-left h1 {
-                font-size: 17px;
-            }
-
-            .topbar-user-detail {
-                display: none;
-            }
-
             .page-content {
-                padding: 16px 16px 80px;
+                padding: 16px;
             }
 
             .header-card {
@@ -910,476 +830,7 @@
                 flex: 1;
                 justify-content: center;
             }
-
-            .filter-form {
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-            .search-box {
-                min-width: 100%;
-            }
-
-            .date-input-group {
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-            .date-input-group input[type="date"] {
-                width: 100%;
-            }
-
-            .table-footer {
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-            .table-footer-left {
-                justify-content: space-between;
-            }
-
-            .pagination-simple {
-                justify-content: space-between;
-                width: 100%;
-            }
-
-            .pagination-simple .btn-page {
-                flex: 1;
-                justify-content: center;
-            }
-
-            .bottom-nav {
-                display: block;
-            }
         }
-
-        /* ============================================================
-   POPUP KONFIRMASI HAPUS
-============================================================ */
-
-.delete-modal {
-    position: fixed;
-    inset: 0;
-    background: rgba(15, 23, 42, 0.48);
-    backdrop-filter: blur(3px);
-    -webkit-backdrop-filter: blur(3px);
-    display: none;
-    align-items: center;
-    justify-content: center;
-    z-index: 99999;
-    padding: 20px;
-}
-
-.delete-modal.show {
-    display: flex;
-}
-
-.delete-modal-box {
-    width: 100%;
-    max-width: 420px;
-    background: #fff;
-    border-radius: 14px;
-    padding: 26px;
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.20);
-    text-align: center;
-    animation: deleteModalIn 0.2s ease-out;
-}
-
-.delete-modal-icon {
-    width: 56px;
-    height: 56px;
-    margin: 0 auto 16px;
-    border-radius: 50%;
-    background: var(--red-light);
-    color: var(--red);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.delete-modal-icon .material-symbols-outlined {
-    font-size: 28px;
-}
-
-.delete-modal-box h3 {
-    margin: 0 0 8px;
-    font-size: 18px;
-    font-weight: 800;
-    color: var(--text-dark);
-}
-
-.delete-modal-box p {
-    margin: 0 auto 22px;
-    font-size: 13px;
-    line-height: 1.5;
-    color: var(--text-muted);
-}
-
-.delete-modal-actions {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-}
-
-.delete-modal-actions button {
-    min-width: 110px;
-    height: 40px;
-    border-radius: 8px;
-    border: none;
-    font-family: inherit;
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-}
-
-.delete-modal-cancel {
-    background: #F1F5F9;
-    color: var(--text-mid);
-}
-
-.delete-modal-cancel:hover {
-    background: #E2E8F0;
-}
-
-.delete-modal-confirm {
-    background: var(--red);
-    color: #fff;
-}
-
-.delete-modal-confirm:hover {
-    background: #B91C1C;
-}
-
-@keyframes deleteModalIn {
-    from {
-        opacity: 0;
-        transform: translateY(8px) scale(0.97);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-    }
-}
-
-/* ============================================================
-   POPUP FORM STOK KELUAR
-============================================================ */
-.stock-out-modal {
-    position: fixed;
-    inset: 0;
-    background: rgba(15, 23, 42, 0.52);
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
-    display: none;
-    align-items: center;
-    justify-content: center;
-    z-index: 99999;
-    padding: 20px;
-}
-
-.stock-out-modal.show {
-    display: flex;
-}
-
-.stock-out-modal-box {
-    width: 100%;
-    max-width: 500px;
-    background: #ffffff;
-    border-radius: 16px;
-    padding: 26px 28px;
-    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.22);
-    position: relative;
-    animation: stockOutModalIn 0.22s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-@keyframes stockOutModalIn {
-    from {
-        opacity: 0;
-        transform: translateY(12px) scale(0.97);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-    }
-}
-
-.modal-close-btn {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    background: transparent;
-    border: none;
-    color: var(--text-muted);
-    cursor: pointer;
-    padding: 4px;
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: var(--transition);
-}
-
-.modal-close-btn:hover {
-    background: #F1F5F9;
-    color: var(--text-dark);
-}
-
-.stock-out-header {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    margin-bottom: 18px;
-}
-
-.stock-out-icon {
-    width: 48px;
-    height: 48px;
-    border-radius: 12px;
-    background: #FEF3C7;
-    color: #D97706;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-}
-
-.stock-out-icon .material-symbols-outlined {
-    font-size: 26px;
-}
-
-.stock-out-header h3 {
-    margin: 0 0 4px;
-    font-size: 18px;
-    font-weight: 800;
-    color: var(--blue-dark);
-}
-
-.stock-out-header p {
-    margin: 0;
-    font-size: 12px;
-    color: var(--text-muted);
-    line-height: 1.4;
-}
-
-.stock-out-material-card {
-    background: #F8FAFC;
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 12px 14px;
-    margin-bottom: 16px;
-}
-
-.material-card-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    font-size: 13px;
-}
-
-.material-card-label {
-    color: var(--text-muted);
-    font-weight: 500;
-}
-
-.modal-stock-alert {
-    background: #FEE2E2;
-    border: 1px solid #FECACA;
-    color: #DC2626;
-    border-radius: 8px;
-    padding: 10px 12px;
-    font-size: 12.5px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 16px;
-    line-height: 1.4;
-}
-
-.modal-form-group {
-    margin-bottom: 16px;
-    text-align: left;
-}
-
-.modal-form-label {
-    display: block;
-    font-size: 13px;
-    font-weight: 700;
-    color: var(--text-dark);
-    margin-bottom: 6px;
-}
-
-.modal-form-group .form-control {
-    width: 100%;
-    padding: 9px 12px;
-    border-radius: 8px;
-    border: 1px solid var(--border);
-    font-family: inherit;
-    font-size: 13.5px;
-    color: var(--text-dark);
-    background: #fff;
-    transition: var(--transition);
-    box-sizing: border-box;
-}
-
-.modal-form-group .form-control:focus {
-    outline: none;
-    border-color: var(--blue);
-    box-shadow: 0 0 0 3px rgba(0, 87, 184, 0.12);
-}
-
-.input-suffix {
-    position: absolute;
-    right: 12px;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 12.5px;
-    font-weight: 600;
-    color: var(--text-muted);
-    pointer-events: none;
-}
-
-.modal-input-hint {
-    font-size: 11.5px;
-    color: var(--text-muted);
-    margin-top: 5px;
-}
-
-.modal-input-error {
-    font-size: 11.5px;
-    color: var(--red);
-    font-weight: 600;
-    margin-top: 5px;
-}
-
-.stock-out-actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: 10px;
-    margin-top: 20px;
-    padding-top: 14px;
-    border-top: 1px solid var(--border);
-}
-
-.stock-out-actions .btn {
-    height: 40px;
-    padding: 0 16px;
-    font-size: 13px;
-    font-weight: 600;
-    border-radius: 8px;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-}
-
-/* ============================================================
-   CHECKBOX & BULK SELECT
-============================================================ */
-.cb-cell {
-    width: 44px;
-    padding-left: 18px !important;
-    padding-right: 8px !important;
-}
-
-.row-checkbox,
-.check-all {
-    width: 17px;
-    height: 17px;
-    accent-color: var(--blue);
-    cursor: pointer;
-    flex-shrink: 0;
-}
-
-table.data-table tbody tr.row-selected {
-    background: #EAF3FF;
-}
-
-/* ============================================================
-   BULK ACTION TOOLBAR (floating bar)
-============================================================ */
-.bulk-toolbar {
-    display: none;
-    align-items: center;
-    gap: 12px;
-    padding: 10px 20px;
-    background: var(--blue-dark);
-    border-radius: var(--radius);
-    margin-bottom: 14px;
-    box-shadow: 0 4px 18px rgba(0,0,0,0.18);
-    animation: bulkToolbarIn 0.18s ease-out;
-}
-
-.bulk-toolbar.visible {
-    display: flex;
-}
-
-@keyframes bulkToolbarIn {
-    from { opacity: 0; transform: translateY(-6px); }
-    to   { opacity: 1; transform: translateY(0); }
-}
-
-.bulk-count-badge {
-    background: var(--yellow);
-    color: var(--blue-dark);
-    font-size: 12px;
-    font-weight: 800;
-    padding: 3px 10px;
-    border-radius: 20px;
-    white-space: nowrap;
-}
-
-.bulk-toolbar-label {
-    font-size: 13px;
-    font-weight: 600;
-    color: rgba(255,255,255,0.85);
-    flex: 1;
-}
-
-.btn-bulk-delete {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 8px 16px;
-    background: var(--red);
-    color: #fff;
-    border: none;
-    border-radius: 8px;
-    font-size: 13px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: background 0.15s ease;
-    white-space: nowrap;
-}
-
-.btn-bulk-delete:hover {
-    background: #B91C1C;
-}
-
-.btn-bulk-delete .material-symbols-outlined {
-    font-size: 18px;
-}
-
-.btn-bulk-cancel {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 8px 14px;
-    background: rgba(255,255,255,0.1);
-    color: rgba(255,255,255,0.8);
-    border: 1px solid rgba(255,255,255,0.2);
-    border-radius: 8px;
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background 0.15s ease;
-    white-space: nowrap;
-}
-
-.btn-bulk-cancel:hover {
-    background: rgba(255,255,255,0.18);
-    color: #fff;
-}
     </style>
 </head>
 
@@ -1390,10 +841,7 @@ table.data-table tbody tr.row-selected {
         <!-- SIDEBAR -->
         @include('partials.sidebar')
 
-
-        <!-- ============================================================
-             MAIN CONTENT
-        ============================================================ -->
+        <!-- MAIN CONTENT -->
         <main class="main">
 
             <!-- Topbar Header -->
@@ -1404,11 +852,11 @@ table.data-table tbody tr.row-selected {
                     </button>
                     <div class="topbar-left">
                         <h1>Data Material</h1>
-                        <p>Kelola data material ATK PT PLN Indonesia Power UBP Asam Asam</p>
+                        <p>Pendaftaran dan pengelolaan data master material ATK PT PLN Indonesia Power UBP Asam Asam</p>
                     </div>
                 </div>
 
-                <a href="{{ route('profile.show') }}" class="topbar-user" title="Buka Profil Pengguna" data-spa-link>
+                <a href="{{ route('profile.show') }}" class="topbar-user" title="Buka Profil Pengguna">
                     <div class="topbar-user-detail">
                         <div class="topbar-user-name">{{ Auth::user()->name }}</div>
                         <div class="topbar-user-email">{{ Auth::user()->email }}</div>
@@ -1472,8 +920,8 @@ table.data-table tbody tr.row-selected {
                 <!-- Header Card dengan Tombol Aksi Utama -->
                 <div class="header-card">
                     <div class="header-card-title">
-                        <h2>Data Material</h2>
-                        <p>Kelola data material ATK PT PLN Indonesia Power UBP Asam Asam</p>
+                        <h2>Data Master Material</h2>
+                        <p>Kelola identitas material (No. Material, Nama Material, dan Satuan)</p>
                     </div>
 
                     <div class="header-actions">
@@ -1497,42 +945,31 @@ table.data-table tbody tr.row-selected {
                 <!-- Filter & Search Bar -->
                 <div class="filter-card">
                     <form method="GET" action="{{ route('materials.index') }}" class="filter-form" id="filterForm">
-                        <!-- Pertahankan per_page jika ada -->
                         <input type="hidden" name="per_page" value="{{ $perPage }}">
 
                         <!-- Input Pencarian -->
                         <div class="search-box">
                             <span class="material-symbols-outlined">search</span>
                             <input type="text" name="search" value="{{ $search }}"
-                                placeholder="Cari no material atau nama material..." autocomplete="off">
+                                placeholder="Cari No. Material atau Nama Material..." autocomplete="off">
                         </div>
 
-                        <!-- Filter Tanggal Masuk -->
-                        <div class="date-input-group">
-                            <label for="start_date">Mulai:</label>
-                            <input type="date" id="start_date" name="start_date" value="{{ $startDate }}">
-                        </div>
-
-                        <div class="date-input-group">
-                            <label for="end_date">Selesai:</label>
-                            <input type="date" id="end_date" name="end_date" value="{{ $endDate }}">
-                        </div>
-
-                        <!-- Filter Status Stok -->
+                        <!-- Filter Status -->
                         <div class="filter-select-group">
-                            <label for="filter_stock">Status:</label>
-                            <select id="filter_stock" name="filter_stock" onchange="document.getElementById('filterForm').submit()">
-                                <option value="" {{ empty($filterStock) ? 'selected' : '' }}>Semua Stok</option>
-                                <option value="low" {{ $filterStock === 'low' ? 'selected' : '' }}>⚠️ Stok Menipis (≤ 15)</option>
+                            <label for="status">Status:</label>
+                            <select id="status" name="status" onchange="document.getElementById('filterForm').submit()">
+                                <option value="all" {{ ($status ?? 'all') === 'all' ? 'selected' : '' }}>Semua Material</option>
+                                <option value="active" {{ ($status ?? '') === 'active' ? 'selected' : '' }}>Aktif</option>
+                                <option value="inactive" {{ ($status ?? '') === 'inactive' ? 'selected' : '' }}>Nonaktif</option>
                             </select>
                         </div>
 
                         <button type="submit" class="btn btn-primary" style="padding: 8px 14px;">
-                            <span class="material-symbols-outlined" style="font-size:18px;">filter_alt</span>
-                            Filter
+                            <span class="material-symbols-outlined" style="font-size:18px;">search</span>
+                            Cari
                         </button>
 
-                        @if (!empty($search) || !empty($startDate) || !empty($endDate) || !empty($filterStock))
+                        @if (!empty($search) || ($status ?? 'all') !== 'all')
                             <a href="{{ route('materials.index', ['per_page' => $perPage]) }}" class="btn btn-outline"
                                 style="padding: 8px 14px;">
                                 <span class="material-symbols-outlined" style="font-size:18px;">restart_alt</span>
@@ -1541,20 +978,6 @@ table.data-table tbody tr.row-selected {
                         @endif
                     </form>
                 </div>
-
-                <!-- Alert Filter Stok Menipis Aktif -->
-                @if ($filterStock === 'low')
-                    <div class="active-filter-alert">
-                        <div class="active-filter-info">
-                            <span class="material-symbols-outlined">warning</span>
-                            <span>Menampilkan <strong>{{ $totalFiltered }} Material</strong> dengan <strong>Stok Menipis (≤ 15 unit)</strong>.</span>
-                        </div>
-                        <a href="{{ route('materials.index', array_merge(request()->except('filter_stock', 'page'))) }}" class="btn-clear-filter">
-                            <span class="material-symbols-outlined">close</span>
-                            Tampilkan Semua Stok
-                        </a>
-                    </div>
-                @endif
 
                 <!-- Bulk Action Toolbar -->
                 <div class="bulk-toolbar" id="bulkToolbar">
@@ -1569,7 +992,7 @@ table.data-table tbody tr.row-selected {
                     </button>
                 </div>
 
-                <!-- Data Table Card -->
+                <!-- Data Table Card (Hanya 4 Kolom: No. Material, Nama Material, Satuan, dan Aksi) -->
                 <div class="table-card">
                     @if ($materials->count() > 0)
                         <div class="table-responsive">
@@ -1580,12 +1003,10 @@ table.data-table tbody tr.row-selected {
                                             <input type="checkbox" class="check-all" id="checkAll" title="Pilih Semua">
                                         </th>
                                         <th style="width: 50px;">No</th>
-                                        <th style="width: 140px;">No Material</th>
+                                        <th style="width: 160px;">No. Material</th>
                                         <th>Nama Material</th>
-                                        <th style="width: 140px;">Tanggal Masuk</th>
-                                        <th style="width: 140px;">Jumlah Item</th>
-                                        <th style="width: 100px;">Satuan</th>
-                                        <th style="width: 140px; text-align: center;">Aksi</th>
+                                        <th style="width: 140px;">Satuan</th>
+                                        <th style="width: 130px; text-align: center;">Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -1593,11 +1014,7 @@ table.data-table tbody tr.row-selected {
                                         $startNumber = ($materials->currentPage() - 1) * $materials->perPage();
                                     @endphp
                                     @foreach ($materials as $index => $mat)
-                                        @php
-                                            $isLow = $mat->quantity <= 15;
-                                            $isCritical = $mat->quantity <= 5;
-                                        @endphp
-                                        <tr data-id="{{ $mat->id }}" class="{{ $isCritical ? 'row-critical-stock' : ($isLow ? 'row-low-stock' : '') }}">
+                                        <tr data-id="{{ $mat->id }}" class="{{ !$mat->is_active ? 'row-inactive' : '' }}">
                                             <td class="cb-cell">
                                                 <input type="checkbox" class="row-checkbox"
                                                         value="{{ $mat->id }}"
@@ -1609,61 +1026,29 @@ table.data-table tbody tr.row-selected {
                                             </td>
                                             <td style="font-weight: 600;">
                                                 {{ $mat->name }}
-                                                @if (!empty($mat->description))
-                                                    <div
-                                                        style="font-size: 11.5px; color: var(--text-muted); font-weight: normal; margin-top: 2px;">
-                                                        {{ $mat->description }}
-                                                    </div>
+                                                @if (!$mat->is_active)
+                                                    <span class="badge-status-inactive" title="Material dinonaktifkan (memiliki riwayat transaksi, tidak dapat dipilih untuk transaksi baru)">Nonaktif</span>
                                                 @endif
                                             </td>
                                             <td>
-                                                {{ $mat->entry_date ? $mat->entry_date->translatedFormat('j M Y') : '-' }}
+                                                <span style="font-weight: 500; color: var(--text-mid);">{{ $mat->unit }}</span>
                                             </td>
                                             <td>
-                                                <div style="display: flex; align-items: center; gap: 6px;">
-                                                    <span class="qty-badge {{ $isCritical ? 'qty-critical' : ($isLow ? 'qty-low' : '') }}">
-                                                        {{ number_format($mat->quantity, 0, ',', '.') }}
-                                                    </span>
-                                                    @if ($isCritical)
-                                                        <span class="stock-pill pill-critical">Kritis</span>
-                                                    @elseif ($isLow)
-                                                        <span class="stock-pill pill-warning">Menipis</span>
-                                                    @endif
-                                                </div>
-                                            </td>
-                                            <td>
-                                                <span
-                                                    style="font-weight: 500; color: var(--text-mid);">{{ $mat->unit }}</span>
-                                            </td>
-                                            <td>
-                                                <div class="actions-cell" style="justify-content: center; gap: 6px;">
-                                                    <!-- Tombol Stok Keluar -->
-                                                    <button type="button"
-                                                            class="btn btn-icon-only btn-stock-out btn-open-stock-out-modal"
-                                                            title="Stok Keluar"
-                                                            aria-label="Catat Stok Keluar {{ $mat->name }}"
-                                                            data-id="{{ $mat->id }}"
-                                                            data-number="{{ $mat->material_number }}"
-                                                            data-name="{{ addslashes($mat->name) }}"
-                                                            data-stock="{{ (int) $mat->quantity }}"
-                                                            data-unit="{{ $mat->unit }}"
-                                                            data-action="{{ route('materials.stock-out', $mat->id) }}">
-                                                        <span class="material-symbols-outlined" style="font-size: 18px;">output</span>
-                                                    </button>
-
+                                                <div class="actions-cell">
                                                     <!-- Tombol Edit -->
                                                     <a href="{{ route('materials.edit', $mat->id) }}"
-                                                        class="btn btn-icon-only btn-edit" title="Edit Material">
-                                                        <span class="material-symbols-outlined"
-                                                            style="font-size: 18px;">edit</span>
+                                                        class="btn-icon-only btn-edit" title="Edit Material">
+                                                        <span class="material-symbols-outlined" style="font-size: 18px;">edit</span>
                                                     </a>
 
                                                     <!-- Tombol Hapus -->
                                                     <button type="button"
-                                                            class="btn btn-icon-only btn-delete btn-open-delete-modal"
+                                                            class="btn-icon-only btn-delete btn-open-delete-modal"
                                                             title="Hapus Material"
                                                             data-action="{{ route('materials.destroy', $mat->id) }}"
-                                                            data-name="{{ addslashes($mat->name) }}">
+                                                            data-name="{{ addslashes($mat->name) }}"
+                                                            data-number="{{ $mat->material_number }}"
+                                                            data-has-relations="{{ $mat->stockMovements()->exists() ? '1' : '0' }}">
                                                         <span class="material-symbols-outlined" style="font-size: 18px;">delete</span>
                                                     </button>
                                                 </div>
@@ -1677,7 +1062,6 @@ table.data-table tbody tr.row-selected {
                         <!-- Footer Tabel: Informasi Data, Dropdown Per Page, & Navigasi Simple -->
                         <div class="table-footer">
                             <div class="table-footer-left">
-                                <!-- Informasi Jumlah Data Dinamis -->
                                 <div class="data-info">
                                     @if ($perPage === 'all' || $perPage === 'Semua')
                                         Menampilkan <strong>1–{{ $materials->total() }}</strong> dari
@@ -1689,39 +1073,29 @@ table.data-table tbody tr.row-selected {
                                     @endif
                                 </div>
 
-                                <!-- Dropdown Jumlah Baris Per Halaman -->
                                 <div class="per-page-select">
                                     <label for="per_page_select">Tampilkan:</label>
                                     <select id="per_page_select" onchange="changePerPage(this.value)">
-                                        <option value="10" {{ $perPage == 10 ? 'selected' : '' }}>10 data per
-                                            halaman</option>
-                                        <option value="25" {{ $perPage == 25 ? 'selected' : '' }}>25 data per
-                                            halaman</option>
-                                        <option value="50" {{ $perPage == 50 ? 'selected' : '' }}>50 data per
-                                            halaman</option>
-                                        <option value="100" {{ $perPage == 100 ? 'selected' : '' }}>100 data per
-                                            halaman</option>
-                                        <option value="250" {{ $perPage == 250 ? 'selected' : '' }}>250 data per
-                                            halaman</option>
-                                        <option value="all"
-                                            {{ $perPage === 'all' || $perPage === 'Semua' ? 'selected' : '' }}>Semua
-                                            data</option>
+                                        <option value="10" {{ $perPage == 10 ? 'selected' : '' }}>10 data per halaman</option>
+                                        <option value="25" {{ $perPage == 25 ? 'selected' : '' }}>25 data per halaman</option>
+                                        <option value="50" {{ $perPage == 50 ? 'selected' : '' }}>50 data per halaman</option>
+                                        <option value="100" {{ $perPage == 100 ? 'selected' : '' }}>100 data per halaman</option>
+                                        <option value="250" {{ $perPage == 250 ? 'selected' : '' }}>250 data per halaman</option>
+                                        <option value="all" {{ $perPage === 'all' || $perPage === 'Semua' ? 'selected' : '' }}>Semua data</option>
                                     </select>
                                 </div>
                             </div>
 
-                            <!-- Navigasi Halaman Simpel (HANYA Sebelumnya & Berikutnya) -->
+                            <!-- Navigasi Halaman Simpel -->
                             <div class="pagination-simple">
                                 @if ($materials->onFirstPage())
                                     <span class="btn-page disabled">
-                                        <span class="material-symbols-outlined"
-                                            style="font-size:16px;">arrow_back</span>
+                                        <span class="material-symbols-outlined" style="font-size:16px;">arrow_back</span>
                                         Sebelumnya
                                     </span>
                                 @else
                                     <a href="{{ $materials->previousPageUrl() }}" class="btn-page">
-                                        <span class="material-symbols-outlined"
-                                            style="font-size:16px;">arrow_back</span>
+                                        <span class="material-symbols-outlined" style="font-size:16px;">arrow_back</span>
                                         Sebelumnya
                                     </a>
                                 @endif
@@ -1729,14 +1103,12 @@ table.data-table tbody tr.row-selected {
                                 @if ($materials->hasMorePages())
                                     <a href="{{ $materials->nextPageUrl() }}" class="btn-page">
                                         Berikutnya
-                                        <span class="material-symbols-outlined"
-                                            style="font-size:16px;">arrow_forward</span>
+                                        <span class="material-symbols-outlined" style="font-size:16px;">arrow_forward</span>
                                     </a>
                                 @else
                                     <span class="btn-page disabled">
                                         Berikutnya
-                                        <span class="material-symbols-outlined"
-                                            style="font-size:16px;">arrow_forward</span>
+                                        <span class="material-symbols-outlined" style="font-size:16px;">arrow_forward</span>
                                     </span>
                                 @endif
                             </div>
@@ -1746,36 +1118,59 @@ table.data-table tbody tr.row-selected {
                         <div class="empty-state">
                             <span class="material-symbols-outlined">inventory_2</span>
                             <h3>Belum ada data material</h3>
-                            <p>Silakan tambahkan material baru atau import data melalui Excel.</p>
-<div class="empty-actions">
-    <a href="{{ route('materials.create') }}" class="btn btn-primary">
-        <span class="material-symbols-outlined">add</span>
-        Tambah Material
-    </a>
-
-    <a href="{{ route('materials.import') }}" class="btn btn-yellow">
-        <span class="material-symbols-outlined">upload_file</span>
-        Import Excel
-    </a>
-</div>
-
+                            <p>Silakan daftarkan material baru atau import data master melalui file Excel.</p>
+                            <div class="empty-actions">
+                                <a href="{{ route('materials.create') }}" class="btn btn-primary">
+                                    <span class="material-symbols-outlined">add</span>
+                                    Tambah Material
+                                </a>
+                                <a href="{{ route('materials.import') }}" class="btn btn-yellow">
+                                    <span class="material-symbols-outlined">upload_file</span>
+                                    Import Excel
+                                </a>
+                            </div>
                         </div>
                     @endif
                 </div>
 
             </div>
 
+            <!-- POPUP KONFIRMASI HAPUS SATUAN -->
+            <div id="deleteModal" class="delete-modal">
+                <div class="delete-modal-box">
+                    <div class="delete-modal-icon">
+                        <span class="material-symbols-outlined">delete</span>
+                    </div>
+                    <h3 id="deleteModalTitle">Hapus Material?</h3>
+                    <p id="deleteModalMessage">
+                        Apakah Anda yakin ingin menghapus data material ini?
+                    </p>
+                    <div class="delete-modal-actions">
+                        <button type="button" class="delete-modal-cancel" id="deleteModalCancel">Batal</button>
+                        <button type="button" class="delete-modal-confirm" id="deleteModalConfirm">Ya, Lanjutkan</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Form tersembunyi untuk submit hapus -->
+            <form id="deleteHiddenForm" method="POST" style="display:none;">
+                @csrf
+                @method('DELETE')
+            </form>
+
             <!-- POPUP KONFIRMASI HAPUS MASSAL -->
             <div id="bulkDeleteModal" class="delete-modal">
                 <div class="delete-modal-box">
-                    <div class="delete-modal-icon" style="background:#FEE2E2;color:#DC2626;">
+                    <div class="delete-modal-icon">
                         <span class="material-symbols-outlined">delete_sweep</span>
                     </div>
                     <h3>Hapus Material Terpilih?</h3>
-                    <p id="bulkDeleteModalMessage">Anda akan menghapus beberapa material sekaligus. Data yang dihapus tidak dapat dikembalikan.</p>
+                    <p id="bulkDeleteModalMessage">
+                        Material yang belum memiliki riwayat akan dihapus permanen, sedangkan material yang sudah memiliki riwayat stok akan dinonaktifkan secara aman.
+                    </p>
                     <div class="delete-modal-actions">
                         <button type="button" class="delete-modal-cancel" id="bulkModalCancelBtn">Batal</button>
-                        <button type="button" class="delete-modal-confirm" id="bulkModalConfirmBtn">Hapus Semua</button>
+                        <button type="button" class="delete-modal-confirm" id="bulkModalConfirmBtn">Ya, Hapus Semua</button>
                     </div>
                 </div>
             </div>
@@ -1787,170 +1182,47 @@ table.data-table tbody tr.row-selected {
                 @csrf
             </form>
 
-            <!-- POPUP KONFIRMASI HAPUS -->
-            <div id="deleteModal" class="delete-modal">
-                <div class="delete-modal-box">
-                    <div class="delete-modal-icon">
-                        <span class="material-symbols-outlined">delete</span>
-                    </div>
-                    <h3>Hapus Material?</h3>
-                    <p id="deleteModalMessage">
-                        Apakah Anda yakin ingin menghapus material ini?
-                        Data yang dihapus tidak dapat dikembalikan.
-                    </p>
-                    <div class="delete-modal-actions">
-                        <button type="button" class="delete-modal-cancel" id="deleteModalCancel">Batal</button>
-                        <button type="button" class="delete-modal-confirm" id="deleteModalConfirm">Hapus</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Form tersembunyi untuk submit hapus -->
-            <form id="deleteHiddenForm" method="POST" style="display:none;">
-                @csrf
-                @method('DELETE')
-            </form>
-
-            <!-- POPUP FORM STOK KELUAR -->
-            <div id="stockOutModal" class="stock-out-modal" aria-hidden="true" role="dialog" aria-labelledby="stockOutModalTitle">
-                <div class="stock-out-modal-box">
-                    <!-- Tombol Tutup (X) -->
-                    <button type="button" class="modal-close-btn" id="stockOutModalCloseBtn" aria-label="Tutup Form">
-                        <span class="material-symbols-outlined">close</span>
-                    </button>
-
-                    <!-- Header Modal -->
-                    <div class="stock-out-header">
-                        <div class="stock-out-icon">
-                            <span class="material-symbols-outlined">output</span>
-                        </div>
-                        <div>
-                            <h3 id="stockOutModalTitle">Catat Stok Keluar</h3>
-                            <p>Pengurangan stok akan otomatis tercatat ke Riwayat Pergerakan Material.</p>
-                        </div>
-                    </div>
-
-                    <!-- Ringkasan Info Material -->
-                    <div class="stock-out-material-card">
-                        <div class="material-card-row">
-                            <span class="material-card-label">No Material:</span>
-                            <span class="badge-material-number" id="modalStockOutNumber">-</span>
-                        </div>
-                        <div class="material-card-row" style="margin-top:6px;">
-                            <span class="material-card-label">Nama Material:</span>
-                            <strong id="modalStockOutName" style="color:var(--text-dark);font-size:13.5px;">-</strong>
-                        </div>
-                        <div class="material-card-row" style="margin-top:6px;">
-                            <span class="material-card-label">Stok Tersedia:</span>
-                            <span id="modalStockOutAvailable" class="stock-pill pill-warning" style="font-weight:700;font-size:12.5px;">0 Unit</span>
-                        </div>
-                    </div>
-
-                    <!-- Peringatan Jika Stok Kosong -->
-                    <div id="modalStockOutEmptyAlert" class="modal-stock-alert" style="display:none;">
-                        <span class="material-symbols-outlined" style="font-size:18px;">warning</span>
-                        <span>Stok material ini sedang kosong (0). Pengeluaran material tidak dapat diproses.</span>
-                    </div>
-
-                    <!-- Form Stok Keluar -->
-                    <form id="stockOutForm" method="POST" action="">
-                        @csrf
-
-                        <!-- Jumlah Keluar -->
-                        <div class="modal-form-group">
-                            <label for="modalStockOutQty" class="modal-form-label">
-                                Jumlah Keluar <span style="color:var(--red);">*</span>
-                            </label>
-                            <div style="position:relative;">
-                                <input type="number" 
-                                       id="modalStockOutQty" 
-                                       name="quantity" 
-                                       class="form-control" 
-                                       min="1" 
-                                       required 
-                                       placeholder="Masukkan jumlah keluar">
-                                <span id="modalStockOutUnitSuffix" class="input-suffix">Unit</span>
-                            </div>
-                            <div id="modalStockOutQtyHint" class="modal-input-hint">
-                                Maksimal yang dapat dikeluarkan: <strong id="modalMaxQtyText">0 Unit</strong>
-                            </div>
-                            <div id="modalStockOutQtyError" class="modal-input-error" style="display:none;">
-                                Jumlah keluar tidak boleh melebihi stok yang tersedia!
-                            </div>
-                        </div>
-
-                        <!-- Tanggal Keluar -->
-                        <div class="modal-form-group">
-                            <label for="modalStockOutDate" class="modal-form-label">
-                                Tanggal Keluar <span style="color:var(--red);">*</span>
-                            </label>
-                            <input type="date" 
-                                   id="modalStockOutDate" 
-                                   name="exit_date" 
-                                   class="form-control" 
-                                   required 
-                                   value="{{ date('Y-m-d') }}">
-                        </div>
-
-                        <!-- Keterangan / Tujuan -->
-                        <div class="modal-form-group">
-                            <label for="modalStockOutDesc" class="modal-form-label">
-                                Keterangan / Tujuan Pengeluaran <span style="color:var(--red);">*</span>
-                            </label>
-                            <textarea id="modalStockOutDesc" 
-                                      name="description" 
-                                      class="form-control" 
-                                      rows="3" 
-                                      required 
-                                      placeholder="Contoh: Digunakan untuk pemeliharaan rutin, operasional unit, rapat, dll."></textarea>
-                        </div>
-
-                        <!-- Tombol Aksi -->
-                        <div class="stock-out-actions">
-                            <button type="button" class="btn btn-outline" id="stockOutModalCancel">Batal</button>
-                            <button type="submit" class="btn btn-primary" id="stockOutSubmitBtn" style="background:var(--blue);">
-                                <span class="material-symbols-outlined" style="font-size:18px;">check_circle</span>
-                                Simpan Stok Keluar
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-
             <script>
             (function () {
-
                 // ======================================================
-                // 1. HAPUS SATU (single delete)
+                // 1. HAPUS SATU (Single Delete with relation detection)
                 // ======================================================
                 const modal      = document.getElementById('deleteModal');
                 const cancelBtn  = document.getElementById('deleteModalCancel');
                 const confirmBtn = document.getElementById('deleteModalConfirm');
                 const msgEl      = document.getElementById('deleteModalMessage');
+                const titleEl    = document.getElementById('deleteModalTitle');
                 const hiddenForm = document.getElementById('deleteHiddenForm');
 
                 let pendingAction = null;
-                let pendingRow    = null;
 
                 if (modal && cancelBtn && confirmBtn && hiddenForm) {
-
                     document.querySelector('main.main').addEventListener('click', function (e) {
                         const btn = e.target.closest('.btn-open-delete-modal');
                         if (!btn) return;
                         e.preventDefault();
+
                         pendingAction = btn.dataset.action;
-                        pendingRow    = btn.closest('tr') || null;
-                        const name    = btn.dataset.name || '';
-                        msgEl.textContent = name
-                            ? `Apakah Anda yakin ingin menghapus material "${name}"? Data yang dihapus tidak dapat dikembalikan.`
-                            : 'Apakah Anda yakin ingin menghapus material ini? Data yang dihapus tidak dapat dikembalikan.';
+                        const name         = btn.dataset.name || '';
+                        const number       = btn.dataset.number || '';
+                        const hasRelations = btn.dataset.hasRelations === '1';
+
+                        if (hasRelations) {
+                            titleEl.textContent = 'Nonaktifkan Material?';
+                            msgEl.innerHTML = `Material <strong>"${name}"</strong> (${number}) telah memiliki riwayat pergerakan stok.<br><br>Untuk menjaga keutuhan data riwayat, material ini akan <strong>dinonaktifkan</strong> dari sistem dan tidak dapat dipilih untuk transaksi stok baru.`;
+                            confirmBtn.textContent = 'Ya, Nonaktifkan';
+                        } else {
+                            titleEl.textContent = 'Hapus Material?';
+                            msgEl.innerHTML = `Apakah Anda yakin ingin menghapus material <strong>"${name}"</strong> (${number}) secara permanen? Data yang belum memiliki riwayat akan dihapus dari sistem.`;
+                            confirmBtn.textContent = 'Ya, Hapus Permanen';
+                        }
+
                         modal.classList.add('show');
                     });
 
                     cancelBtn.addEventListener('click', function () {
                         modal.classList.remove('show');
                         pendingAction = null;
-                        pendingRow    = null;
                     });
 
                     confirmBtn.addEventListener('click', function () {
@@ -1958,10 +1230,9 @@ table.data-table tbody tr.row-selected {
                         const action = pendingAction;
                         modal.classList.remove('show');
                         pendingAction = null;
-                        pendingRow    = null;
 
                         confirmBtn.disabled    = true;
-                        confirmBtn.textContent = 'Menghapus...';
+                        confirmBtn.textContent = 'Memproses...';
 
                         hiddenForm.action = action;
                         hiddenForm.submit();
@@ -1971,7 +1242,6 @@ table.data-table tbody tr.row-selected {
                         if (e.target === modal) {
                             modal.classList.remove('show');
                             pendingAction = null;
-                            pendingRow    = null;
                         }
                     });
 
@@ -1979,13 +1249,12 @@ table.data-table tbody tr.row-selected {
                         if (e.key === 'Escape' && modal.classList.contains('show')) {
                             modal.classList.remove('show');
                             pendingAction = null;
-                            pendingRow    = null;
                         }
                     });
                 }
 
                 // ======================================================
-                // 2. HAPUS MASSAL (bulk delete)
+                // 2. HAPUS MASSAL (Bulk Delete)
                 // ======================================================
                 const bulkModal      = document.getElementById('bulkDeleteModal');
                 const bulkCancelBtn  = document.getElementById('bulkModalCancelBtn');
@@ -2011,20 +1280,19 @@ table.data-table tbody tr.row-selected {
                     } else {
                         bulkToolbar.classList.remove('visible');
                     }
-                    // Update state checkAll
+
                     const allBoxes = document.querySelectorAll('.row-checkbox');
                     if (checkAll) {
                         checkAll.indeterminate = count > 0 && count < allBoxes.length;
                         checkAll.checked       = count > 0 && count === allBoxes.length;
                     }
-                    // Highlight baris terpilih
+
                     document.querySelectorAll('.row-checkbox').forEach(cb => {
                         const row = cb.closest('tr');
                         if (row) row.classList.toggle('row-selected', cb.checked);
                     });
                 }
 
-                // Pilih semua
                 if (checkAll) {
                     checkAll.addEventListener('change', function () {
                         document.querySelectorAll('.row-checkbox').forEach(cb => {
@@ -2034,14 +1302,12 @@ table.data-table tbody tr.row-selected {
                     });
                 }
 
-                // Per-baris checkbox (event delegation)
                 document.querySelector('main.main').addEventListener('change', function (e) {
                     if (e.target.classList.contains('row-checkbox')) {
                         updateToolbar();
                     }
                 });
 
-                // Tombol Batal di toolbar
                 if (bulkCancelToolbarBtn) {
                     bulkCancelToolbarBtn.addEventListener('click', function () {
                         document.querySelectorAll('.row-checkbox').forEach(cb => cb.checked = false);
@@ -2050,24 +1316,21 @@ table.data-table tbody tr.row-selected {
                     });
                 }
 
-                // Tombol Hapus Terpilih → buka modal konfirmasi
                 if (bulkDeleteBtn) {
                     bulkDeleteBtn.addEventListener('click', function () {
                         const count = getChecked().length;
                         if (count === 0) return;
-                        bulkMsgEl.textContent = `Anda akan menghapus ${count} material sekaligus. Data yang dihapus tidak dapat dikembalikan.`;
+                        bulkMsgEl.innerHTML = `Anda akan memproses <strong>${count} material terpilih</strong>.<br><br>Material yang sudah memiliki riwayat stok akan dinonaktifkan, sedangkan material yang belum pernah digunakan akan dihapus permanen.`;
                         bulkModal.classList.add('show');
                     });
                 }
 
-                // Batal dari modal bulk
                 if (bulkCancelBtn) {
                     bulkCancelBtn.addEventListener('click', function () {
                         bulkModal.classList.remove('show');
                     });
                 }
 
-                // Konfirmasi hapus massal
                 if (bulkConfirmBtn && bulkForm) {
                     bulkConfirmBtn.addEventListener('click', function () {
                         const checkedBoxes = getChecked();
@@ -2075,12 +1338,10 @@ table.data-table tbody tr.row-selected {
 
                         bulkModal.classList.remove('show');
                         bulkConfirmBtn.disabled    = true;
-                        bulkConfirmBtn.textContent = 'Menghapus...';
+                        bulkConfirmBtn.textContent = 'Memproses...';
 
-                        // Bersihkan input ids[] lama dari bulkForm jika ada
                         bulkForm.querySelectorAll('input[name="ids[]"]').forEach(el => el.remove());
 
-                        // Masukkan setiap id terpilih ke dalam bulkForm
                         checkedBoxes.forEach(cb => {
                             const input = document.createElement('input');
                             input.type  = 'hidden';
@@ -2093,162 +1354,35 @@ table.data-table tbody tr.row-selected {
                     });
                 }
 
-                // Klik luar modal bulk
                 if (bulkModal) {
                     bulkModal.addEventListener('click', function (e) {
                         if (e.target === bulkModal) bulkModal.classList.remove('show');
                     });
                 }
 
-                // Escape tutup kedua modal
                 document.addEventListener('keydown', function (e) {
                     if (e.key === 'Escape') {
                         if (bulkModal) bulkModal.classList.remove('show');
                     }
                 });
 
-                // ======================================================
-                // 3. STOK KELUAR MODAL
-                // ======================================================
-                const stockOutModal     = document.getElementById('stockOutModal');
-                const stockOutForm      = document.getElementById('stockOutForm');
-                const stockOutCancel    = document.getElementById('stockOutModalCancel');
-                const stockOutCloseBtn  = document.getElementById('stockOutModalCloseBtn');
-                const stockOutSubmitBtn = document.getElementById('stockOutSubmitBtn');
-
-                const stockOutNumberEl  = document.getElementById('modalStockOutNumber');
-                const stockOutNameEl    = document.getElementById('modalStockOutName');
-                const stockOutAvailEl   = document.getElementById('modalStockOutAvailable');
-                const stockOutAlertEl   = document.getElementById('modalStockOutEmptyAlert');
-
-                const stockOutQtyInput  = document.getElementById('modalStockOutQty');
-                const stockOutUnitEl    = document.getElementById('modalStockOutUnitSuffix');
-                const stockOutMaxHint   = document.getElementById('modalMaxQtyText');
-                const stockOutQtyError  = document.getElementById('modalStockOutQtyError');
-                const stockOutDateInput = document.getElementById('modalStockOutDate');
-                const stockOutDescInput = document.getElementById('modalStockOutDesc');
-
-                let currentStockAvailable = 0;
-
-                function closeStockOutModal() {
-                    if (stockOutModal) {
-                        stockOutModal.classList.remove('show');
-                    }
-                }
-
-                if (stockOutModal && stockOutForm) {
-                    document.querySelector('main.main').addEventListener('click', function (e) {
-                        const btn = e.target.closest('.btn-open-stock-out-modal');
-                        if (!btn) return;
-                        e.preventDefault();
-
-                        const matId     = btn.dataset.id;
-                        const matNumber = btn.dataset.number || '-';
-                        const matName   = btn.dataset.name || '-';
-                        const stockQty  = parseInt(btn.dataset.stock, 10) || 0;
-                        const unit      = btn.dataset.unit || 'Unit';
-                        const actionUrl = btn.dataset.action;
-
-                        currentStockAvailable = stockQty;
-
-                        // Set action form
-                        stockOutForm.action = actionUrl;
-
-                        // Set info visual
-                        if (stockOutNumberEl) stockOutNumberEl.textContent = matNumber;
-                        if (stockOutNameEl)   stockOutNameEl.textContent   = matName;
-                        if (stockOutAvailEl)  stockOutAvailEl.textContent  = `${stockQty.toLocaleString('id-ID')} ${unit}`;
-                        if (stockOutUnitEl)   stockOutUnitEl.textContent   = unit;
-                        if (stockOutMaxHint)  stockOutMaxHint.textContent  = `${stockQty.toLocaleString('id-ID')} ${unit}`;
-
-                        // Reset form inputs & validation
-                        if (stockOutQtyInput) {
-                            stockOutQtyInput.value = '';
-                            stockOutQtyInput.max   = stockQty;
-                            stockOutQtyInput.style.borderColor = '';
-                        }
-                        if (stockOutDescInput) stockOutDescInput.value = '';
-                        if (stockOutDateInput) stockOutDateInput.value = new Date().toISOString().split('T')[0];
-                        if (stockOutQtyError)  stockOutQtyError.style.display = 'none';
-
-                        if (stockQty <= 0) {
-                            if (stockOutAlertEl)   stockOutAlertEl.style.display = 'flex';
-                            if (stockOutQtyInput)  stockOutQtyInput.disabled = true;
-                            if (stockOutSubmitBtn) {
-                                stockOutSubmitBtn.disabled = true;
-                                stockOutSubmitBtn.style.opacity = '0.5';
-                                stockOutSubmitBtn.style.cursor = 'not-allowed';
-                            }
-                        } else {
-                            if (stockOutAlertEl)   stockOutAlertEl.style.display = 'none';
-                            if (stockOutQtyInput)  stockOutQtyInput.disabled = false;
-                            if (stockOutSubmitBtn) {
-                                stockOutSubmitBtn.disabled = false;
-                                stockOutSubmitBtn.style.opacity = '1';
-                                stockOutSubmitBtn.style.cursor = 'pointer';
-                                stockOutSubmitBtn.innerHTML = '<span class="material-symbols-outlined" style="font-size:18px;">check_circle</span> Simpan Stok Keluar';
-                            }
-                        }
-
-                        stockOutModal.classList.add('show');
-                        if (stockQty > 0 && stockOutQtyInput) {
-                            setTimeout(() => stockOutQtyInput.focus(), 150);
-                        }
-                    });
-
-                    if (stockOutCancel)   stockOutCancel.addEventListener('click', closeStockOutModal);
-                    if (stockOutCloseBtn) stockOutCloseBtn.addEventListener('click', closeStockOutModal);
-
-                    stockOutModal.addEventListener('click', function (e) {
-                        if (e.target === stockOutModal) closeStockOutModal();
-                    });
-
-                    document.addEventListener('keydown', function (e) {
-                        if (e.key === 'Escape' && stockOutModal.classList.contains('show')) {
-                            closeStockOutModal();
-                        }
-                    });
-
-                    // Validasi real-time input jumlah keluar
-                    if (stockOutQtyInput) {
-                        stockOutQtyInput.addEventListener('input', function () {
-                            const val = parseInt(this.value, 10);
-                            if (isNaN(val) || val <= 0) {
-                                stockOutQtyError.textContent = 'Jumlah keluar wajib lebih dari 0.';
-                                stockOutQtyError.style.display = 'block';
-                                this.style.borderColor = 'var(--red)';
-                                stockOutSubmitBtn.disabled = true;
-                            } else if (val > currentStockAvailable) {
-                                stockOutQtyError.textContent = `Jumlah keluar tidak boleh melebihi stok yang tersedia (${currentStockAvailable}).`;
-                                stockOutQtyError.style.display = 'block';
-                                this.style.borderColor = 'var(--red)';
-                                stockOutSubmitBtn.disabled = true;
-                            } else {
-                                stockOutQtyError.style.display = 'none';
-                                this.style.borderColor = '';
-                                stockOutSubmitBtn.disabled = false;
-                            }
-                        });
-                    }
-
-                    stockOutForm.addEventListener('submit', function (e) {
-                        const val = parseInt(stockOutQtyInput.value, 10);
-                        if (isNaN(val) || val <= 0 || val > currentStockAvailable) {
-                            e.preventDefault();
-                            stockOutQtyInput.focus();
-                            stockOutQtyError.style.display = 'block';
-                            return;
-                        }
-                        stockOutSubmitBtn.disabled = true;
-                        stockOutSubmitBtn.innerHTML = '<span class="material-symbols-outlined" style="font-size:18px;">hourglass_empty</span> Menyimpan...';
-                    });
-                }
-
             })();
+
+            function changePerPage(val) {
+                const url = new URL(window.location.href);
+                url.searchParams.set('per_page', val);
+                url.searchParams.delete('page');
+                window.location.href = url.toString();
+            }
+
+            function openSidebar() {
+                const sidebar = document.getElementById('sidebar');
+                if (sidebar) sidebar.classList.add('open');
+            }
             </script>
 
         </main>
-   
+    </div>
 
 </body>
 

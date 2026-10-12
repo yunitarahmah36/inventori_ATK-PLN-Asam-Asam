@@ -3,25 +3,20 @@
 namespace App\Imports;
 
 use App\Models\Material;
-use App\Models\StockMovement;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Concerns\ToCollection;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
-use Maatwebsite\Excel\Concerns\WithValidation;
 use Maatwebsite\Excel\Concerns\SkipsEmptyRows;
-use PhpOffice\PhpSpreadsheet\Shared\Date;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 
-class MaterialsImport implements
-    ToCollection,
-    WithHeadingRow,
-    WithValidation,
-    SkipsEmptyRows
+class MaterialsImport implements ToCollection, WithHeadingRow, SkipsEmptyRows
 {
-    /**
-     * Header berada di baris pertama.
-     */
+    protected $importedCount = 0;
+    protected $skippedCount = 0;
+    protected $conflicts = [];
+
     public function headingRow(): int
     {
         return 1;
@@ -40,340 +35,280 @@ class MaterialsImport implements
     }
 
     /**
-     * Validasi data dasar per kolom.
+     * Parse file Excel untuk analisis pratinjau (data baru, duplikat, konflik, error)
+     * sebelum konfirmasi simpan.
      */
-    public function rules(): array
+    public static function parseFile($file): array
     {
+        $filePath = is_string($file) ? $file : $file->getRealPath();
+
+        $spreadsheet = IOFactory::load($filePath);
+        $worksheet   = $spreadsheet->getActiveSheet();
+        $rows        = $worksheet->toArray(null, true, true, true);
+
+        if (empty($rows)) {
+            throw new \Exception('File Excel kosong atau tidak memiliki data.');
+        }
+
+        // Cari baris header (baris pertama yang memiliki teks kolom)
+        $headerRowIndex = null;
+        $colMap = [
+            'number' => null,
+            'name'   => null,
+            'unit'   => null,
+        ];
+
+        foreach ($rows as $rIndex => $row) {
+            $rowValues = array_map(function ($val) {
+                return strtolower(trim((string) $val));
+            }, $row);
+
+            foreach ($rowValues as $colLetter => $cellVal) {
+                if ($colMap['number'] === null && (str_contains($cellVal, 'no') || str_contains($cellVal, 'kode')) && str_contains($cellVal, 'mat')) {
+                    $colMap['number'] = $colLetter;
+                } elseif ($colMap['number'] === null && (str_contains($cellVal, 'no_material') || $cellVal === 'no material' || $cellVal === 'nomor material')) {
+                    $colMap['number'] = $colLetter;
+                }
+
+                if ($colMap['name'] === null && (str_contains($cellVal, 'nama') || str_contains($cellVal, 'barang') || str_contains($cellVal, 'item'))) {
+                    $colMap['name'] = $colLetter;
+                }
+
+                if ($colMap['unit'] === null && (str_contains($cellVal, 'satuan') || str_contains($cellVal, 'unit'))) {
+                    $colMap['unit'] = $colLetter;
+                }
+            }
+
+            if ($colMap['number'] !== null && $colMap['name'] !== null && $colMap['unit'] !== null) {
+                $headerRowIndex = $rIndex;
+                break;
+            }
+        }
+
+        // Jika header 3 kolom spesifik tidak terdeteksi via nama, fallback ke kolom A, B, C jika baris 1
+        if ($headerRowIndex === null) {
+            // Coba periksa baris 1 apakah minimal memiliki 3 kolom
+            if (isset($rows[1])) {
+                $colMap = ['number' => 'A', 'name' => 'B', 'unit' => 'C'];
+                $headerRowIndex = 1;
+            } else {
+                throw new \Exception('Format kolom Excel tidak sesuai. Template baru mewajibkan 3 kolom: No. Material, Nama Material, dan Satuan.');
+            }
+        }
+
+        $allDataRows = [];
+        $newItems    = [];
+        $duplicates  = [];
+        $conflicts   = [];
+        $errors      = [];
+
+        $seenInFile = [];
+
+        // Ambil semua nomor material dari database ke memori untuk pencocokan cepat
+        $existingMaterials = Material::all()->keyBy(function ($item) {
+            return strtolower(trim($item->material_number));
+        });
+
+        foreach ($rows as $rIndex => $row) {
+            if ($rIndex <= $headerRowIndex) {
+                continue; // Lewati header
+            }
+
+            $numVal  = trim((string) ($row[$colMap['number']] ?? ''));
+            $nameVal = trim((string) ($row[$colMap['name']] ?? ''));
+            $unitVal = trim((string) ($row[$colMap['unit']] ?? ''));
+
+            // Lewati jika seluruh baris kosong
+            if ($numVal === '' && $nameVal === '' && $unitVal === '') {
+                continue;
+            }
+
+            $allDataRows[] = [
+                'row'             => $rIndex,
+                'material_number' => $numVal,
+                'name'            => $nameVal,
+                'unit'            => $unitVal,
+            ];
+
+            // Validasi kelengkapan data
+            if ($numVal === '' || $nameVal === '' || $unitVal === '') {
+                $missing = [];
+                if ($numVal === '')  $missing[] = 'No. Material';
+                if ($nameVal === '') $missing[] = 'Nama Material';
+                if ($unitVal === '') $missing[] = 'Satuan';
+
+                $errors[] = [
+                    'row'             => $rIndex,
+                    'material_number' => $numVal ?: '-',
+                    'name'            => $nameVal ?: '-',
+                    'unit'            => $unitVal ?: '-',
+                    'reason'          => 'Kolom tidak lengkap: ' . implode(', ', $missing) . ' wajib diisi.',
+                ];
+                continue;
+            }
+
+            $numKey         = strtolower($numVal);
+            $normalizedName = self::normalizeName($nameVal);
+
+            // 1. Cek duplikasi di internal file Excel itu sendiri
+            if (isset($seenInFile[$numKey])) {
+                $prev = $seenInFile[$numKey];
+                if ($normalizedName !== $prev['normalized_name']) {
+                    // Konflik internal file: No Material sama tapi nama material beda
+                    $conflicts[] = [
+                        'row'              => $rIndex,
+                        'material_number'  => $numVal,
+                        'name'             => $nameVal,
+                        'conflicting_name' => $prev['name'],
+                        'reason'           => "No. Material '{$numVal}' sama dengan Baris {$prev['row']} pada file, tetapi Nama Material berbeda ('{$nameVal}' vs '{$prev['name']}').",
+                    ];
+                } else {
+                    // Duplikat dalam file dengan nama sama: lewati
+                    $duplicates[] = [
+                        'row'             => $rIndex,
+                        'material_number' => $numVal,
+                        'name'            => $nameVal,
+                        'unit'            => $unitVal,
+                        'reason'          => "Duplikat di dalam file Excel (sama dengan Baris {$prev['row']}).",
+                    ];
+                }
+                continue;
+            }
+
+            $seenInFile[$numKey] = [
+                'row'             => $rIndex,
+                'name'            => $nameVal,
+                'normalized_name' => $normalizedName,
+            ];
+
+            // 2. Cek terhadap database
+            if ($existingMaterials->has($numKey)) {
+                $existing = $existingMaterials->get($numKey);
+                $existingNormName = self::normalizeName($existing->name);
+
+                if ($normalizedName !== $existingNormName) {
+                    // Konflik dengan database: No Material sudah terdaftar tapi nama berbeda
+                    $conflicts[] = [
+                        'row'              => $rIndex,
+                        'material_number'  => $numVal,
+                        'name'             => $nameVal,
+                        'conflicting_name' => $existing->name,
+                        'reason'           => "No. Material '{$numVal}' sudah terdaftar di sistem untuk '{$existing->name}', tetapi pada file tertulis '{$nameVal}'.",
+                    ];
+                } else {
+                    // Duplikat data lama: No Material dan Nama sama persis -> lewati
+                    $duplicates[] = [
+                        'row'             => $rIndex,
+                        'material_number' => $numVal,
+                        'name'            => $nameVal,
+                        'unit'            => $unitVal,
+                        'reason'          => "Material sudah terdaftar di sistem ('{$existing->name}').",
+                    ];
+                }
+                continue;
+            }
+
+            // 3. Data Baru yang Valid
+            $newItems[] = [
+                'row'             => $rIndex,
+                'material_number' => $numVal,
+                'name'            => $nameVal,
+                'unit'            => $unitVal,
+            ];
+        }
+
         return [
-            'no_material' => [
-                'required',
-                'string',
-                'max:50',
-            ],
-
-            'nama_material' => [
-                'required',
-                'string',
-                'max:255',
-            ],
-
-            'tanggal_masuk' => [
-                'required',
-            ],
-
-            'jumlah_item' => [
-                'required',
-                'integer',
-                'min:0',
-            ],
-
-            'satuan' => [
-                'required',
-                'string',
-                'max:50',
-            ],
-
-            'deskripsi' => [
-                'nullable',
-                'string',
-            ],
+            'total_rows'      => count($allDataRows),
+            'new_items'       => $newItems,
+            'duplicates'      => $duplicates,
+            'conflicts'       => $conflicts,
+            'errors'          => $errors,
+            'new_count'       => count($newItems),
+            'duplicate_count' => count($duplicates),
+            'conflict_count'  => count($conflicts),
+            'error_count'     => count($errors),
         ];
     }
 
     /**
-     * Pengecekan aturan bisnis No Material & Normalisasi Nama:
-     * 1. Material yang sama (setelah normalisasi nama & No Material sama) dapat menggunakan No Material yang sama.
-     * 2. Jika No Material dan nama material sama setelah normalisasi, jangan ditolak sebagai duplikat (cegah data ganda saat simpan).
-     * 3. Jika No Material sama tetapi nama material berbeda setelah normalisasi, tampilkan validasi error.
-     */
-    public function withValidator($validator)
-    {
-        $validator->after(function ($validator) {
-            $data = $validator->getData();
-            if (empty($data) || !is_array($data)) {
-                return;
-            }
-
-            // Kumpulkan seluruh No Material dari data file Excel
-            $fileNumbers = [];
-            foreach ($data as $row) {
-                if (!isset($row['no_material']) || trim((string) $row['no_material']) === '') {
-                    continue;
-                }
-                $fileNumbers[] = trim((string) $row['no_material']);
-            }
-
-            // Ambil seluruh material yang sudah terdaftar di database berdasarkan No Material
-            $existingMaterials = [];
-            if (!empty($fileNumbers)) {
-                $dbMaterials = Material::whereIn('material_number', array_unique($fileNumbers))->get();
-                foreach ($dbMaterials as $mat) {
-                    $existingMaterials[strtolower(trim($mat->material_number))] = $mat;
-                }
-            }
-
-            $seenInFile = [];
-
-            foreach ($data as $rowNum => $row) {
-                if (!isset($row['no_material']) || trim((string) $row['no_material']) === '') {
-                    continue;
-                }
-
-                $noMaterialRaw  = trim((string) $row['no_material']);
-                $noMaterialKey  = strtolower($noMaterialRaw);
-                $nameRaw        = isset($row['nama_material']) ? trim((string) $row['nama_material']) : '';
-                $normalizedName = self::normalizeName($nameRaw);
-
-                // 1. Cek terhadap baris sebelumnya di dalam file Excel itu sendiri
-                if (isset($seenInFile[$noMaterialKey])) {
-                    $prev = $seenInFile[$noMaterialKey];
-                    $normalizedPrevName = self::normalizeName($prev['name']);
-
-                    // Jika No Material sama tetapi nama material BERBEDA setelah normalisasi:
-                    if ($normalizedName !== $normalizedPrevName) {
-                        $validator->errors()->add(
-                            "{$rowNum}.no_material",
-                            "No Material '{$noMaterialRaw}' sama dengan Baris {$prev['row']} tetapi memiliki nama material berbeda ('{$nameRaw}' vs '{$prev['name']}'). No Material yang sama tidak boleh digunakan untuk nama material yang berbeda."
-                        );
-                    }
-                    // Jika No Material sama DAN nama material SAMA setelah normalisasi:
-                    // Jangan ditolak sebagai duplikat; biarkan lolos, nanti saat simpan stoknya digabungkan untuk mencegah data ganda.
-                } else {
-                    $seenInFile[$noMaterialKey] = [
-                        'row'    => $rowNum,
-                        'name'   => $nameRaw,
-                        'raw_no' => $noMaterialRaw,
-                    ];
-                }
-
-                // 2. Cek terhadap database
-                if (isset($existingMaterials[$noMaterialKey])) {
-                    $existing = $existingMaterials[$noMaterialKey];
-                    $normalizedDbName = self::normalizeName($existing->name);
-
-                    // Jika No Material sama tetapi nama material BERBEDA setelah normalisasi:
-                    if ($normalizedName !== $normalizedDbName) {
-                        $validator->errors()->add(
-                            "{$rowNum}.no_material",
-                            "No Material '{$noMaterialRaw}' sudah terdaftar di sistem untuk material '{$existing->name}', tetapi pada file Excel tertulis '{$nameRaw}'. No Material yang sama tidak boleh digunakan untuk nama material yang berbeda."
-                        );
-                    }
-                    // Jika No Material sama DAN nama material SAMA setelah normalisasi:
-                    // Jangan ditolak sebagai duplikat; biarkan lolos, nanti saat simpan stoknya ditambahkan ke material yang ada.
-                }
-
-                // 3. Validasi format tanggal masuk
-                if (!empty($row['tanggal_masuk']) && $this->convertDate($row['tanggal_masuk']) === null) {
-                    $validator->errors()->add(
-                        "{$rowNum}.tanggal_masuk",
-                        "Format tanggal tidak dikenali. Gunakan format DD/MM/YYYY (contoh: 01/07/2026)."
-                    );
-                }
-            }
-        });
-    }
-
-    /**
-     * Simpan seluruh data material dan catat riwayat stok secara transaksional.
-     * Mencegah pembuatan data ganda: jika No Material sudah ada, perbarui stoknya.
+     * Pelaksanaan import langsung untuk koleksi baris jika dipanggil via Excel::import.
+     * Mengimpor data baru, melewati duplikat, dan menolak konflik.
+     * Tidak mengubah kuantitas stok atau membuat riwayat stok.
      */
     public function collection(Collection $rows)
     {
-        if ($rows->isEmpty()) {
-            throw new \Exception('Import gagal. File Excel yang diunggah tidak memiliki data. Pastikan file berisi minimal satu baris data.');
-        }
-
-        DB::transaction(function () use ($rows) {
-            foreach ($rows as $row) {
-                // Lewati jika baris kosong
-                if (empty($row['no_material']) && empty($row['nama_material'])) {
-                    continue;
-                }
-
-                $matNumber    = trim((string) $row['no_material']);
-                $matNumberKey = strtolower($matNumber);
-                $quantity     = (int) $row['jumlah_item'];
-                $name         = trim((string) $row['nama_material']);
-                $entryDate    = $this->convertDate($row['tanggal_masuk']);
-                $unit         = $this->normalizeUnit($row['satuan']);
-                $desc         = !empty($row['deskripsi']) ? trim((string) $row['deskripsi']) : null;
-
-                // Cari apakah No Material sudah ada di database (atau sudah dibuat oleh baris sebelumnya)
-                $material = Material::whereRaw('LOWER(TRIM(material_number)) = ?', [$matNumberKey])->first();
-
-                if ($material) {
-                    // Cegah pembuatan data ganda: tambahkan stok ke material yang sudah ada
-                    $qtyBefore = (int) $material->quantity;
-                    $qtyAfter  = $qtyBefore + $quantity;
-
-                    $material->update([
-                        'quantity'   => $qtyAfter,
-                        'entry_date' => $entryDate && $entryDate > $material->entry_date ? $entryDate : $material->entry_date,
-                    ]);
-
-                    $movement = new StockMovement([
-                        'material_id'     => $material->id,
-                        'material_name'   => $material->name,
-                        'material_number' => $material->material_number,
-                        'user_id'         => Auth::id(),
-                        'activity'        => 'Import',
-                        'quantity_before' => $qtyBefore,
-                        'quantity_after'  => $qtyAfter,
-                        'quantity_change' => $quantity,
-                        'description'     => $desc ?: 'Import data via Excel (penambahan stok material)',
-                    ]);
-                    $movement->created_at = $entryDate ? \Carbon\Carbon::parse($entryDate)->setTime(now()->hour, now()->minute, now()->second) : now();
-                    $movement->save();
-                } else {
-                    // Buat data material baru
-                    $material = Material::create([
-                        'material_number' => $matNumber,
-                        'name'            => $name,
-                        'entry_date'      => $entryDate,
-                        'quantity'        => $quantity,
-                        'unit'            => $unit,
-                        'description'     => $desc,
-                        'created_by'      => Auth::id(),
-                    ]);
-
-                    $movement = new StockMovement([
-                        'material_id'     => $material->id,
-                        'material_name'   => $material->name,
-                        'material_number' => $material->material_number,
-                        'user_id'         => Auth::id(),
-                        'activity'        => 'Import',
-                        'quantity_before' => 0,
-                        'quantity_after'  => $quantity,
-                        'quantity_change' => $quantity,
-                        'description'     => $desc ?: 'Import data via Excel',
-                    ]);
-                    $movement->created_at = $entryDate ? \Carbon\Carbon::parse($entryDate)->setTime(now()->hour, now()->minute, now()->second) : now();
-                    $movement->save();
-                }
-            }
+        $existingMaterials = Material::all()->keyBy(function ($m) {
+            return strtolower(trim($m->material_number));
         });
-    }
 
-    /**
-     * Pesan validasi yang ramah pengguna.
-     */
-    public function customValidationMessages(): array
-    {
-        return [
-            'no_material.required'    => 'Kolom No Material tidak boleh kosong.',
-            'no_material.max'         => 'No Material terlalu panjang (maksimal 50 karakter).',
-            'nama_material.required'  => 'Kolom Nama Material tidak boleh kosong.',
-            'nama_material.max'       => 'Nama Material terlalu panjang (maksimal 255 karakter).',
-            'tanggal_masuk.required'  => 'Kolom Tanggal Masuk tidak boleh kosong.',
-            'jumlah_item.required'    => 'Kolom Jumlah Item tidak boleh kosong.',
-            'jumlah_item.integer'     => 'Jumlah Item harus berupa angka bulat (contoh: 10, 25, 100).',
-            'jumlah_item.min'         => 'Jumlah Item tidak boleh bernilai negatif.',
-            'satuan.required'         => 'Kolom Satuan tidak boleh kosong.',
-            'satuan.max'              => 'Satuan terlalu panjang (maksimal 50 karakter).',
-        ];
-    }
+        $seenInFile = [];
+        $toInsert   = [];
 
-    /**
-     * Label kolom yang ditampilkan di pesan error.
-     */
-    public function customValidationAttributes(): array
-    {
-        return [
-            'no_material'   => 'No Material',
-            'nama_material' => 'Nama Material',
-            'tanggal_masuk' => 'Tanggal Masuk',
-            'jumlah_item'   => 'Jumlah Item',
-            'satuan'        => 'Satuan',
-            'deskripsi'     => 'Deskripsi',
-        ];
-    }
+        foreach ($rows as $index => $row) {
+            $num  = trim((string) ($row['no_material'] ?? $row['no_material'] ?? $row['kode_material'] ?? ''));
+            $name = trim((string) ($row['nama_material'] ?? $row['nama'] ?? ''));
+            $unit = trim((string) ($row['satuan'] ?? $row['unit'] ?? ''));
 
-    /**
-     * Normalisasi satuan.
-     */
-    private function normalizeUnit($unit)
-    {
-        $unit = strtolower(trim((string) $unit));
-
-        $units = [
-            'pcs'    => 'Pcs',
-            'pc'     => 'Pcs',
-            'rim'    => 'Rim',
-            'buah'   => 'Buah',
-            'box'    => 'Box',
-            'pack'   => 'Pack',
-            'lusin'  => 'Lusin',
-            'rol'    => 'Rol',
-            'roll'   => 'Rol',
-            'lembar' => 'Lembar',
-            'botol'  => 'Botol',
-            'karton' => 'Karton',
-            'dus'    => 'Dus',
-            'set'    => 'Set',
-            'unit'   => 'Unit',
-        ];
-
-        if (isset($units[$unit])) {
-            return $units[$unit];
-        }
-
-        return ucwords($unit);
-    }
-
-    /**
-     * Konversi tanggal Excel menjadi format database (Y-m-d).
-     */
-    private function convertDate($date)
-    {
-        if (empty($date)) {
-            return null;
-        }
-
-        /*
-        |--------------------------------------------------------------------------
-        | Jika Excel mengirim tanggal sebagai serial number
-        |--------------------------------------------------------------------------
-        */
-        if (is_numeric($date)) {
-            try {
-                return Date::excelToDateTimeObject($date)->format('Y-m-d');
-            } catch (\Exception $e) {
-                return null;
+            if ($num === '' && $name === '' && $unit === '') {
+                continue;
             }
+
+            if ($num === '' || $name === '' || $unit === '') {
+                continue;
+            }
+
+            $numKey  = strtolower($num);
+            $normName = self::normalizeName($name);
+
+            // Cek konflik di file
+            if (isset($seenInFile[$numKey])) {
+                if ($seenInFile[$numKey] !== $normName) {
+                    throw new \Exception("Konflik data: No. Material '{$num}' digunakan untuk nama material yang berbeda.");
+                }
+                $this->skippedCount++;
+                continue;
+            }
+            $seenInFile[$numKey] = $normName;
+
+            // Cek di database
+            if ($existingMaterials->has($numKey)) {
+                $dbMat = $existingMaterials->get($numKey);
+                if (self::normalizeName($dbMat->name) !== $normName) {
+                    throw new \Exception("Konflik data: No. Material '{$num}' sudah terdaftar untuk '{$dbMat->name}', tetapi di file tertulis '{$name}'.");
+                }
+                // Duplikat yang sama persis: lewati
+                $this->skippedCount++;
+                continue;
+            }
+
+            $toInsert[] = [
+                'material_number' => $num,
+                'name'            => $name,
+                'unit'            => $unit,
+                'entry_date'      => now()->toDateString(),
+                'quantity'        => 0,
+                'is_active'       => true,
+                'created_by'      => Auth::id(),
+                'created_at'      => now(),
+                'updated_at'      => now(),
+            ];
         }
 
-        $date = trim((string) $date);
-
-        // Format DD/MM/YYYY
-        $dateObject = \DateTime::createFromFormat('d/m/Y', $date);
-        if ($dateObject && $dateObject->format('d/m/Y') === $date) {
-            return $dateObject->format('Y-m-d');
+        if (!empty($toInsert)) {
+            DB::transaction(function () use ($toInsert) {
+                Material::insert($toInsert);
+            });
+            $this->importedCount = count($toInsert);
         }
+    }
 
-        // Format MM/DD/YYYY
-        $dateObject = \DateTime::createFromFormat('m/d/Y', $date);
-        if ($dateObject && $dateObject->format('m/d/Y') === $date) {
-            return $dateObject->format('Y-m-d');
-        }
+    public function getImportedCount(): int
+    {
+        return $this->importedCount;
+    }
 
-        // Format DD-MM-YYYY
-        $dateObject = \DateTime::createFromFormat('d-m-Y', $date);
-        if ($dateObject && $dateObject->format('d-m-Y') === $date) {
-            return $dateObject->format('Y-m-d');
-        }
-
-        // Format YYYY-MM-DD
-        $dateObject = \DateTime::createFromFormat('Y-m-d', $date);
-        if ($dateObject && $dateObject->format('Y-m-d') === $date) {
-            return $dateObject->format('Y-m-d');
-        }
-
-        // Fallback strtotime
-        $ts = strtotime($date);
-        if ($ts !== false) {
-            return date('Y-m-d', $ts);
-        }
-
-        return null;
+    public function getSkippedCount(): int
+    {
+        return $this->skippedCount;
     }
 }

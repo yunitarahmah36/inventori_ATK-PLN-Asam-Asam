@@ -5,15 +5,13 @@
     <meta charset="UTF-8">
     <meta name="viewport"
         content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-
-    <title>Import Excel - Inventori ATK PT PLN Indonesia Power UBP Asam Asam</title>
-
+    <title>Import Data Material - Inventori ATK PT PLN Indonesia Power UBP Asam Asam</title>
     <link rel="icon" type="image/png" href="{{ asset('images/pln_bulat.png') }}">
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
-
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
         rel="stylesheet">
 
     <style id="page-style">
@@ -30,15 +28,22 @@
             --blue-dark: #003B73;
             --blue-light: #EAF3FF;
             --yellow: #FFC107;
+            --yellow-light: #FFF8E1;
             --bg: #F5F7FA;
             --white: #FFFFFF;
             --text-dark: #1F2937;
+            --text-mid: #374151;
             --text-muted: #6B7280;
             --border: #E5E7EB;
+            --red: #DC2626;
+            --red-light: #FEF2F2;
+            --green: #10B981;
+            --green-light: #ECFDF5;
             --sidebar-w: 260px;
             --header-h: 68px;
             --radius: 12px;
             --shadow: 0 2px 12px rgba(0, 0, 0, 0.07);
+            --transition: 0.2s ease;
         }
 
         html,
@@ -114,138 +119,6 @@
             margin-bottom: 0;
         }
 
-        .page-content {
-            padding: 24px 28px 80px;
-            flex: 1;
-            max-width: 800px;
-            margin: 0 auto;
-            width: 100%;
-        }
-
-        .btn-back {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 13px;
-            font-weight: 600;
-            color: var(--text-muted);
-            margin-bottom: 16px;
-        }
-
-        .btn-back:hover {
-            color: var(--blue);
-        }
-
-        .card {
-            background: var(--white);
-            border-radius: var(--radius);
-            border: 1px solid var(--border);
-            box-shadow: var(--shadow);
-            padding: 36px;
-            text-align: center;
-        }
-
-        .icon-circle {
-            width: 72px;
-            height: 72px;
-            border-radius: 50%;
-            background: var(--blue-light);
-            color: var(--blue);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 18px;
-        }
-
-        .icon-circle .material-symbols-outlined {
-            font-size: 36px;
-        }
-
-        .card h2 {
-            font-size: 20px;
-            font-weight: 800;
-            color: var(--blue-dark);
-            margin-bottom: 8px;
-        }
-
-        .card > p {
-            font-size: 13.5px;
-            color: var(--text-muted);
-            max-width: 500px;
-            margin: 0 auto 24px;
-            line-height: 1.6;
-        }
-
-        .upload-box {
-            border: 2px dashed #CBD5E1;
-            border-radius: 12px;
-            padding: 40px 20px;
-            background: #FAFBFD;
-            margin-bottom: 24px;
-        }
-
-        .upload-box p {
-            margin-bottom: 12px;
-            font-size: 13px;
-            color: var(--text-muted);
-        }
-
-        .file-name {
-            margin-top: 14px;
-            font-size: 13px;
-            color: var(--blue-dark);
-            font-weight: 600;
-            display: none;
-        }
-
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            padding: 10px 20px;
-            border-radius: 8px;
-            font-size: 13.5px;
-            font-weight: 600;
-            cursor: pointer;
-            border: none;
-            transition: 0.2s;
-        }
-
-        .btn-primary {
-            background: var(--blue);
-            color: #fff;
-        }
-
-        .btn-primary:hover {
-            background: var(--blue-dark);
-        }
-
-        .btn-outline {
-            background: var(--white);
-            color: var(--text-dark);
-            border: 1px solid var(--border);
-        }
-
-        .btn-outline:hover {
-            border-color: var(--blue);
-            color: var(--blue);
-        }
-
-        .btn-success {
-            background: #198754;
-            color: #fff;
-        }
-
-        .btn-success:hover {
-            background: #157347;
-        }
-
-        .btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
         .topbar-user {
             display: flex;
             align-items: center;
@@ -309,42 +182,263 @@
             text-transform: uppercase;
         }
 
-        .alert {
-            padding: 12px 16px;
-            border-radius: 8px;
-            margin-bottom: 18px;
-            text-align: left;
+        .page-content {
+            padding: 28px;
+            flex: 1;
+            max-width: 900px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .btn-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
             font-size: 13px;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 16px;
+            transition: var(--transition);
+        }
+
+        .btn-back:hover {
+            color: var(--blue);
+            transform: translateX(-2px);
+        }
+
+        .card {
+            background: var(--white);
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+            padding: 32px;
+        }
+
+        .upload-icon-circle {
+            width: 68px;
+            height: 68px;
+            border-radius: 50%;
+            background: var(--blue-light);
+            color: var(--blue);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+        }
+
+        .upload-box {
+            border: 2px dashed #CBD5E1;
+            border-radius: 12px;
+            padding: 36px 20px;
+            background: #FAFBFD;
+            text-align: center;
+            margin-bottom: 24px;
+            transition: var(--transition);
+        }
+
+        .upload-box:hover {
+            border-color: var(--blue);
+            background: #F0F7FF;
+        }
+
+        .file-name {
+            margin-top: 14px;
+            font-size: 13px;
+            color: var(--blue-dark);
+            font-weight: 600;
+            display: none;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 13.5px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: var(--transition);
+        }
+
+        .btn-primary {
+            background: var(--blue);
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            background: var(--blue-dark);
+        }
+
+        .btn-outline {
+            background: var(--white);
+            color: var(--text-dark);
+            border: 1px solid var(--border);
+        }
+
+        .btn-outline:hover {
+            border-color: var(--blue);
+            color: var(--blue);
+        }
+
+        .btn-success {
+            background: #198754;
+            color: #fff;
+        }
+
+        .btn-success:hover {
+            background: #157347;
+        }
+
+        .btn-danger {
+            background: var(--red);
+            color: #fff;
+        }
+
+        .btn-danger:hover {
+            background: #B91C1C;
+        }
+
+        /* STATS GRID */
+        .preview-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: #fff;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .stat-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .stat-icon.green {
+            background: var(--green-light);
+            color: var(--green);
+        }
+
+        .stat-icon.yellow {
+            background: var(--yellow-light);
+            color: #D97706;
+        }
+
+        .stat-icon.red {
+            background: var(--red-light);
+            color: var(--red);
+        }
+
+        .stat-number {
+            font-size: 24px;
+            font-weight: 800;
+            line-height: 1.1;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 2px;
+            font-weight: 600;
+        }
+
+        .alert {
+            padding: 14px 18px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            line-height: 1.6;
         }
 
         .alert-success {
-            background: #ECFDF3;
-            color: #166534;
-            border: 1px solid #BBF7D0;
+            background: #ECFDF5;
+            color: #065F46;
+            border: 1px solid #A7F3D0;
+        }
+
+        .alert-warning {
+            background: #FFFBEB;
+            color: #92400E;
+            border: 1px solid #FDE68A;
         }
 
         .alert-danger {
-            background: #FEF2F2;
+            background: var(--red-light);
             color: #991B1B;
             border: 1px solid #FECACA;
         }
 
-        .error-list {
-            margin: 6px 0 0 18px;
+        .alert-info {
+            background: var(--blue-light);
+            color: var(--blue-dark);
+            border: 1px solid #BFDBFE;
         }
 
-        .info-box {
-            margin-top: 20px;
-            padding: 14px 16px;
-            background: var(--blue-light);
-            border-radius: 8px;
+        .preview-table-box {
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 24px;
+        }
+
+        .preview-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        .preview-table thead tr {
+            background: #F8FAFC;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .preview-table th {
+            padding: 12px 16px;
+            font-weight: 700;
+            color: var(--blue-dark);
             text-align: left;
             font-size: 12px;
+        }
+
+        .preview-table td {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-dark);
+        }
+
+        .preview-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .badge-num {
+            display: inline-block;
+            font-family: monospace;
+            font-weight: 700;
+            padding: 2px 6px;
+            background: #EFF6FF;
             color: var(--blue-dark);
-            line-height: 1.7;
+            border-radius: 4px;
         }
 
         @media (max-width: 768px) {
+            .main {
+                margin-left: 0;
+            }
 
             .btn-hamburger {
                 display: flex;
@@ -354,52 +448,11 @@
                 padding: 0 16px;
             }
 
-            .topbar-left h1 {
-                font-size: 17px;
-            }
-
-            .topbar-user-detail {
-                display: none;
-            }
-
-            .main {
-                margin-left: 0;
-            }
-
             .page-content {
                 padding: 16px;
             }
-
-            .card {
-                padding: 24px 18px;
-            }
-
-            .action-buttons {
-                flex-direction: column;
-            }
-
-            .action-buttons .btn {
-                width: 100%;
-            }
         }
     </style>
-    <script>
-    document.documentElement.classList.add('page-loading');
-
-    window.addEventListener('load', function () {
-        document.documentElement.classList.remove('page-loading');
-    });
-</script>
-
-<style>
-    html.page-loading body {
-        visibility: hidden;
-    }
-
-    html:not(.page-loading) body {
-        visibility: visible;
-    }
-</style>
 </head>
 
 <body>
@@ -413,79 +466,37 @@
 
         <!-- TOPBAR -->
         <header class="topbar">
-
             <div style="display:flex;align-items:center;gap:14px;">
-
-                <button
-                    class="btn-hamburger"
-                    onclick="openSidebar()"
-                    aria-label="Buka Menu"
-                >
-                    <span class="material-symbols-outlined">
-                        menu
-                    </span>
+                <button class="btn-hamburger" onclick="openSidebar()" aria-label="Buka Menu">
+                    <span class="material-symbols-outlined">menu</span>
                 </button>
-
                 <div class="topbar-left">
-
-                    <h1>
-                        Import Data Material
-                    </h1>
-
-                    <p>
-                        Inventori ATK PT PLN Indonesia Power UBP Asam Asam
-                    </p>
-
+                    <h1>Import Data Material</h1>
+                    <p>Pendaftaran master data material ATK PT PLN Indonesia Power UBP Asam Asam</p>
                 </div>
-
             </div>
 
             <div class="topbar-user">
-
                 <div class="topbar-user-detail">
-
-                    <div class="topbar-user-name">
-                        {{ Auth::user()->name }}
-                    </div>
-
-                    <div class="topbar-user-email">
-                        {{ Auth::user()->email }}
-                    </div>
-
-                    <span class="badge-role">
-                        {{ Auth::user()->role }}
-                    </span>
-
+                    <div class="topbar-user-name">{{ Auth::user()->name }}</div>
+                    <div class="topbar-user-email">{{ Auth::user()->email }}</div>
+                    <span class="badge-role">{{ Auth::user()->role }}</span>
                 </div>
-
                 <div class="topbar-avatar">
                     {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
                 </div>
-
             </div>
-
         </header>
-
 
         <!-- CONTENT -->
         <div class="page-content">
 
-            <a
-                href="{{ route('materials.index') }}"
-                class="btn-back"
-            >
-                <span
-                    class="material-symbols-outlined"
-                    style="font-size:18px;"
-                >
-                    arrow_back
-                </span>
-
+            <a href="{{ route('materials.index') }}" class="btn-back">
+                <span class="material-symbols-outlined" style="font-size:18px;">arrow_back</span>
                 Kembali ke Data Material
             </a>
 
-
-            <!-- SUCCESS -->
+            <!-- NOTIFIKASI UMUM -->
             @if(session('success'))
                 <div class="alert alert-success" style="display:flex;align-items:center;gap:10px;">
                     <span class="material-symbols-outlined" style="font-size:20px;flex-shrink:0;">check_circle</span>
@@ -493,277 +504,285 @@
                 </div>
             @endif
 
+            @if(session('info'))
+                <div class="alert alert-info" style="display:flex;align-items:center;gap:10px;">
+                    <span class="material-symbols-outlined" style="font-size:20px;flex-shrink:0;">info</span>
+                    <span>{{ session('info') }}</span>
+                </div>
+            @endif
 
-            <!-- ERROR UMUM (file rusak, kolom salah, dll) -->
             @if(session('error'))
-                <div class="alert alert-danger">
-                    <div style="display:flex;align-items:flex-start;gap:10px;">
-                        <span class="material-symbols-outlined" style="font-size:22px;flex-shrink:0;margin-top:1px;">error</span>
-                        <div>
-                            <div style="font-weight:700;font-size:14px;margin-bottom:4px;">Import Tidak Berhasil</div>
-                            <div style="line-height:1.6;">{{ session('error') }}</div>
-                            <div style="margin-top:10px;font-size:12px;color:#7F1D1D;">
-                                💡 <strong>Saran:</strong> Download template di bawah agar format file sudah pasti benar.
-                            </div>
-                        </div>
+                <div class="alert alert-danger" style="display:flex;align-items:flex-start;gap:10px;">
+                    <span class="material-symbols-outlined" style="font-size:22px;flex-shrink:0;margin-top:1px;">error</span>
+                    <div>
+                        <div style="font-weight:700;font-size:14px;margin-bottom:2px;">Import Tidak Berhasil</div>
+                        <div>{{ session('error') }}</div>
                     </div>
                 </div>
             @endif
 
+            @if($errors->any())
+                <div class="alert alert-danger" style="display:flex;align-items:flex-start;gap:10px;">
+                    <span class="material-symbols-outlined" style="font-size:22px;flex-shrink:0;margin-top:1px;">upload_file</span>
+                    <div>
+                        <div style="font-weight:700;font-size:14px;margin-bottom:4px;">File Tidak Dapat Diproses</div>
+                        @foreach($errors->all() as $err)
+                            <div>{{ $err }}</div>
+                        @endforeach
+                    </div>
+                </div>
+            @endif
 
-            <!-- ERROR VALIDASI PER BARIS (dari Excel) -->
-            @if(session('import_errors'))
-                @php $importErrors = session('import_errors'); @endphp
-                <div class="alert alert-danger">
-                    <div style="display:flex;align-items:flex-start;gap:10px;">
-                        <span class="material-symbols-outlined" style="font-size:22px;flex-shrink:0;margin-top:1px;">table_rows</span>
-                        <div style="flex:1;min-width:0;">
-                            <div style="font-weight:700;font-size:14px;margin-bottom:4px;">
-                                Import Gagal — Ditemukan {{ count($importErrors) }} masalah pada data
+            @if(isset($preview) && is_array($preview))
+                {{-- ============================================================
+                     BAGIAN 2: PRATINJAU HASIL ANALISIS EXCEL SEBELUM KONFIRMASI
+                ============================================================ --}}
+                <div class="card">
+                    <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;border-bottom:1px solid var(--border);padding-bottom:16px;">
+                        <span class="material-symbols-outlined" style="font-size:28px;color:var(--blue);">analytics</span>
+                        <div>
+                            <h2 style="font-size:18px;font-weight:800;color:var(--blue-dark);">Pratinjau Data Import Material</h2>
+                            <p style="font-size:13px;color:var(--text-muted);">Periksa ringkasan data sebelum mengonfirmasi penyimpanan ke data master material.</p>
+                        </div>
+                    </div>
+
+                    <!-- RINGKASAN STATISTIK -->
+                    <div class="preview-stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon green">
+                                <span class="material-symbols-outlined">add_circle</span>
                             </div>
-                            <div style="font-size:13px;margin-bottom:10px;line-height:1.5;">
-                                Beberapa baris di file Excel tidak sesuai format. Perbaiki data berikut lalu coba import ulang.
+                            <div>
+                                <div class="stat-number" style="color:var(--green);">{{ $preview['new_count'] }}</div>
+                                <div class="stat-label">Data Baru (Siap Diimpor)</div>
                             </div>
-                            <ul style="margin:0 0 0 4px;padding:0;list-style:none;display:flex;flex-direction:column;gap:5px;">
-                                @foreach($importErrors as $err)
-                                    <li style="display:flex;align-items:flex-start;gap:7px;font-size:12.5px;padding:6px 10px;background:rgba(185,28,28,0.07);border-radius:6px;">
-                                        <span class="material-symbols-outlined" style="font-size:15px;flex-shrink:0;margin-top:1px;color:#B91C1C;">warning</span>
-                                        <span>{{ $err }}</span>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-icon yellow">
+                                <span class="material-symbols-outlined">history</span>
+                            </div>
+                            <div>
+                                <div class="stat-number" style="color:#D97706;">{{ $preview['duplicate_count'] }}</div>
+                                <div class="stat-label">Duplikat (Sudah Terdaftar)</div>
+                            </div>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-icon red">
+                                <span class="material-symbols-outlined">warning</span>
+                            </div>
+                            <div>
+                                <div class="stat-number" style="color:var(--red);">{{ $preview['conflict_count'] }}</div>
+                                <div class="stat-label">Konflik Data (Ditolak)</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- PEMBERITAHUAN JIKA SEMUA DATA SUDAH TERDAFTAR -->
+                    @if($preview['new_count'] === 0 && $preview['duplicate_count'] > 0 && $preview['conflict_count'] === 0)
+                        <div class="alert alert-info" style="display:flex;align-items:flex-start;gap:10px;">
+                            <span class="material-symbols-outlined" style="font-size:22px;flex-shrink:0;">info</span>
+                            <div>
+                                <div style="font-weight:700;font-size:14px;margin-bottom:2px;">Tidak Ada Data Baru</div>
+                                <div>Seluruh {{ $preview['duplicate_count'] }} data material dalam file Excel sudah terdaftar di sistem. Tidak ada data baru yang perlu diimpor.</div>
+                            </div>
+                        </div>
+                    @endif
+
+                    <!-- RINCIAN KONFLIK DATA (JIKA ADA) -->
+                    @if(!empty($preview['conflicts']))
+                        <div class="alert alert-danger" style="margin-bottom:20px;">
+                            <div style="display:flex;align-items:center;gap:8px;font-weight:700;margin-bottom:8px;">
+                                <span class="material-symbols-outlined" style="font-size:20px;">error</span>
+                                <span>Ditemukan {{ count($preview['conflicts']) }} Konflik No. Material (Tidak Dapat Diimpor):</span>
+                            </div>
+                            <ul style="margin:0 0 0 20px;padding:0;">
+                                @foreach($preview['conflicts'] as $c)
+                                    <li style="margin-bottom:6px;font-size:12.5px;">
+                                        Baris {{ $c['row'] }}: <strong>{{ $c['material_number'] }}</strong> &mdash; {{ $c['reason'] }}
                                     </li>
                                 @endforeach
                             </ul>
-                            <div style="margin-top:12px;font-size:12px;color:#7F1D1D;">
-                                💡 <strong>Saran:</strong> Nomor baris di atas sudah termasuk baris header (baris 1). Jadi "Baris 2" berarti data pertama di file Excel Anda.
+                            <div style="font-size:12px;margin-top:8px;color:#7F1D1D;">
+                                💡 <em>Satu No. Material hanya boleh digunakan untuk satu nama material. Harap periksa file Excel Anda.</em>
                             </div>
                         </div>
-                    </div>
-                </div>
-            @endif
+                    @endif
 
-
-            <!-- ERROR VALIDASI FILE (misal: bukan xlsx/xls) -->
-            @if($errors->any())
-                <div class="alert alert-danger">
-                    <div style="display:flex;align-items:flex-start;gap:10px;">
-                        <span class="material-symbols-outlined" style="font-size:22px;flex-shrink:0;margin-top:1px;">upload_file</span>
-                        <div>
-                            <div style="font-weight:700;font-size:14px;margin-bottom:6px;">File Tidak Dapat Diproses</div>
-                            @foreach($errors->all() as $error)
-                                <div style="line-height:1.6;">{{ $error }}</div>
-                            @endforeach
-                        </div>
-                    </div>
-                </div>
-            @endif
-
-
-            <div class="card">
-
-                <div class="icon-circle">
-
-                    <span class="material-symbols-outlined">
-                        upload_file
-                    </span>
-
-                </div>
-
-
-                <h2>
-                    Import Data Material via Excel
-                </h2>
-
-
-                <p>
-                    Upload file Excel untuk menambahkan data material
-                    secara massal ke dalam sistem Inventori ATK PT PLN Indonesia Power UBP Asam Asam.
-                </p>
-
-
-                <!-- FORM IMPORT -->
-                <form
-                    action="{{ route('materials.import') }}"
-                    method="POST"
-                    enctype="multipart/form-data"
-                    id="importForm"
-                >
-
-                    @csrf
-
-
-                    <div class="upload-box">
-
-                        <span
-                            class="material-symbols-outlined"
-                            style="font-size:42px;color:#94A3B8;margin-bottom:8px;"
-                        >
-                            cloud_upload
-                        </span>
-
-
-                        <p>
-
-                            Format kolom:
-
-                            <strong>
-                                No Material, Nama Material,
-                                Tanggal Masuk, Jumlah Item,
-                                Satuan, Deskripsi
-                            </strong>
-
-                        </p>
-
-
-                        <!-- FILE INPUT -->
-                        <input
-                            type="file"
-                            id="file"
-                            name="file"
-                            accept=".xlsx,.xls"
-                            style="display:none;"
-                            required
-                            onchange="showFileName(this)"
-                        >
-
-
-                        <!-- PILIH FILE -->
-                        <button
-                            type="button"
-                            class="btn btn-outline"
-                            onclick="document.getElementById('file').click()"
-                        >
-
-                            <span
-                                class="material-symbols-outlined"
-                                style="font-size:18px;"
-                            >
-                                folder_open
-                            </span>
-
-                            Pilih File Excel
-
-                        </button>
-
-
-                        <!-- NAMA FILE -->
-                        <div
-                            id="fileName"
-                            class="file-name"
-                        >
+                    <!-- TABEL PRATINJAU DATA BARU YANG AKAN DIIMPOR -->
+                    @if($preview['new_count'] > 0)
+                        <div style="margin-bottom:12px;">
+                            <h3 style="font-size:15px;font-weight:700;color:var(--text-dark);">Daftar Material Baru yang Akan Diimpor ({{ $preview['new_count'] }} Material):</h3>
                         </div>
 
+                        <div class="preview-table-box">
+                            <table class="preview-table">
+                                <thead>
+                                    <tr>
+                                        <th style="width:50px;">No</th>
+                                        <th style="width:160px;">No. Material</th>
+                                        <th>Nama Material</th>
+                                        <th style="width:120px;">Satuan</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($preview['new_items'] as $idx => $item)
+                                        <tr>
+                                            <td>{{ $idx + 1 }}</td>
+                                            <td><span class="badge-num">{{ $item['material_number'] }}</span></td>
+                                            <td style="font-weight:600;">{{ $item['name'] }}</td>
+                                            <td>{{ $item['unit'] }}</td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- AKSI KONFIRMASI -->
+                        <div style="display:flex;align-items:center;justify-content:flex-end;gap:12px;flex-wrap:wrap;">
+                            <form action="{{ route('materials.import.cancel') }}" method="POST">
+                                @csrf
+                                <button type="submit" class="btn btn-outline">
+                                    Batal / Upload File Lain
+                                </button>
+                            </form>
+
+                            <form action="{{ route('materials.import.confirm') }}" method="POST">
+                                @csrf
+                                <button type="submit" class="btn btn-primary">
+                                    <span class="material-symbols-outlined" style="font-size:18px;">check_circle</span>
+                                    Konfirmasi & Simpan {{ $preview['new_count'] }} Material Baru
+                                </button>
+                            </form>
+                        </div>
+                    @else
+                        <!-- AKSI JIKA TIDAK ADA DATA BARU -->
+                        <div style="display:flex;align-items:center;justify-content:flex-end;gap:12px;margin-top:16px;">
+                            <form action="{{ route('materials.import.cancel') }}" method="POST">
+                                @csrf
+                                <button type="submit" class="btn btn-outline">
+                                    Upload File Lain
+                                </button>
+                            </form>
+
+                            <a href="{{ route('materials.index') }}" class="btn btn-primary">
+                                Kembali ke Data Material
+                            </a>
+                        </div>
+                    @endif
+                </div>
+
+            @else
+                {{-- ============================================================
+                     BAGIAN 1: FORM UPLOAD FILE EXCEL BARU (3 KOLOM)
+                ============================================================ --}}
+                <div class="card" style="text-align:center;">
+                    <div class="upload-icon-circle">
+                        <span class="material-symbols-outlined" style="font-size:36px;">upload_file</span>
                     </div>
 
+                    <h2 style="font-size:20px;font-weight:800;color:var(--blue-dark);margin-bottom:8px;">
+                        Import Master Data Material via Excel
+                    </h2>
 
-                    <!-- BUTTON -->
-                    <div
-                        class="action-buttons"
-                        style="display:flex;justify-content:center;gap:12px;flex-wrap:wrap;"
-                    >
+                    <p style="font-size:13.5px;color:var(--text-muted);max-width:540px;margin:0 auto 24px;line-height:1.6;">
+                        Unggah file Excel untuk mendaftarkan data master material baru ke sistem. Sistem akan menampilkan pratinjau sebelum data disimpan.
+                    </p>
 
-                        <!-- IMPORT -->
-                        <button
-                            type="submit"
-                            class="btn btn-primary"
-                            id="importButton"
-                            disabled
-                        >
+                    <!-- FORM IMPORT -->
+                    <form action="{{ route('materials.import') }}" method="POST" enctype="multipart/form-data" id="importForm">
+                        @csrf
 
-                            <span
-                                class="material-symbols-outlined"
-                                style="font-size:18px;"
-                            >
-                                upload
+                        <div class="upload-box">
+                            <span class="material-symbols-outlined" style="font-size:42px;color:#94A3B8;margin-bottom:10px;">
+                                cloud_upload
                             </span>
 
-                            Import Excel
+                            <p style="font-size:13.5px;color:var(--text-dark);margin-bottom:6px;font-weight:600;">
+                                Format Kolom Template Baru:
+                            </p>
 
-                        </button>
+                            <div style="display:inline-flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;justify-content:center;">
+                                <span style="background:#EFF6FF;color:var(--blue-dark);font-size:12px;font-weight:700;padding:4px 10px;border-radius:6px;border:1px solid #DBEAFE;">1. No. Material</span>
+                                <span style="background:#EFF6FF;color:var(--blue-dark);font-size:12px;font-weight:700;padding:4px 10px;border-radius:6px;border:1px solid #DBEAFE;">2. Nama Material</span>
+                                <span style="background:#EFF6FF;color:var(--blue-dark);font-size:12px;font-weight:700;padding:4px 10px;border-radius:6px;border:1px solid #DBEAFE;">3. Satuan</span>
+                            </div>
 
+                            <p style="font-size:12px;color:var(--text-muted);margin-bottom:16px;">
+                                Tidak ada kolom stok atau tanggal masuk. Hanya data master identitas barang.
+                            </p>
 
-                        <!-- TEMPLATE -->
-                        <a
-                            href="{{ route('materials.import.template') }}"
-                            class="btn btn-success"
-                        >
+                            <!-- FILE INPUT -->
+                            <input type="file" id="file" name="file" accept=".xlsx,.xls" style="display:none;" required onchange="showFileName(this)">
 
-                            <span
-                                class="material-symbols-outlined"
-                                style="font-size:18px;"
-                            >
-                                download
-                            </span>
+                            <!-- TOMBOL PILIH FILE -->
+                            <div>
+                                <button type="button" class="btn btn-outline" onclick="document.getElementById('file').click()">
+                                    <span class="material-symbols-outlined" style="font-size:18px;">folder_open</span>
+                                    Pilih File Excel (.xlsx / .xls)
+                                </button>
+                            </div>
 
-                            Download Template Excel
+                            <!-- NAMA FILE PILIHAN -->
+                            <div id="fileName" class="file-name"></div>
+                        </div>
 
-                        </a>
+                        <!-- ACTION BUTTONS -->
+                        <div style="display:flex;justify-content:center;gap:12px;flex-wrap:wrap;">
+                            <button type="submit" class="btn btn-primary" id="importButton" disabled>
+                                <span class="material-symbols-outlined" style="font-size:18px;">preview</span>
+                                Unggah & Periksa Pratinjau
+                            </button>
 
+                            <a href="{{ route('materials.import.template') }}" class="btn btn-success">
+                                <span class="material-symbols-outlined" style="font-size:18px;">download</span>
+                                Download Template Baru (3 Kolom)
+                            </a>
 
-                        <!-- KEMBALI -->
-                        <a
-                            href="{{ route('materials.index') }}"
-                            class="btn btn-outline"
-                        >
-
-                            Kembali
-
-                        </a>
-
-                    </div>
-
-                </form>
-
-            </div>
+                            <a href="{{ route('materials.index') }}" class="btn btn-outline">
+                                Batal
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            @endif
 
         </div>
 
         <script>
+            function showFileName(input) {
+                const fileNameEl    = document.getElementById('fileName');
+                const importBtn     = document.getElementById('importButton');
 
-    function showFileName(input) {
+                if (input.files && input.files.length > 0) {
+                    const file = input.files[0];
+                    fileNameEl.style.display = 'block';
+                    fileNameEl.innerHTML     = 'File dipilih: <strong>' + file.name + '</strong> (' + (file.size / 1024).toFixed(1) + ' KB)';
+                    if (importBtn) importBtn.disabled = false;
+                } else {
+                    fileNameEl.style.display = 'none';
+                    fileNameEl.innerHTML     = '';
+                    if (importBtn) importBtn.disabled = true;
+                }
+            }
 
-        const fileName = document.getElementById('fileName');
-        const importButton = document.getElementById('importButton');
+            const importForm = document.getElementById('importForm');
+            if (importForm) {
+                importForm.addEventListener('submit', function () {
+                    const btn = document.getElementById('importButton');
+                    if (btn) {
+                        btn.disabled = true;
+                        btn.innerHTML = '<span class="material-symbols-outlined" style="font-size:18px;">hourglass_top</span> Memeriksa File...';
+                    }
+                });
+            }
 
-        if (input.files && input.files.length > 0) {
-
-            const file = input.files[0];
-
-            fileName.style.display = 'block';
-
-            fileName.innerHTML =
-                'File dipilih: <strong>' +
-                file.name +
-                '</strong>';
-
-            importButton.disabled = false;
-
-        } else {
-
-            fileName.style.display = 'none';
-
-            fileName.innerHTML = '';
-
-            importButton.disabled = true;
-        }
-    }
-
-
-    document
-        .getElementById('importForm')
-        .addEventListener('submit', function () {
-
-            const button =
-                document.getElementById('importButton');
-
-            button.disabled = true;
-
-            button.innerHTML =
-                '<span class="material-symbols-outlined" style="font-size:18px;">progress_activity</span>' +
-                ' Sedang Mengimport...';
-
-        });
-
-</script>
-
+            function openSidebar() {
+                const sidebar = document.getElementById('sidebar');
+                if (sidebar) sidebar.classList.add('open');
+            }
+        </script>
 
     </main>
 

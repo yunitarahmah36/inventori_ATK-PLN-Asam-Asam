@@ -3,361 +3,113 @@
 namespace App\Exports;
 
 use Maatwebsite\Excel\Concerns\FromArray;
+use Maatwebsite\Excel\Concerns\WithColumnWidths;
 use Maatwebsite\Excel\Concerns\WithEvents;
+use Maatwebsite\Excel\Concerns\WithStyles;
 use Maatwebsite\Excel\Events\AfterSheet;
-use PhpOffice\PhpSpreadsheet\Cell\DataValidation;
-use PhpOffice\PhpSpreadsheet\Shared\Date;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class MaterialsTemplateExport implements FromArray, WithEvents
+class MaterialsTemplateExport implements FromArray, WithStyles, WithColumnWidths, WithEvents
 {
     /**
-     * Data awal template Excel
+     * Data template master material: hanya 3 kolom (No. Material, Nama Material, Satuan)
      */
     public function array(): array
     {
         return [
             [
-                'No Material',
+                'No. Material',
                 'Nama Material',
-                'Tanggal Masuk',
-                'Jumlah Item',
                 'Satuan',
-                'Deskripsi',
             ],
-
             [
                 'MAT001',
-                'Contoh Kertas A4',
-                Date::PHPToExcel(new \DateTime('2026-10-07')),
-                10,
+                'Kertas HVS A4 70gr',
                 'Rim',
-                'Contoh data - silakan ubah atau hapus',
+            ],
+            [
+                'MAT002',
+                'Pulpen Standard Hitam',
+                'Pcs',
+            ],
+            [
+                'MAT003',
+                'Spidol Boardmarker Hitam',
+                'Pcs',
             ],
         ];
     }
 
     /**
-     * Pengaturan tampilan Excel
+     * Pengaturan lebar kolom
+     */
+    public function columnWidths(): array
+    {
+        return [
+            'A' => 20, // No. Material
+            'B' => 45, // Nama Material
+            'C' => 18, // Satuan
+        ];
+    }
+
+    /**
+     * Styling baris & kolom
+     */
+    public function styles(Worksheet $sheet)
+    {
+        return [
+            1 => [
+                'font' => [
+                    'bold'  => true,
+                    'color' => ['rgb' => 'FFFFFF'],
+                    'size'  => 11,
+                ],
+                'fill' => [
+                    'fillType'   => Fill::FILL_SOLID,
+                    'startColor' => ['rgb' => '0057B8'], // PLN Blue
+                ],
+                'alignment' => [
+                    'horizontal' => Alignment::HORIZONTAL_CENTER,
+                    'vertical'   => Alignment::VERTICAL_CENTER,
+                ],
+            ],
+        ];
+    }
+
+    /**
+     * Pengaturan tampilan border dan perataan isi tabel
      */
     public function registerEvents(): array
     {
         return [
             AfterSheet::class => function (AfterSheet $event) {
-
                 $sheet = $event->sheet->getDelegate();
 
-                /*
-                |--------------------------------------------------------------------------
-                | KETERANGAN KOLOM TANGGAL
-                |--------------------------------------------------------------------------
-                */
+                // Tinggi baris header
+                $sheet->getRowDimension(1)->setRowHeight(30);
 
-                $sheet->getComment('C1')
-                    ->getText()
-                    ->createTextRun(
-                        'Format tanggal wajib: MM/DD/YYYY (contoh: 12/20/2026)'
-                    );
+                // Perataan kolom data
+                $sheet->getStyle('A2:A4')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+                $sheet->getStyle('B2:B4')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
+                $sheet->getStyle('C2:C4')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
-
-                /*
-                |--------------------------------------------------------------------------
-                | STYLE HEADER
-                |--------------------------------------------------------------------------
-                */
-
-                $sheet->getStyle('A1:F1')->applyFromArray([
-                    'font' => [
-                        'bold' => true,
-                        'size' => 11,
-                        'color' => [
-                            'rgb' => 'FFFFFF',
-                        ],
-                    ],
-
-                    'fill' => [
-                        'fillType' => Fill::FILL_SOLID,
-                        'startColor' => [
-                            'rgb' => '4472C4',
-                        ],
-                    ],
-
-                    'alignment' => [
-                        'horizontal' => Alignment::HORIZONTAL_CENTER,
-                        'vertical' => Alignment::VERTICAL_CENTER,
-                        'wrapText' => true,
-                    ],
-
+                // Border seluruh tabel contoh
+                $sheet->getStyle('A1:C4')->applyFromArray([
                     'borders' => [
                         'allBorders' => [
                             'borderStyle' => Border::BORDER_THIN,
-                            'color' => [
-                                'rgb' => 'B4C7E7',
-                            ],
+                            'color'       => ['rgb' => 'CBD5E1'],
                         ],
                     ],
                 ]);
 
-
-                /*
-                |--------------------------------------------------------------------------
-                | BORDER DATA
-                |--------------------------------------------------------------------------
-                */
-
-                $sheet->getStyle('A2:F104')->applyFromArray([
-                    'borders' => [
-                        'allBorders' => [
-                            'borderStyle' => Border::BORDER_THIN,
-                            'color' => [
-                                'rgb' => 'D9E2F3',
-                            ],
-                        ],
-                    ],
-
-                    'alignment' => [
-                        'vertical' => Alignment::VERTICAL_CENTER,
-                    ],
-                ]);
-
-
-                /*
-                |--------------------------------------------------------------------------
-                | FORMAT TANGGAL
-                |--------------------------------------------------------------------------
-                |
-                | Excel akan menampilkan tanggal sebagai:
-                | DD/MM/YYYY
-                |
-                */
-
-                $sheet->getStyle('C2:C104')
+                // Pastikan format kolom No. Material adalah Text agar tidak diubah excel jadi angka
+                $sheet->getStyle('A2:A1000')
                     ->getNumberFormat()
-                    ->setFormatCode('dd/mm/yyyy');
-
-
-                /*
-                |--------------------------------------------------------------------------
-                | VALIDASI TANGGAL
-                |--------------------------------------------------------------------------
-                */
-
-                for ($row = 2; $row <= 104; $row++) {
-
-                    $dateValidation = new DataValidation();
-
-                    $dateValidation->setType(
-                        DataValidation::TYPE_DATE
-                    );
-
-                    $dateValidation->setOperator(
-                        DataValidation::OPERATOR_BETWEEN
-                    );
-
-                    $dateValidation->setFormula1(
-                        'DATE(2000,1,1)'
-                    );
-
-                    $dateValidation->setFormula2(
-                        'DATE(2100,12,31)'
-                    );
-
-                    $dateValidation->setAllowBlank(true);
-
-                    $dateValidation->setShowInputMessage(true);
-
-                    $dateValidation->setShowErrorMessage(true);
-
-                    $dateValidation->setErrorTitle(
-                        'Tanggal tidak valid'
-                    );
-
-                    $dateValidation->setError(
-                        'Masukkan tanggal dengan format MM/DD/YYYY. Contoh: 12/20/2026'
-                    );
-
-                    $dateValidation->setPromptTitle(
-                        'Tanggal Masuk'
-                    );
-
-                    $dateValidation->setPrompt(
-                        'Masukkan tanggal dengan format MM/DD/YYYY. Contoh: 12/20/2026'
-                    );
-
-                    $sheet
-                        ->getCell('C' . $row)
-                        ->setDataValidation($dateValidation);
-                }
-
-
-                /*
-                |--------------------------------------------------------------------------
-                | FORMAT JUMLAH ITEM
-                |--------------------------------------------------------------------------
-                */
-
-                $sheet->getStyle('D2:D104')
-                    ->getNumberFormat()
-                    ->setFormatCode('0');
-
-
-                /*
-                |--------------------------------------------------------------------------
-                | VALIDASI JUMLAH ITEM
-                |--------------------------------------------------------------------------
-                */
-
-                for ($row = 2; $row <= 104; $row++) {
-
-                    $quantityValidation = new DataValidation();
-
-                    $quantityValidation->setType(
-                        DataValidation::TYPE_WHOLE
-                    );
-
-                    $quantityValidation->setOperator(
-                        DataValidation::OPERATOR_GREATERTHANOREQUAL
-                    );
-
-                    $quantityValidation->setFormula1('0');
-
-                    $quantityValidation->setAllowBlank(true);
-
-                    $quantityValidation->setShowInputMessage(true);
-
-                    $quantityValidation->setShowErrorMessage(true);
-
-                    $quantityValidation->setErrorTitle(
-                        'Jumlah tidak valid'
-                    );
-
-                    $quantityValidation->setError(
-                        'Jumlah Item harus berupa angka 0 atau lebih.'
-                    );
-
-                    $quantityValidation->setPromptTitle(
-                        'Jumlah Item'
-                    );
-
-                    $quantityValidation->setPrompt(
-                        'Masukkan jumlah item dalam angka.'
-                    );
-
-                    $sheet
-                        ->getCell('D' . $row)
-                        ->setDataValidation($quantityValidation);
-                }
-
-
-                /*
-                |--------------------------------------------------------------------------
-                | ALIGNMENT
-                |--------------------------------------------------------------------------
-                */
-
-                $sheet
-                    ->getStyle('A1:A104')
-                    ->getAlignment()
-                    ->setHorizontal(
-                        Alignment::HORIZONTAL_CENTER
-                    );
-
-                $sheet
-                    ->getStyle('C1:C104')
-                    ->getAlignment()
-                    ->setHorizontal(
-                        Alignment::HORIZONTAL_CENTER
-                    );
-
-                $sheet
-                    ->getStyle('D1:D104')
-                    ->getAlignment()
-                    ->setHorizontal(
-                        Alignment::HORIZONTAL_CENTER
-                    );
-
-                $sheet
-                    ->getStyle('E1:E104')
-                    ->getAlignment()
-                    ->setHorizontal(
-                        Alignment::HORIZONTAL_CENTER
-                    );
-
-
-                /*
-                |--------------------------------------------------------------------------
-                | FREEZE HEADER
-                |--------------------------------------------------------------------------
-                */
-
-                $sheet->freezePane('A2');
-
-
-                /*
-                |--------------------------------------------------------------------------
-                | TIDAK MENGGUNAKAN FILTER
-                |--------------------------------------------------------------------------
-                */
-
-
-                /*
-                |--------------------------------------------------------------------------
-                | LEBAR KOLOM
-                |--------------------------------------------------------------------------
-                */
-
-                $sheet
-                    ->getColumnDimension('A')
-                    ->setWidth(18);
-
-                $sheet
-                    ->getColumnDimension('B')
-                    ->setWidth(30);
-
-                $sheet
-                    ->getColumnDimension('C')
-                    ->setWidth(20);
-
-                $sheet
-                    ->getColumnDimension('D')
-                    ->setWidth(17);
-
-                $sheet
-                    ->getColumnDimension('E')
-                    ->setWidth(18);
-
-                $sheet
-                    ->getColumnDimension('F')
-                    ->setWidth(45);
-
-
-                /*
-                |--------------------------------------------------------------------------
-                | TINGGI BARIS
-                |--------------------------------------------------------------------------
-                */
-
-                $sheet
-                    ->getRowDimension(1)
-                    ->setRowHeight(30);
-
-                $sheet
-                    ->getRowDimension(2)
-                    ->setRowHeight(25);
-
-
-                /*
-                |--------------------------------------------------------------------------
-                | WRAP TEXT
-                |--------------------------------------------------------------------------
-                */
-
-                $sheet
-                    ->getStyle('A1:F104')
-                    ->getAlignment()
-                    ->setWrapText(true);
+                    ->setFormatCode('@');
             },
         ];
     }

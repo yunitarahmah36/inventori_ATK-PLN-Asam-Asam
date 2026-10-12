@@ -16,160 +16,47 @@ use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 class MaterialsExport implements FromCollection, WithStyles, WithColumnWidths, WithEvents
 {
     protected $search;
-    protected $startDate;
-    protected $endDate;
-    protected $perPage;
-    protected $page;
-    protected $filterStock;
 
-    public function __construct(
-        $search = null,
-        $startDate = null,
-        $endDate = null,
-        $perPage = null,
-        $page = null,
-        $filterStock = null
-    ) {
+    public function __construct($search = null)
+    {
         $this->search = $search;
-        $this->startDate = $startDate;
-        $this->endDate = $endDate;
-        $this->perPage = $perPage;
-        $this->page = $page;
-        $this->filterStock = $filterStock;
     }
 
     /**
-     * Data yang akan diekspor
+     * Kumpulan data yang akan diekspor: hanya data master material (No. Material, Nama Material, Satuan)
      */
     public function collection()
     {
         $query = Material::query();
 
-        // Filter pencarian
         if (!empty($this->search)) {
             $query->where(function ($q) {
-                $q->where(
-                    'material_number',
-                    'like',
-                    "%{$this->search}%"
-                )->orWhere(
-                    'name',
-                    'like',
-                    "%{$this->search}%"
-                );
+                $q->where('material_number', 'like', "%{$this->search}%")
+                  ->orWhere('name', 'like', "%{$this->search}%");
             });
         }
 
-        // Filter tanggal mulai
-        if (!empty($this->startDate)) {
-            $query->whereDate(
-                'entry_date',
-                '>=',
-                $this->startDate
-            );
-        }
-
-        // Filter tanggal akhir
-        if (!empty($this->endDate)) {
-            $query->whereDate(
-                'entry_date',
-                '<=',
-                $this->endDate
-            );
-        }
-
-        // Filter stok menipis (<= 15 unit)
-        if ($this->filterStock === 'low') {
-            $query->where('quantity', '<=', 15);
-            $query->orderBy('quantity', 'asc')->orderBy('entry_date', 'asc');
-        } else {
-            $query->latest('entry_date')->latest('id');
-        }
-
-        $startNumber = 1;
-
-        if ($this->perPage === 'all' || $this->perPage === 'Semua') {
-            $materials = $query->get();
-        } else {
-            $perPageValue = in_array((int) $this->perPage, [10, 25, 50, 100, 250])
-                ? (int) $this->perPage
-                : 25;
-            $pageValue = max((int) ($this->page ?? 1), 1);
-
-            $materials = $query->forPage($pageValue, $perPageValue)->get();
-            $startNumber = (($pageValue - 1) * $perPageValue) + 1;
-        }
+        $materials = $query->orderBy('material_number', 'asc')->get();
 
         $data = collect();
 
-        // =========================
-        // JUDUL
-        // =========================
-
+        // 1. JUDUL
         $data->push([
-            'DATA MATERIAL',
-            '',
-            '',
-            '',
+            'DATA MASTER MATERIAL ATK',
             '',
             '',
             '',
         ]);
 
-        // =========================
-        // PERIODE
-        // =========================
-
-        if ($this->startDate && $this->endDate) {
-
-            if ($this->startDate === $this->endDate) {
-
-                $periode = 'Tanggal: ' .
-                    date(
-                        'd/m/Y',
-                        strtotime($this->startDate)
-                    );
-
-            } else {
-
-                $periode = 'Periode: ' .
-                    date(
-                        'd/m/Y',
-                        strtotime($this->startDate)
-                    ) .
-                    ' s.d. ' .
-                    date(
-                        'd/m/Y',
-                        strtotime($this->endDate)
-                    );
-            }
-
-        } elseif ($this->startDate) {
-
-            $periode = 'Mulai tanggal: ' .
-                date(
-                    'd/m/Y',
-                    strtotime($this->startDate)
-                );
-
-        } elseif ($this->endDate) {
-
-            $periode = 'Sampai tanggal: ' .
-                date(
-                    'd/m/Y',
-                    strtotime($this->endDate)
-                );
-
-        } else {
-
-            $periode = 'Seluruh Data Material';
-        }
+        $data->push([
+            'PT PLN INDONESIA POWER UBP ASAM ASAM',
+            '',
+            '',
+            '',
+        ]);
 
         $data->push([
-            $periode,
-            '',
-            '',
-            '',
+            'Tanggal Unduh: ' . date('d/m/Y H:i') . ' WITA',
             '',
             '',
             '',
@@ -181,248 +68,123 @@ class MaterialsExport implements FromCollection, WithStyles, WithColumnWidths, W
             '',
             '',
             '',
-            '',
-            '',
-            '',
         ]);
 
-        // =========================
-        // HEADER TABEL
-        // =========================
-
+        // 2. HEADER TABEL (Hanya 4 kolom: No, No. Material, Nama Material, Satuan)
         $data->push([
             'No',
-            'No Material',
+            'No. Material',
             'Nama Material',
-            'Tanggal Masuk',
-            'Jumlah Item',
             'Satuan',
-            'Deskripsi',
         ]);
 
-        // =========================
-        // DATA MATERIAL
-        // =========================
-
+        // 3. BARIS DATA
         foreach ($materials as $index => $mat) {
-
             $data->push([
-                $startNumber + $index,
+                $index + 1,
                 $mat->material_number,
                 $mat->name,
-                $mat->entry_date
-                    ? $mat->entry_date->format('d/m/Y')
-                    : '-',
-                $mat->quantity,
                 $mat->unit,
-                $mat->description ?? '-',
             ]);
         }
 
         return $data;
     }
 
-    /**
-     * Styling dasar
-     */
+    public function columnWidths(): array
+    {
+        return [
+            'A' => 8,  // No
+            'B' => 20, // No. Material
+            'C' => 45, // Nama Material
+            'D' => 16, // Satuan
+        ];
+    }
+
     public function styles(Worksheet $sheet)
     {
-        // =========================
-        // JUDUL
-        // =========================
+        // Judul Utama
+        $sheet->mergeCells('A1:D1');
+        $sheet->mergeCells('A2:D2');
+        $sheet->mergeCells('A3:D3');
 
-        $sheet->mergeCells('A1:G1');
-
-        $sheet->getStyle('A1:G1')->applyFromArray([
+        $sheet->getStyle('A1')->applyFromArray([
             'font' => [
-                'bold' => true,
-                'size' => 16,
+                'bold'  => true,
+                'size'  => 14,
+                'color' => ['rgb' => '003B73'],
             ],
             'alignment' => [
                 'horizontal' => Alignment::HORIZONTAL_CENTER,
-                'vertical' => Alignment::VERTICAL_CENTER,
             ],
         ]);
 
-        // =========================
-        // PERIODE
-        // =========================
-
-        $sheet->mergeCells('A2:G2');
-
-        $sheet->getStyle('A2:G2')->applyFromArray([
+        $sheet->getStyle('A2')->applyFromArray([
             'font' => [
-                'bold' => true,
-                'size' => 11,
+                'bold'  => true,
+                'size'  => 11,
+                'color' => ['rgb' => '0057B8'],
             ],
             'alignment' => [
                 'horizontal' => Alignment::HORIZONTAL_CENTER,
-                'vertical' => Alignment::VERTICAL_CENTER,
             ],
         ]);
 
-        // =========================
-        // HEADER TABEL
-        // =========================
-
-        $sheet->getStyle('A4:G4')->applyFromArray([
+        $sheet->getStyle('A3')->applyFromArray([
             'font' => [
-                'bold' => true,
-                'color' => [
-                    'rgb' => 'FFFFFF',
-                ],
+                'italic' => true,
+                'size'   => 9,
+                'color'  => ['rgb' => '64748B'],
+            ],
+            'alignment' => [
+                'horizontal' => Alignment::HORIZONTAL_CENTER,
+            ],
+        ]);
+
+        // Header Tabel di baris 5
+        $sheet->getStyle('A5:D5')->applyFromArray([
+            'font' => [
+                'bold'  => true,
+                'color' => ['rgb' => 'FFFFFF'],
+                'size'  => 10.5,
             ],
             'fill' => [
-                'fillType' => Fill::FILL_SOLID,
-                'startColor' => [
-                    'rgb' => '4472C4',
-                ],
+                'fillType'   => Fill::FILL_SOLID,
+                'startColor' => ['rgb' => '0057B8'],
             ],
             'alignment' => [
                 'horizontal' => Alignment::HORIZONTAL_CENTER,
-                'vertical' => Alignment::VERTICAL_CENTER,
-            ],
-            'borders' => [
-                'allBorders' => [
-                    'borderStyle' => Border::BORDER_THIN,
-                    'color' => [
-                        'rgb' => '808080',
-                    ],
-                ],
+                'vertical'   => Alignment::VERTICAL_CENTER,
             ],
         ]);
 
         return [];
     }
 
-    /**
-     * Lebar kolom
-     */
-    public function columnWidths(): array
-    {
-        return [
-            'A' => 7,
-            'B' => 18,
-            'C' => 30,
-            'D' => 18,
-            'E' => 15,
-            'F' => 15,
-            'G' => 40,
-        ];
-    }
-
-    /**
-     * Event setelah sheet dibuat
-     */
     public function registerEvents(): array
     {
         return [
             AfterSheet::class => function (AfterSheet $event) {
-
                 $sheet = $event->sheet->getDelegate();
-
                 $highestRow = $sheet->getHighestRow();
 
-                // =========================
-                // TINGGI BARIS
-                // =========================
+                $sheet->getRowDimension(5)->setRowHeight(26);
 
-                $sheet->getRowDimension(1)
-                    ->setRowHeight(30);
+                if ($highestRow >= 6) {
+                    $sheet->getStyle("A6:A{$highestRow}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+                    $sheet->getStyle("B6:B{$highestRow}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+                    $sheet->getStyle("C6:C{$highestRow}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
+                    $sheet->getStyle("D6:D{$highestRow}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
-                $sheet->getRowDimension(2)
-                    ->setRowHeight(22);
-
-                $sheet->getRowDimension(4)
-                    ->setRowHeight(25);
-
-                // =========================
-                // BORDER TABEL
-                // =========================
-
-                if ($highestRow >= 4) {
-
-                    $sheet
-                        ->getStyle("A4:G{$highestRow}")
-                        ->applyFromArray([
-                            'borders' => [
-                                'allBorders' => [
-                                    'borderStyle' =>
-                                        Border::BORDER_THIN,
-                                    'color' => [
-                                        'rgb' => 'BFBFBF',
-                                    ],
-                                ],
+                    // Border Tabel
+                    $sheet->getStyle("A5:D{$highestRow}")->applyFromArray([
+                        'borders' => [
+                            'allBorders' => [
+                                'borderStyle' => Border::BORDER_THIN,
+                                'color'       => ['rgb' => 'CBD5E1'],
                             ],
-                        ]);
-                }
-
-                // =========================
-                // ALIGNMENT
-                // =========================
-
-                if ($highestRow >= 5) {
-
-                    // Nomor
-                    $sheet
-                        ->getStyle("A5:A{$highestRow}")
-                        ->getAlignment()
-                        ->setHorizontal(
-                            Alignment::HORIZONTAL_CENTER
-                        );
-
-                    // Tanggal, jumlah, satuan
-                    $sheet
-                        ->getStyle("D5:F{$highestRow}")
-                        ->getAlignment()
-                        ->setHorizontal(
-                            Alignment::HORIZONTAL_CENTER
-                        );
-
-                    // Deskripsi
-                    $sheet
-                        ->getStyle("G5:G{$highestRow}")
-                        ->getAlignment()
-                        ->setWrapText(true);
-                }
-
-                // =========================
-                // FREEZE HEADER
-                // =========================
-
-                $sheet->freezePane('A5');
-
-                // =========================
-                // FILTER EXCEL
-                // =========================
-
-                if ($highestRow >= 4) {
-                    $sheet->setAutoFilter(
-                        "A4:G{$highestRow}"
-                    );
-                }
-
-                // =========================
-                // WARNA SELANG-SELING
-                // =========================
-
-                for ($row = 5; $row <= $highestRow; $row++) {
-
-                    if ($row % 2 === 0) {
-
-                        $sheet
-                            ->getStyle("A{$row}:G{$row}")
-                            ->getFill()
-                            ->setFillType(
-                                Fill::FILL_SOLID
-                            );
-
-                        $sheet
-                            ->getStyle("A{$row}:G{$row}")
-                            ->getFill()
-                            ->getStartColor()
-                            ->setRGB('F2F6FC');
-                    }
+                        ],
+                    ]);
                 }
             },
         ];
