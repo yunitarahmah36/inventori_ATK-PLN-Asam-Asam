@@ -43,12 +43,35 @@
             padding: 0;
         }
 
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: var(--bg);
-            color: var(--text-dark);
-            min-height: 100vh;
+        
+html,
+body {
+    height: 100%;
+    font-family: 'Inter', Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text-dark);
+    overflow-x: hidden;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+    width: 5px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #CBD5E1;
+    border-radius: 10px;
+}
+
+
+        .layout {
             display: flex;
+            min-height: 100vh;
+            width: 100%;
         }
 
         .main {
@@ -163,10 +186,15 @@
         }
 
         /* Page Content */
-        .page-content {
-            padding: 24px 28px 80px;
-            flex: 1;
-        }
+        
+.page-content {
+    flex: 1;
+    width: 100%;
+    max-width: none;
+    padding: 24px 28px 100px;
+    box-sizing: border-box;
+}
+
 
         /* Alerts */
         .alert {
@@ -911,6 +939,12 @@
             .btn-hamburger {
                 display: flex;
             }
+            .topbar {
+                padding: 0 16px;
+            }
+            .topbar-user-detail {
+                display: none;
+            }
             .page-content {
                 padding: 16px 14px 60px;
             }
@@ -918,17 +952,26 @@
                 flex-direction: column;
                 align-items: flex-start;
             }
+            .header-actions {
+                width: 100%;
+            }
+            .header-actions .btn {
+                flex: 1;
+                justify-content: center;
+            }
         }
     </style>
 </head>
 
 <body>
 
-    {{-- Sidebar Komponen Terpusat --}}
-    @include('partials.sidebar')
+    <div class="layout">
 
-    {{-- Main Content --}}
-    <main class="main">
+        {{-- Sidebar Komponen Terpusat --}}
+        @include('partials.sidebar')
+
+        {{-- Main Content --}}
+        <main class="main">
 
         {{-- Topbar --}}
         <header class="topbar">
@@ -1732,6 +1775,7 @@
 
     </main>
 
+    </div>
 
 </body>
 

@@ -49,13 +49,29 @@
             --transition: 0.2s ease;
         }
 
-        html,
-        body {
-            height: 100%;
-            font-family: 'Inter', Arial, sans-serif;
-            background: var(--bg);
-            color: var(--text-dark);
-        }
+        
+html,
+body {
+    height: 100%;
+    font-family: 'Inter', Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text-dark);
+    overflow-x: hidden;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+    width: 5px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #CBD5E1;
+    border-radius: 10px;
+}
 
         a {
             text-decoration: none;
@@ -199,10 +215,15 @@
             text-transform: uppercase;
         }
 
-        .page-content {
-            padding: 28px;
-            flex: 1;
-        }
+        
+.page-content {
+    flex: 1;
+    width: 100%;
+    max-width: none;
+    padding: 24px 28px 100px;
+    box-sizing: border-box;
+}
+
 
         /* ALERTS */
         .alert {

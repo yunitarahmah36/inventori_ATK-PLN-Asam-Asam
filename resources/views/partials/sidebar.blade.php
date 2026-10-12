@@ -210,6 +210,13 @@
         scrollbar-gutter: stable;
     }
 
+    /* Layout Wrapper Global */
+    .layout {
+        display: flex;
+        min-height: 100vh;
+        width: 100%;
+    }
+
     /* Transisi Halus Area Main (Sidebar tetap diam 100%) */
     .main {
         transition: opacity 0.08s ease;
@@ -789,6 +796,16 @@
 
     /* Responsif Mobile (Max 768px) */
     @media (max-width: 768px) {
+        .layout {
+            display: block;
+            width: 100%;
+        }
+
+        .main {
+            margin-left: 0 !important;
+            width: 100% !important;
+        }
+
         .sidebar {
             width: min(280px, 86vw) !important;
             transform: translate3d(-100%, 0, 0) !important;
