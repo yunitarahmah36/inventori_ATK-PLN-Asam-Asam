@@ -18,7 +18,8 @@
         }
 
         body {
-            background: linear-gradient(135deg, #e0f2fe 0%, #fef9c3 100%);
+            /* Background gradasi putih bersih ke blush petal lembut */
+            background: linear-gradient(135deg, #FFFFFF 0%, #FAF0F3 45%, #F7C8D3 100%);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -31,12 +32,13 @@
             width: 100%;
             max-width: 420px;
             padding: 40px 35px;
-            border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0, 95, 184, 0.15);
+            border-radius: 14px;
+            border: 1px solid #F2E0E4;
+            box-shadow: 0 16px 40px rgba(180, 106, 114, 0.12);
             text-align: center;
             position: relative;
             overflow: hidden;
-            border-top: 5px solid #facc15;
+            border-top: 5px solid #B46A72; /* Aksen Rosewood di atas */
         }
 
         .logo-container {
@@ -50,15 +52,29 @@
 
         h2 {
             font-size: 22px;
-            color: #005fb8;
-            font-weight: 700;
+            color: #3D2227; /* Deep Rosewood - kontras tinggi & nyaman */
+            font-weight: 800;
             margin-bottom: 8px;
         }
 
         .subtitle {
             font-size: 13px;
-            color: #6b7280;
+            color: #7E5B62;
             margin-bottom: 30px;
+            position: relative;
+            display: inline-block;
+        }
+
+        /* Aksen Blush Petal di bawah subtitle */
+        .subtitle::after {
+            content: '';
+            display: block;
+            width: 40px;
+            height: 3px;
+            background-color: #F7C8D3;
+            border: 1px solid #EAAAB9;
+            margin: 8px auto 0;
+            border-radius: 2px;
         }
 
         .form-group {
@@ -69,8 +85,8 @@
         .form-group label {
             display: block;
             font-size: 13px;
-            font-weight: 600;
-            color: #005fb8;
+            font-weight: 700;
+            color: #3D2227;
             margin-bottom: 8px;
         }
 
@@ -83,25 +99,25 @@
         .input-wrapper input {
             width: 100%;
             padding: 12px 45px 12px 12px; /* ruang kanan untuk tombol mata */
-            background-color: #f8fafc;
-            border: 2px solid #e2e8f0;
+            background-color: #FFFFFF;
+            border: 2px solid #EDD4DA;
             border-radius: 8px;
             font-size: 14px;
-            color: #1f2937;
+            color: #3D2227;
             outline: none;
             transition: all 0.3s;
         }
 
         .input-wrapper input:focus {
-            border-color: #facc15;
+            border-color: #B46A72;
             background-color: #ffffff;
-            box-shadow: 0 0 0 4px rgba(250, 204, 21, 0.2);
+            box-shadow: 0 0 0 4px rgba(247, 200, 211, 0.45);
         }
 
         /* Validasi konfirmasi password */
         .input-wrapper input.match {
-            border-color: #16a34a;
-            background-color: #f0fdf4;
+            border-color: #059669;
+            background-color: #F0FDF4;
         }
 
         .input-wrapper input.mismatch {
@@ -122,17 +138,17 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #94a3b8;
+            color: #B46A72;
             transition: color 0.2s;
             border-radius: 4px;
         }
 
         .toggle-password:hover {
-            color: #005fb8;
+            color: #8E474F;
         }
 
         .toggle-password:focus-visible {
-            outline: 2px solid #facc15;
+            outline: 2px solid #F7C8D3;
             outline-offset: 2px;
         }
 
@@ -154,7 +170,7 @@
 
         .strength-bar {
             height: 4px;
-            background-color: #e2e8f0;
+            background-color: #F2E0E4;
             border-radius: 2px;
             overflow: hidden;
             margin-bottom: 6px;
@@ -170,14 +186,14 @@
         .strength-text {
             font-size: 11px;
             font-weight: 600;
-            color: #6b7280;
+            color: #7E5B62;
         }
 
         .btn-submit {
             width: 100%;
-            background-color: #005fb8;
+            background: linear-gradient(135deg, #B46A72 0%, #9C545C 100%);
             color: #ffffff;
-            border: 2px solid #005fb8;
+            border: 2px solid #8E474F;
             padding: 14px;
             border-radius: 8px;
             font-size: 15px;
@@ -185,14 +201,15 @@
             cursor: pointer;
             transition: all 0.3s ease;
             margin-top: 5px;
+            box-shadow: 0 4px 14px rgba(180, 106, 114, 0.3);
         }
 
         .btn-submit:hover {
-            background-color: #facc15;
-            border-color: #facc15;
-            color: #005fb8;
+            background: linear-gradient(135deg, #F7C8D3 0%, #F5BCC9 100%);
+            border-color: #E6A8B5;
+            color: #3D2227;
             transform: translateY(-2px);
-            box-shadow: 0 6px 15px rgba(250, 204, 21, 0.4);
+            box-shadow: 0 6px 18px rgba(180, 106, 114, 0.25);
         }
 
         .btn-submit:active {
@@ -202,16 +219,16 @@
         .back-login {
             display: inline-block;
             margin-top: 20px;
-            color: #005fb8;
+            color: #B46A72;
             text-decoration: none;
             font-size: 13px;
-            font-weight: 600;
+            font-weight: 700;
             transition: color 0.2s;
         }
 
         .back-login:hover {
             text-decoration: underline;
-            color: #facc15;
+            color: #8E474F;
         }
 
         .alert-error {
@@ -245,8 +262,8 @@
             height: 120px;
             background: radial-gradient(
                 circle,
-                rgba(250, 204, 21, 0.2) 0%,
-                rgba(250, 204, 21, 0) 70%
+                rgba(247, 200, 211, 0.35) 0%,
+                rgba(247, 200, 211, 0) 70%
             );
             border-radius: 50%;
             pointer-events: none;
@@ -255,9 +272,11 @@
         .footer-text {
             margin-top: 30px;
             padding-top: 15px;
-            border-top: 2px dashed #e2e8f0;
+            border-top: 2px dashed #F2E0E4;
             font-size: 12px;
-            color: #005fb8;
+            color: #7E5B62;
+            font-weight: 600;
+        }
             font-weight: 500;
         }
 

@@ -28,7 +28,7 @@
 
         .header {
             width: 100%;
-            border-bottom: 3px solid #0057B8;
+            border-bottom: 3px solid #B46A72;
             padding-bottom: 12px;
             margin-bottom: 15px;
         }
@@ -52,20 +52,20 @@
         .title {
             font-size: 20px;
             font-weight: bold;
-            color: #003B73;
+            color: #3D2227;
             margin-bottom: 4px;
         }
 
         .subtitle {
             font-size: 10px;
-            color: #6B7280;
+            color: #7E5B62;
         }
 
         .document-label {
             display: inline-block;
-            background: #EAF3FF;
-            color: #0057B8;
-            border: 1px solid #BBD7F5;
+            background: #FDF0F3;
+            color: #B46A72;
+            border: 1px solid #F7C8D3;
             padding: 6px 10px;
             border-radius: 6px;
             font-size: 8px;
@@ -90,26 +90,26 @@
         }
 
         .summary-box {
-            border: 1px solid #E5E7EB;
-            background: #F8FAFC;
+            border: 1px solid #F2E0E4;
+            background: #FAF4F6;
             padding: 9px 11px;
             border-radius: 7px;
         }
 
         .summary-label {
-            color: #6B7280;
+            color: #7E5B62;
             font-size: 7.5px;
             margin-bottom: 3px;
         }
 
         .summary-value {
-            color: #003B73;
+            color: #3D2227;
             font-size: 11px;
             font-weight: bold;
         }
 
         .summary-date {
-            color: #374151;
+            color: #4D2C32;
             font-size: 8px;
         }
 
@@ -125,25 +125,25 @@
         }
 
         .data-table thead th {
-            background: #0057B8;
+            background: #B46A72;
             color: #FFFFFF;
             padding: 8px 5px;
             text-align: center;
             font-size: 7.8px;
             font-weight: bold;
-            border: 1px solid #0057B8;
+            border: 1px solid #9C545C;
         }
 
         .data-table tbody td {
             padding: 7px 5px;
-            border-bottom: 1px solid #E5E7EB;
+            border-bottom: 1px solid #F2E0E4;
             vertical-align: middle;
             font-size: 7.8px;
             word-wrap: break-word;
         }
 
         .data-table tbody tr:nth-child(even) {
-            background: #F8FAFC;
+            background: #FAF4F6;
         }
 
         .data-table tbody tr:nth-child(odd) {

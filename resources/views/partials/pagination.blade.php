@@ -12,7 +12,7 @@
         .pagination-list {
             display: inline-flex !important;
             align-items: center !important;
-            gap: 4px !important;
+            gap: 5px !important;
             list-style: none !important;
             margin: 0 !important;
             padding: 0 !important;
@@ -30,6 +30,39 @@
         }
         .pagination-list .page-link {
             font-family: inherit !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            min-width: 34px !important;
+            height: 34px !important;
+            padding: 0 10px !important;
+            border-radius: 8px !important;
+            font-size: 13px !important;
+            font-weight: 600 !important;
+            color: #5C3D43 !important;
+            background: #FFFFFF !important;
+            border: 1px solid #F2E0E4 !important;
+            text-decoration: none !important;
+            transition: all 0.15s ease !important;
+        }
+        .pagination-list .page-link:hover:not(.disabled):not(.active) {
+            background: #FDF2F4 !important;
+            border-color: #F7C8D3 !important;
+            color: #B46A72 !important;
+        }
+        .pagination-list .page-item.active .page-link,
+        .pagination-list .page-link.active {
+            background: linear-gradient(135deg, #B46A72 0%, #9C545C 100%) !important;
+            border-color: #8E474F !important;
+            color: #FFFFFF !important;
+            box-shadow: 0 2px 6px rgba(180, 106, 114, 0.3) !important;
+        }
+        .pagination-list .page-link.disabled {
+            opacity: 0.5 !important;
+            cursor: not-allowed !important;
+            background: #FAFAFA !important;
+            border-color: #F2E0E4 !important;
+            color: #9C7981 !important;
         }
     </style>
     <nav class="pagination-nav" role="navigation" aria-label="Navigasi Halaman">

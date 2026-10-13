@@ -29,21 +29,21 @@
         }
 
         :root {
-            --blue: #0057B8;
-            --blue-dark: #003B73;
-            --blue-light: #EAF3FF;
-            --yellow: #FFC107;
-            --yellow-light: #FFF8E1;
-            --bg: #F5F7FA;
+            --blue: #B46A72;
+            --blue-dark: #3D2227;
+            --blue-light: #FDF2F4;
+            --yellow: #F7C8D3;
+            --yellow-light: #FFF5F7;
+            --bg: #FCF9FA;
             --white: #FFFFFF;
-            --text-dark: #1F2937;
-            --text-mid: #374151;
-            --text-muted: #6B7280;
-            --border: #E5E7EB;
+            --text-dark: #3D2227;
+            --text-mid: #4D2C32;
+            --text-muted: #7E5B62;
+            --border: #F2E0E4;
             --sidebar-w: 260px;
             --header-h: 68px;
             --radius: 12px;
-            --shadow: 0 2px 12px rgba(0, 0, 0, 0.07);
+            --shadow: 0 2px 12px rgba(180, 106, 114, 0.06);
             --transition: 0.2s ease;
         }
 
@@ -219,8 +219,9 @@
             margin-top: 2px;
             padding: 2px 8px;
             border-radius: 20px;
-            background: var(--yellow-light);
-            color: var(--blue-dark);
+            background: #FDF2F4;
+            color: #B46A72;
+            border: 1px solid #F7C8D3;
             font-size: 10px;
             font-weight: 700;
             letter-spacing: 0.04em;
@@ -250,19 +251,21 @@
 
 
         /* ============================================================
-           WELCOME CARD
+           WELCOME CARD (Dominan Putih/Blush dengan Aksen Rosewood)
         ============================================================ */
         .welcome-card {
-            background: linear-gradient(135deg, var(--blue) 0%, var(--blue-dark) 100%);
+            background: linear-gradient(135deg, #FFF0F3 0%, #FDE2E7 50%, #F7C8D3 100%);
             border-radius: var(--radius);
             padding: 24px 28px;
-            color: #fff;
+            color: #3D2227;
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 22px;
             position: relative;
             overflow: hidden;
+            border: 1px solid #F2CCD4;
+            box-shadow: 0 8px 24px rgba(180, 106, 114, 0.12);
         }
 
         .welcome-card::before {
@@ -273,7 +276,7 @@
             width: 200px;
             height: 200px;
             border-radius: 50%;
-            background: rgba(255, 255, 255, 0.06);
+            background: rgba(255, 255, 255, 0.5);
         }
 
         .welcome-card::after {
@@ -284,7 +287,7 @@
             width: 140px;
             height: 140px;
             border-radius: 50%;
-            background: rgba(255, 255, 255, 0.04);
+            background: rgba(255, 255, 255, 0.35);
         }
 
         .welcome-left {
@@ -297,16 +300,17 @@
             align-items: center;
             gap: 6px;
             padding: 4px 12px;
-            background: rgba(255, 255, 255, 0.15);
+            background: rgba(180, 106, 114, 0.12);
             border-radius: 20px;
             font-size: 11.5px;
-            font-weight: 500;
-            color: rgba(255, 255, 255, 0.9);
+            font-weight: 600;
+            color: #3D2227;
             margin-bottom: 12px;
         }
 
         .welcome-date-badge .material-symbols-outlined {
             font-size: 14px;
+            color: #B46A72;
         }
 
         .welcome-card h2 {
@@ -314,11 +318,12 @@
             font-weight: 800;
             letter-spacing: -0.3px;
             margin-bottom: 6px;
+            color: #3D2227;
         }
 
         .welcome-card p {
             font-size: 13px;
-            color: rgba(255, 255, 255, 0.8);
+            color: #6E4D53;
         }
 
         .welcome-status {
@@ -327,29 +332,32 @@
             gap: 6px;
             margin-top: 12px;
             padding: 5px 12px;
-            background: rgba(255, 255, 255, 0.12);
+            background: rgba(180, 106, 114, 0.12);
             border-radius: 8px;
             font-size: 12px;
-            font-weight: 500;
-            color: rgba(255, 255, 255, 0.9);
+            font-weight: 600;
+            color: #3D2227;
         }
 
         .welcome-status .material-symbols-outlined {
             font-size: 15px;
+            color: #B46A72;
         }
 
         .welcome-role-badge {
             position: relative;
             z-index: 1;
             flex-shrink: 0;
-            background: var(--yellow);
-            color: var(--blue-dark);
+            background: #B46A72;
+            color: #ffffff;
             font-size: 13px;
             font-weight: 800;
             padding: 10px 20px;
             border-radius: 8px;
             letter-spacing: 0.03em;
             text-transform: uppercase;
+            border: 1px solid #8E474F;
+            box-shadow: 0 3px 10px rgba(180, 106, 114, 0.3);
         }
 
 
@@ -424,13 +432,14 @@
         }
 
         .action-btn-yellow {
-            background: var(--yellow);
-            color: var(--blue-dark);
+            background: linear-gradient(135deg, #F7C8D3 0%, #F5BCC9 100%);
+            color: #3D2227;
+            border: 1px solid #E6A8B5;
         }
 
         .action-btn-yellow .action-icon {
-            background: rgba(0, 59, 115, 0.1);
-            color: var(--blue-dark);
+            background: rgba(61, 34, 39, 0.1);
+            color: #3D2227;
         }
 
         .action-btn-white {

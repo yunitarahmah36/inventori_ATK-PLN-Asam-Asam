@@ -169,12 +169,16 @@
 <style id="sidebar-styles">
     :root {
         --sidebar-w: 260px;
-        --sidebar-blue: #003B73;
-        --sidebar-yellow: #FFC107;
+        --sidebar-rosewood: #B46A72;
+        --sidebar-blush: #F7C8D3;
+        --sidebar-dark: #3D2227;
+        --sidebar-muted: #7E5B62;
+        --sidebar-border: #F2E0E4;
+        --sidebar-bg: #FFFFFF;
     }
 
     /* ============================================================
-       YOUTUBE-STYLE TOP LOADING PROGRESS BAR
+       YOUTUBE-STYLE TOP LOADING PROGRESS BAR (Blush & Rosewood)
     ============================================================ */
     .sidebar-progress-bar {
         position: fixed;
@@ -182,13 +186,13 @@
         left: 0;
         height: 3px;
         width: 0%;
-        background: linear-gradient(90deg, #FFC107 0%, #0057B8 50%, #FFC107 100%);
+        background: linear-gradient(90deg, #F7C8D3 0%, #B46A72 50%, #F7C8D3 100%);
         background-size: 200% 100%;
         z-index: 999999;
         pointer-events: none;
         opacity: 0;
         transition: width 0.22s cubic-bezier(0.1, 0.85, 0.25, 1), opacity 0.2s ease;
-        box-shadow: 0 0 10px rgba(255, 193, 7, 0.9), 0 0 4px rgba(0, 87, 184, 0.6);
+        box-shadow: 0 0 10px rgba(247, 200, 211, 0.9), 0 0 4px rgba(180, 106, 114, 0.6);
     }
     .sidebar-progress-bar.active {
         opacity: 1;
@@ -236,20 +240,21 @@
         transition: opacity 0.08s ease;
     }
 
-    /* Container Sidebar */
+    /* Container Sidebar (Putih Dominan dengan Aksen Blush & Rosewood) */
     .sidebar {
         position: fixed;
         top: 0;
         left: 0;
         bottom: 0;
         width: var(--sidebar-w);
-        background: var(--sidebar-blue);
-        color: #ffffff;
+        background: #FFFFFF;
+        color: #3D2227;
+        border-right: 1px solid #F2E0E4;
         display: flex;
         flex-direction: column;
         padding: 0;
         z-index: 999;
-        box-shadow: 2px 0 16px rgba(0, 0, 0, 0.08);
+        box-shadow: 2px 0 16px rgba(180, 106, 114, 0.06);
         user-select: none;
         -webkit-user-select: none;
         /* Default: jangan ada transition transform agar tidak ngesot/bergerak di desktop */
@@ -299,7 +304,7 @@
         justify-content: space-between;
         gap: 12px;
         padding: 20px 18px;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        border-bottom: 1px solid #F5E8EB;
         height: 68px;
         box-sizing: border-box;
     }
@@ -332,7 +337,7 @@
         margin: 0;
         font-size: 15px;
         font-weight: 800;
-        color: #ffffff;
+        color: #3D2227;
         line-height: 1.2;
         letter-spacing: 0.02em;
     }
@@ -340,7 +345,7 @@
     .sidebar-logo-text p {
         margin: 2px 0 0;
         font-size: 11px;
-        color: rgba(255, 255, 255, 0.62);
+        color: #7E5B62;
         line-height: 1.2;
     }
 
@@ -352,35 +357,37 @@
         width: 34px;
         height: 34px;
         border-radius: 8px;
-        background: rgba(255, 255, 255, 0.1);
+        background: #FDF2F4;
         border: none;
-        color: #ffffff;
+        color: #3D2227;
         cursor: pointer;
         transition: background 0.15s ease;
         touch-action: manipulation;
     }
 
     .sidebar-close-btn:hover {
-        background: rgba(255, 255, 255, 0.2);
+        background: #F7C8D3;
+        color: #3D2227;
     }
 
     /* User Card */
     .sidebar-user {
         margin: 14px 14px 6px;
         padding: 11px 12px;
-        background: rgba(255, 255, 255, 0.07);
-        border: 1px solid rgba(255, 255, 255, 0.06);
+        background: #FDF5F7;
+        border: 1px solid #F2E0E4;
         border-radius: 10px;
         display: flex;
         align-items: center;
         gap: 11px;
         text-decoration: none;
         color: inherit;
-        transition: background 0.15s ease;
+        transition: all 0.15s ease;
         cursor: pointer;
     }
     .sidebar-user:hover {
-        background: rgba(255, 255, 255, 0.14);
+        background: #FDE8ED;
+        border-color: #F7C8D3;
     }
 
     .sidebar-avatar {
@@ -389,15 +396,16 @@
         min-width: 38px;
         min-height: 38px;
         border-radius: 50%;
-        background: var(--sidebar-yellow);
-        color: var(--sidebar-blue);
+        background: linear-gradient(135deg, #B46A72 0%, #D88F97 100%);
+        color: #ffffff;
         display: flex;
         align-items: center;
         justify-content: center;
         font-size: 15px;
         font-weight: 800;
         flex-shrink: 0;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+        box-shadow: 0 2px 6px rgba(180, 106, 114, 0.25);
+        border: 2px solid #F7C8D3;
     }
 
     .sidebar-user-info {
@@ -408,8 +416,8 @@
 
     .sidebar-user-name {
         font-size: 13px;
-        font-weight: 600;
-        color: #ffffff;
+        font-weight: 700;
+        color: #3D2227;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -418,7 +426,7 @@
     .sidebar-user-role {
         font-size: 10px;
         font-weight: 700;
-        color: var(--sidebar-yellow);
+        color: #B46A72;
         text-transform: uppercase;
         letter-spacing: 0.05em;
         margin-top: 2px;
@@ -431,21 +439,21 @@
         overflow-x: hidden;
         padding: 10px 12px;
         scrollbar-width: thin;
-        scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
+        scrollbar-color: rgba(180, 106, 114, 0.2) transparent;
     }
 
     .sidebar-nav::-webkit-scrollbar {
         width: 4px;
     }
     .sidebar-nav::-webkit-scrollbar-thumb {
-        background: rgba(255, 255, 255, 0.18);
+        background: rgba(180, 106, 114, 0.2);
         border-radius: 4px;
     }
 
     .nav-section-title {
         font-size: 10px;
         font-weight: 700;
-        color: rgba(255, 255, 255, 0.45);
+        color: #9C7981;
         text-transform: uppercase;
         letter-spacing: 0.08em;
         padding: 8px 8px 5px;
@@ -459,7 +467,7 @@
         border-radius: 9px;
         font-size: 13.5px;
         font-weight: 500;
-        color: rgba(255, 255, 255, 0.78);
+        color: #5C3D43;
         text-decoration: none;
         margin-bottom: 3px;
         transition: background 0.12s ease, color 0.12s ease;
@@ -469,24 +477,25 @@
     }
 
     .nav-item:hover {
-        background: rgba(255, 255, 255, 0.1);
-        color: #ffffff;
+        background: #FDF2F4;
+        color: #B46A72;
     }
 
     .nav-item:active {
-        background: rgba(255, 255, 255, 0.18);
+        background: #FDE8ED;
     }
 
     .nav-item.active {
-        background: var(--sidebar-yellow);
-        color: var(--sidebar-blue);
-        font-weight: 700;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.14);
+        background: linear-gradient(135deg, #F7C8D3 0%, #F5BCC9 100%);
+        color: #3D2227;
+        font-weight: 800;
+        box-shadow: 0 3px 10px rgba(180, 106, 114, 0.2);
+        border-left: 4px solid #B46A72;
     }
 
     .nav-item.active:hover {
-        background: #f5b700;
-        color: var(--sidebar-blue);
+        background: #F5BCC9;
+        color: #3D2227;
     }
 
     /* ============================================================
@@ -520,18 +529,18 @@
         min-width: 20px !important;
         min-height: 20px !important;
         transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-        color: rgba(255, 255, 255, 0.6);
+        color: #8C656C;
     }
 
     .nav-group.open .nav-parent .nav-arrow {
         transform: rotate(180deg);
-        color: rgba(255, 255, 255, 0.95);
+        color: #B46A72;
     }
 
     .nav-item.active-parent {
-        background: rgba(255, 255, 255, 0.12);
-        color: #ffffff;
-        font-weight: 600;
+        background: #FDF2F4;
+        color: #B46A72;
+        font-weight: 700;
     }
 
     .nav-submenu {
@@ -539,7 +548,7 @@
         flex-direction: column;
         padding-left: 18px;
         margin: 2px 0 6px 10px;
-        border-left: 2px solid rgba(255, 255, 255, 0.16);
+        border-left: 2px solid #F7C8D3;
         gap: 2px;
     }
 
@@ -567,7 +576,7 @@
         border-radius: 8px;
         font-size: 12.5px;
         font-weight: 500;
-        color: rgba(255, 255, 255, 0.76);
+        color: #6E4D53;
         text-decoration: none;
         transition: background 0.12s ease, color 0.12s ease;
         touch-action: manipulation;
@@ -582,26 +591,27 @@
     }
 
     .nav-subitem:hover {
-        background: rgba(255, 255, 255, 0.1);
-        color: #ffffff;
+        background: #FDF2F4;
+        color: #B46A72;
     }
 
     .nav-subitem.active {
-        background: var(--sidebar-yellow);
-        color: var(--sidebar-blue);
-        font-weight: 700;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+        background: #F7C8D3;
+        color: #3D2227;
+        font-weight: 800;
+        box-shadow: 0 2px 6px rgba(180, 106, 114, 0.15);
+        border-left: 3px solid #B46A72;
     }
 
     .nav-subitem.active:hover {
-        background: #f5b700;
-        color: var(--sidebar-blue);
+        background: #F5BCC9;
+        color: #3D2227;
     }
 
     /* Footer & Logout */
     .sidebar-footer {
         padding: 12px 14px;
-        border-top: 1px solid rgba(255, 255, 255, 0.08);
+        border-top: 1px solid #F5E8EB;
     }
 
     .btn-logout {
@@ -611,9 +621,9 @@
         gap: 10px;
         padding: 10px 12px;
         border-radius: 9px;
-        border: 1px solid rgba(239, 68, 68, 0.28);
-        background: rgba(239, 68, 68, 0.12);
-        color: #FCA5A5;
+        border: 1px solid rgba(180, 106, 114, 0.25);
+        background: #FFF5F6;
+        color: #B46A72;
         font-size: 13.5px;
         font-weight: 600;
         cursor: pointer;
@@ -623,12 +633,12 @@
     }
 
     .btn-logout:hover {
-        background: rgba(239, 68, 68, 0.26);
+        background: #B46A72;
         color: #ffffff;
     }
 
     .btn-logout:active {
-        background: rgba(239, 68, 68, 0.35);
+        background: #9C545C;
     }
 
     /* Backdrop Mobile */
@@ -835,6 +845,219 @@
         .sidebar-close-btn {
             display: flex;
         }
+    }
+
+    /* ============================================================
+       GLOBAL THEME: BLUSH PETAL (#F7C8D3), ROSEWOOD (#B46A72), DOMINANT WHITE
+       - Dominant background: #FCF9FA / #FFFFFF
+       - Primary accent: Blush Petal #F7C8D3
+       - Secondary accent: Rosewood #B46A72
+       - Font headings & dark text: #3D2227 (High contrast, readable)
+       - Font body: #4D2C32
+       - Font muted: #7E5B62
+       - Border: #F2E0E4
+    ============================================================ */
+    body {
+        background-color: #FCF9FA !important;
+        color: #4D2C32 !important;
+    }
+
+    /* Topbar */
+    .topbar {
+        background-color: #FFFFFF !important;
+        border-bottom: 1px solid #F2E0E4 !important;
+        box-shadow: 0 1px 6px rgba(180, 106, 114, 0.04) !important;
+    }
+    .topbar-left h1 {
+        color: #3D2227 !important;
+    }
+    .topbar-left p {
+        color: #7E5B62 !important;
+    }
+    .topbar-avatar {
+        background: linear-gradient(135deg, #B46A72 0%, #D88F97 100%) !important;
+        color: #ffffff !important;
+        border: 2px solid #F7C8D3 !important;
+    }
+    .topbar-user {
+        background: #FDF5F7 !important;
+        border: 1px solid #F2E0E4 !important;
+    }
+    .topbar-user:hover {
+        background: #FDE8ED !important;
+    }
+    .topbar-user-name {
+        color: #3D2227 !important;
+    }
+
+    /* Primary buttons */
+    .btn-primary,
+    .btn-submit,
+    .action-btn-primary {
+        background: linear-gradient(135deg, #B46A72 0%, #9C545C 100%) !important;
+        border: 1px solid #8E474F !important;
+        color: #ffffff !important;
+        box-shadow: 0 4px 12px rgba(180, 106, 114, 0.28) !important;
+    }
+    .btn-primary:hover,
+    .btn-submit:hover,
+    .action-btn-primary:hover {
+        background: linear-gradient(135deg, #F7C8D3 0%, #F5BCC9 100%) !important;
+        border-color: #E6A8B5 !important;
+        color: #3D2227 !important;
+        box-shadow: 0 6px 16px rgba(180, 106, 114, 0.22) !important;
+    }
+
+    /* Yellow / Blush Accent buttons */
+    .btn-yellow,
+    .btn-warning,
+    .action-btn-yellow {
+        background: linear-gradient(135deg, #F7C8D3 0%, #F5BCC9 100%) !important;
+        border: 1px solid #E6A8B5 !important;
+        color: #3D2227 !important;
+    }
+    .btn-yellow:hover,
+    .btn-warning:hover,
+    .action-btn-yellow:hover {
+        background: linear-gradient(135deg, #B46A72 0%, #9C545C 100%) !important;
+        border-color: #8E474F !important;
+        color: #ffffff !important;
+    }
+    .action-btn-yellow .action-icon {
+        background: rgba(61, 34, 39, 0.1) !important;
+        color: #3D2227 !important;
+    }
+
+    /* Action buttons white */
+    .action-btn-white {
+        background: #ffffff !important;
+        border: 1px solid #F2E0E4 !important;
+        color: #3D2227 !important;
+    }
+    .action-btn-white .action-icon {
+        background: #FDF2F4 !important;
+        color: #B46A72 !important;
+    }
+
+    /* Tables */
+    table thead th,
+    .data-table thead th {
+        background: #FAF0F3 !important;
+        color: #3D2227 !important;
+        border: 1px solid #F2E0E4 !important;
+        font-weight: 700 !important;
+    }
+    table tbody tr:hover,
+    .data-table tbody tr:hover {
+        background: #FDF5F7 !important;
+    }
+    table tbody td,
+    .data-table tbody td {
+        border-bottom: 1px solid #F5EAEB !important;
+        color: #4D2C32 !important;
+    }
+
+    /* Cards */
+    .card,
+    .section-card,
+    .stat-card {
+        background: #ffffff !important;
+        border: 1px solid #F2E0E4 !important;
+        box-shadow: 0 2px 10px rgba(180, 106, 114, 0.05) !important;
+    }
+    .section-card-header {
+        border-bottom-color: #F5EAEB !important;
+    }
+    .section-card-title,
+    .card-title {
+        color: #3D2227 !important;
+    }
+    .stat-card-value {
+        color: #3D2227 !important;
+    }
+    .stat-card-label {
+        color: #7E5B62 !important;
+    }
+    .stat-card-bar.blue {
+        background: #B46A72 !important;
+    }
+    .stat-card-bar.yellow {
+        background: #F7C8D3 !important;
+    }
+    .stat-icon-blue {
+        background: #FDF2F4 !important;
+        color: #B46A72 !important;
+    }
+    .stat-icon-yellow {
+        background: #FDE8ED !important;
+        color: #B46A72 !important;
+    }
+
+    /* Badges & Pills */
+    .badge-role {
+        background: #FDF2F4 !important;
+        color: #B46A72 !important;
+        border: 1px solid #F7C8D3 !important;
+    }
+    .badge-blue,
+    .badge-tambah,
+    .badge-info,
+    .badge-import {
+        background: #FDF2F4 !important;
+        color: #B46A72 !important;
+        border: 1px solid #F7C8D3 !important;
+    }
+    .badge-edit {
+        background: #F7C8D3 !important;
+        color: #3D2227 !important;
+        border: 1px solid #EAAAB9 !important;
+    }
+
+    /* Inputs, Selects, Textareas */
+    input:focus,
+    select:focus,
+    textarea:focus {
+        border-color: #B46A72 !important;
+        box-shadow: 0 0 0 3.5px rgba(247, 200, 211, 0.45) !important;
+    }
+
+    /* Links & Icons */
+    a.btn-lihat-semua,
+    .text-primary,
+    .link-primary {
+        color: #B46A72 !important;
+    }
+    a.btn-lihat-semua:hover {
+        background: #FDF2F4 !important;
+        color: #3D2227 !important;
+    }
+
+    /* Welcome Card (Dashboard) */
+    .welcome-card {
+        background: linear-gradient(135deg, #FFF0F3 0%, #FDE2E7 50%, #F7C8D3 100%) !important;
+        border: 1px solid #F2CCD4 !important;
+        box-shadow: 0 8px 24px rgba(180, 106, 114, 0.12) !important;
+        color: #3D2227 !important;
+    }
+    .welcome-card h2 {
+        color: #3D2227 !important;
+    }
+    .welcome-card p {
+        color: #6E4D53 !important;
+    }
+    .welcome-date-badge {
+        background: rgba(180, 106, 114, 0.12) !important;
+        color: #3D2227 !important;
+    }
+    .welcome-status {
+        background: rgba(180, 106, 114, 0.12) !important;
+        color: #3D2227 !important;
+    }
+    .welcome-role-badge {
+        background: #B46A72 !important;
+        color: #ffffff !important;
+        border: 1px solid #8E474F !important;
+        box-shadow: 0 3px 10px rgba(180, 106, 114, 0.3) !important;
     }
 </style>
 
