@@ -351,6 +351,19 @@
             background: #E0A800;
         }
 
+        .btn:disabled,
+        .btn[disabled] {
+            opacity: 0.55;
+            cursor: not-allowed !important;
+            box-shadow: none !important;
+        }
+
+        .btn:disabled:hover,
+        .btn[disabled]:hover {
+            opacity: 0.55;
+            cursor: not-allowed !important;
+        }
+
         .btn-outline {
             background: var(--white);
             color: var(--text-mid);
@@ -941,6 +954,21 @@
             background: #F0F7FF;
         }
 
+        .dropzone-area.has-error {
+            border-color: var(--red) !important;
+            background: #FEF2F2 !important;
+        }
+
+        .dropzone-area.has-error:hover {
+            border-color: var(--red) !important;
+            background: #FEE2E2 !important;
+        }
+
+        .dropzone-area.has-file {
+            border-color: var(--blue);
+            background: #F0F7FF;
+        }
+
         .dropzone-area .material-symbols-outlined {
             font-size: 38px;
             color: var(--blue);
@@ -1387,19 +1415,34 @@
                     </ul>
                 </div>
 
-                <form action="{{ route('materials.stock-in.import') }}" method="POST" enctype="multipart/form-data" id="importStockInForm">
+                <!-- ALERT VALIDASI JIKA FILE BELUM DIPILIH -->
+                <div id="importFileAlert" class="alert alert-error" style="display:none;margin-bottom:16px;padding:12px 14px;border-radius:10px;">
+                    <div style="display:flex;align-items:center;gap:8px;">
+                        <span class="material-symbols-outlined" style="font-size:20px;color:var(--red);">error</span>
+                        <span id="importFileAlertText" style="font-size:13px;font-weight:600;color:#991B1B;">Silakan pilih file Excel terlebih dahulu!</span>
+                    </div>
+                    <button type="button" class="alert-close" id="closeImportAlertBtn" aria-label="Tutup alert">
+                        <span class="material-symbols-outlined" style="font-size:18px;">close</span>
+                    </button>
+                </div>
+
+                <form action="{{ route('materials.stock-in.import') }}" method="POST" enctype="multipart/form-data" id="importStockInForm" novalidate>
                     @csrf
 
                     <div class="form-group-custom">
                         <label for="importFile" class="form-label-custom">
                             Pilih File Excel (.xlsx, .xls, .csv) <span style="color:var(--red);">*</span>
                         </label>
-                        <div class="dropzone-area" onclick="document.getElementById('importFile').click()">
-                            <span class="material-symbols-outlined">cloud_upload</span>
+                        <div class="dropzone-area" id="importDropzone" onclick="document.getElementById('importFile').click()">
+                            <span class="material-symbols-outlined" id="dropzoneIcon">cloud_upload</span>
                             <div style="font-weight:600;font-size:13.5px;color:var(--text-dark);" id="dropzoneText">Klik untuk memilih file Excel</div>
-                            <div style="font-size:11.5px;color:var(--text-muted);margin-top:2px;">Format .xlsx, .xls, .csv (Maksimal 10MB)</div>
+                            <div style="font-size:11.5px;color:var(--text-muted);margin-top:2px;" id="dropzoneSubtext">Format .xlsx, .xls, .csv (Maksimal 10MB)</div>
                         </div>
-                        <input type="file" id="importFile" name="file" accept=".xlsx,.xls,.csv" style="display:none;" required>
+                        <input type="file" id="importFile" name="file" accept=".xlsx,.xls,.csv" style="display:none;">
+                        <div id="importFileErrorMsg" style="display:none;color:var(--red);font-size:12px;font-weight:600;margin-top:6px;align-items:center;gap:4px;">
+                            <span class="material-symbols-outlined" style="font-size:16px;">error</span>
+                            <span id="importFileErrorMsgText">Silakan pilih file Excel terlebih dahulu!</span>
+                        </div>
                     </div>
 
                     <div style="margin-top:14px;display:flex;align-items:center;justify-content:space-between;gap:10px;">
@@ -1410,10 +1453,12 @@
 
                         <div style="display:flex;gap:8px;">
                             <button type="button" class="btn btn-outline" id="cancelImportModalBtn">Batal</button>
-                            <button type="submit" class="btn btn-yellow" id="submitImportBtn">
-                                <span class="material-symbols-outlined" style="font-size:18px;">upload</span>
-                                Proses Import
-                            </button>
+                            <div id="submitImportBtnWrapper" style="display:inline-block;cursor:not-allowed;" title="Silakan pilih file Excel terlebih dahulu!">
+                                <button type="submit" class="btn btn-yellow" id="submitImportBtn" disabled>
+                                    <span class="material-symbols-outlined" style="font-size:18px;">upload</span>
+                                    Import Data
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </form>
@@ -1478,41 +1523,189 @@
         }
 
         // --- Modal 2: Import Excel ---
-        const importModal     = document.getElementById('importStockInModal');
-        const openImportBtn   = document.getElementById('btnOpenImportModal');
-        const closeImportBtn  = document.getElementById('closeImportModalBtn');
-        const cancelImportBtn = document.getElementById('cancelImportModalBtn');
-        const importForm      = document.getElementById('importStockInForm');
-        const submitImportBtn = document.getElementById('submitImportBtn');
-        const importFileInput = document.getElementById('importFile');
-        const dropzoneText    = document.getElementById('dropzoneText');
+        const importModal            = document.getElementById('importStockInModal');
+        const openImportBtn          = document.getElementById('btnOpenImportModal');
+        const closeImportBtn         = document.getElementById('closeImportModalBtn');
+        const cancelImportBtn        = document.getElementById('cancelImportModalBtn');
+        const importForm             = document.getElementById('importStockInForm');
+        const submitImportBtn        = document.getElementById('submitImportBtn');
+        const submitImportBtnWrapper = document.getElementById('submitImportBtnWrapper');
+        const importFileInput        = document.getElementById('importFile');
+        const importDropzone         = document.getElementById('importDropzone');
+        const dropzoneIcon           = document.getElementById('dropzoneIcon');
+        const dropzoneText           = document.getElementById('dropzoneText');
+        const dropzoneSubtext        = document.getElementById('dropzoneSubtext');
+        const importFileAlert        = document.getElementById('importFileAlert');
+        const importFileAlertText    = document.getElementById('importFileAlertText');
+        const closeImportAlertBtn    = document.getElementById('closeImportAlertBtn');
+        const importFileErrorMsg     = document.getElementById('importFileErrorMsg');
+        const importFileErrorMsgText = document.getElementById('importFileErrorMsgText');
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function showImportError(msg) {
+            const message = msg || 'Silakan pilih file Excel terlebih dahulu!';
+            if (importFileAlert) {
+                if (importFileAlertText) importFileAlertText.textContent = message;
+                importFileAlert.style.display = 'flex';
+            }
+            if (importFileErrorMsg) {
+                if (importFileErrorMsgText) importFileErrorMsgText.textContent = message;
+                importFileErrorMsg.style.display = 'flex';
+            }
+            if (importDropzone) {
+                importDropzone.classList.add('has-error');
+                importDropzone.classList.remove('has-file');
+            }
+        }
+
+        function hideImportError() {
+            if (importFileAlert) importFileAlert.style.display = 'none';
+            if (importFileErrorMsg) importFileErrorMsg.style.display = 'none';
+            if (importDropzone) importDropzone.classList.remove('has-error');
+        }
+
+        function resetImportFileState() {
+            if (importFileInput) importFileInput.value = '';
+            hideImportError();
+            if (importDropzone) {
+                importDropzone.classList.remove('has-error', 'has-file');
+            }
+            if (dropzoneIcon) {
+                dropzoneIcon.textContent = 'cloud_upload';
+                dropzoneIcon.style.color = 'var(--blue)';
+            }
+            if (dropzoneText) {
+                dropzoneText.textContent = 'Klik untuk memilih file Excel';
+                dropzoneText.style.color = 'var(--text-dark)';
+            }
+            if (dropzoneSubtext) {
+                dropzoneSubtext.textContent = 'Format .xlsx, .xls, .csv (Maksimal 10MB)';
+            }
+            if (submitImportBtn) {
+                submitImportBtn.disabled = true;
+                submitImportBtn.innerHTML = '<span class="material-symbols-outlined" style="font-size:18px;">upload</span> Import Data';
+            }
+            if (submitImportBtnWrapper) {
+                submitImportBtnWrapper.style.cursor = 'not-allowed';
+                submitImportBtnWrapper.title = 'Silakan pilih file Excel terlebih dahulu!';
+            }
+        }
+
+        function handleFileChange() {
+            if (importFileInput && importFileInput.files && importFileInput.files.length > 0) {
+                const file = importFileInput.files[0];
+                hideImportError();
+                if (importDropzone) {
+                    importDropzone.classList.remove('has-error');
+                    importDropzone.classList.add('has-file');
+                }
+                if (dropzoneIcon) {
+                    dropzoneIcon.textContent = 'description';
+                    dropzoneIcon.style.color = 'var(--blue)';
+                }
+                if (dropzoneText) {
+                    dropzoneText.innerHTML = 'File dipilih: <strong style="color:var(--blue);">' + escapeHtml(file.name) + '</strong>';
+                    dropzoneText.style.color = 'var(--blue)';
+                }
+                if (dropzoneSubtext) {
+                    const sizeKb = (file.size / 1024).toFixed(1);
+                    dropzoneSubtext.textContent = 'Ukuran: ' + sizeKb + ' KB — Klik untuk mengganti file';
+                }
+                if (submitImportBtn) {
+                    submitImportBtn.disabled = false;
+                }
+                if (submitImportBtnWrapper) {
+                    submitImportBtnWrapper.style.cursor = 'default';
+                    submitImportBtnWrapper.removeAttribute('title');
+                }
+            } else {
+                resetImportFileState();
+            }
+        }
+
+        function validateImportFile(e) {
+            if (!importFileInput || !importFileInput.files || importFileInput.files.length === 0) {
+                if (e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }
+                showImportError('Silakan pilih file Excel terlebih dahulu!');
+                return false;
+            }
+            return true;
+        }
 
         function openImportModal() {
+            resetImportFileState();
             if (importModal) importModal.classList.add('show');
         }
 
         function closeImportModal() {
+            resetImportFileState();
             if (importModal) importModal.classList.remove('show');
         }
 
         if (openImportBtn) openImportBtn.addEventListener('click', openImportModal);
         if (closeImportBtn) closeImportBtn.addEventListener('click', closeImportModal);
         if (cancelImportBtn) cancelImportBtn.addEventListener('click', closeImportModal);
+        if (closeImportAlertBtn) closeImportAlertBtn.addEventListener('click', hideImportError);
 
         if (importFileInput) {
-            importFileInput.addEventListener('change', function () {
-                if (this.files && this.files.length > 0) {
-                    dropzoneText.textContent = `File dipilih: ${this.files[0].name}`;
-                    dropzoneText.style.color = 'var(--blue)';
-                } else {
-                    dropzoneText.textContent = 'Klik untuk memilih file Excel';
-                    dropzoneText.style.color = 'var(--text-dark)';
+            importFileInput.addEventListener('change', handleFileChange);
+        }
+
+        // Drag and Drop support
+        if (importDropzone) {
+            importDropzone.addEventListener('dragover', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                importDropzone.style.borderColor = 'var(--blue)';
+                importDropzone.style.background = '#F0F7FF';
+            });
+            importDropzone.addEventListener('dragleave', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                if (!importFileInput || !importFileInput.files || importFileInput.files.length === 0) {
+                    importDropzone.style.borderColor = '#CBD5E1';
+                    importDropzone.style.background = '#F8FAFC';
+                }
+            });
+            importDropzone.addEventListener('drop', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+                    importFileInput.files = e.dataTransfer.files;
+                    handleFileChange();
+                }
+            });
+        }
+
+        if (submitImportBtnWrapper) {
+            submitImportBtnWrapper.addEventListener('click', function (e) {
+                if (submitImportBtn && submitImportBtn.disabled) {
+                    validateImportFile(e);
+                }
+            });
+        }
+
+        if (submitImportBtn) {
+            submitImportBtn.addEventListener('click', function (e) {
+                if (!validateImportFile(e)) {
+                    return false;
                 }
             });
         }
 
         if (importForm) {
-            importForm.addEventListener('submit', function () {
+            importForm.addEventListener('submit', function (e) {
+                if (!validateImportFile(e)) {
+                    return false;
+                }
                 submitImportBtn.disabled = true;
                 submitImportBtn.innerHTML = '<span class="material-symbols-outlined" style="font-size:18px;">hourglass_empty</span> Memproses...';
             });

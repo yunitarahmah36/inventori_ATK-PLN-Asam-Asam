@@ -270,4 +270,31 @@ class MaterialImportAndAnalysisTest extends TestCase
         $pageResponse->assertSee('Tidak Ada Data Baru');
         $pageResponse->assertSee('Seluruh 2 data material dalam file Excel sudah terdaftar di sistem.');
     }
+
+    public function test_import_material_fails_validation_when_no_file_uploaded(): void
+    {
+        $admin = $this->createUser();
+
+        $response = $this->actingAs($admin)->post('/materials/import', []);
+
+        $response->assertSessionHasErrors(['file']);
+        $this->assertEquals(
+            'Silakan pilih file Excel terlebih dahulu!',
+            session('errors')->first('file')
+        );
+    }
+
+    public function test_material_import_page_renders_with_validation_elements_and_disabled_button(): void
+    {
+        $admin = $this->createUser();
+
+        $response = $this->actingAs($admin)->get('/materials/import');
+
+        $response->assertStatus(200);
+        $response->assertSee('importButton');
+        $response->assertSee('importButtonWrapper');
+        $response->assertSee('Import Data');
+        $response->assertSee('Silakan pilih file Excel terlebih dahulu!');
+    }
 }
+

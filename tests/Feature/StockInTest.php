@@ -708,4 +708,32 @@ class StockInTest extends TestCase
             $this->assertTrue(str_contains($e->errors()['import_errors'][0], 'Format tanggal tidak dikenali'));
         }
     }
+
+    public function test_import_stock_in_fails_validation_when_no_file_uploaded(): void
+    {
+        $user = $this->createUser('Admin');
+
+        $response = $this->actingAs($user)->post(route('materials.stock-in.import'), []);
+
+        $response->assertSessionHasErrors(['file']);
+        $this->assertEquals(
+            'Silakan pilih file Excel terlebih dahulu!',
+            session('errors')->first('file')
+        );
+    }
+
+    public function test_stock_in_page_renders_import_modal_with_validation_elements_and_disabled_button(): void
+    {
+        $user = $this->createUser('Admin');
+
+        $response = $this->actingAs($user)->get(route('materials.stock-in.index'));
+
+        $response->assertStatus(200);
+        $response->assertSee('importStockInModal');
+        $response->assertSee('submitImportBtn');
+        $response->assertSee('submitImportBtnWrapper');
+        $response->assertSee('Import Data');
+        $response->assertSee('Silakan pilih file Excel terlebih dahulu!');
+    }
 }
+

@@ -170,7 +170,7 @@ class StockInController extends Controller
         $request->validate([
             'file' => 'required|file|mimes:xlsx,xls,csv|max:10240',
         ], [
-            'file.required' => 'Pilih file Excel yang akan diimport.',
+            'file.required' => 'Silakan pilih file Excel terlebih dahulu!',
             'file.file'     => 'File yang diunggah tidak valid.',
             'file.mimes'    => 'Format file harus berupa Excel (.xlsx, .xls) atau CSV.',
             'file.max'      => 'Ukuran file maksimal 10MB.',

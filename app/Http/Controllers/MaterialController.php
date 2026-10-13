@@ -443,7 +443,7 @@ class MaterialController extends Controller
                 'max:5120',
             ],
         ], [
-            'file.required' => 'File Excel wajib dipilih sebelum melakukan import.',
+            'file.required' => 'Silakan pilih file Excel terlebih dahulu!',
             'file.file'     => 'File yang dipilih tidak valid. Pastikan file tidak rusak.',
             'file.mimes'    => 'Format file tidak didukung. Gunakan file Excel dengan ekstensi .xlsx atau .xls.',
             'file.max'      => 'Ukuran file terlalu besar. Maksimal 5 MB.',

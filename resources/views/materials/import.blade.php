@@ -272,6 +272,34 @@
             background: var(--blue-dark);
         }
 
+        .btn:disabled,
+        .btn[disabled] {
+            opacity: 0.55;
+            cursor: not-allowed !important;
+            box-shadow: none !important;
+        }
+
+        .btn:disabled:hover,
+        .btn[disabled]:hover {
+            opacity: 0.55;
+            cursor: not-allowed !important;
+        }
+
+        .upload-box.has-error {
+            border-color: var(--red) !important;
+            background: #FEF2F2 !important;
+        }
+
+        .upload-box.has-error:hover {
+            border-color: var(--red) !important;
+            background: #FEE2E2 !important;
+        }
+
+        .upload-box.has-file {
+            border-color: var(--blue) !important;
+            background: #F0F7FF !important;
+        }
+
         .btn-outline {
             background: var(--white);
             color: var(--text-dark);
@@ -691,11 +719,22 @@
                     </p>
 
                     <!-- FORM IMPORT -->
-                    <form action="{{ route('materials.import') }}" method="POST" enctype="multipart/form-data" id="importForm">
+                    <form action="{{ route('materials.import') }}" method="POST" enctype="multipart/form-data" id="importForm" novalidate>
                         @csrf
 
-                        <div class="upload-box">
-                            <span class="material-symbols-outlined" style="font-size:42px;color:#94A3B8;margin-bottom:10px;">
+                        <!-- ALERT VALIDASI JIKA FILE BELUM DIPILIH -->
+                        <div id="importFileAlert" class="alert alert-danger" style="display:none;margin-bottom:16px;padding:12px 16px;border-radius:10px;text-align:left;align-items:center;justify-content:space-between;">
+                            <div style="display:flex;align-items:center;gap:10px;">
+                                <span class="material-symbols-outlined" style="font-size:20px;color:var(--red);">error</span>
+                                <span id="importFileAlertText" style="font-size:13.5px;font-weight:600;color:#991B1B;">Silakan pilih file Excel terlebih dahulu!</span>
+                            </div>
+                            <button type="button" id="closeImportAlertBtn" style="background:none;border:none;cursor:pointer;color:inherit;display:flex;align-items:center;" aria-label="Tutup">
+                                <span class="material-symbols-outlined" style="font-size:18px;">close</span>
+                            </button>
+                        </div>
+
+                        <div class="upload-box" id="uploadBox">
+                            <span class="material-symbols-outlined" id="uploadBoxIcon" style="font-size:42px;color:#94A3B8;margin-bottom:10px;">
                                 cloud_upload
                             </span>
 
@@ -714,7 +753,7 @@
                             </p>
 
                             <!-- FILE INPUT -->
-                            <input type="file" id="file" name="file" accept=".xlsx,.xls" style="display:none;" required onchange="showFileName(this)">
+                            <input type="file" id="file" name="file" accept=".xlsx,.xls" style="display:none;" onchange="showFileName(this)">
 
                             <!-- TOMBOL PILIH FILE -->
                             <div>
@@ -726,14 +765,22 @@
 
                             <!-- NAMA FILE PILIHAN -->
                             <div id="fileName" class="file-name"></div>
+
+                            <!-- PESAN ERROR DI BAWAH -->
+                            <div id="importFileErrorMsg" style="display:none;color:var(--red);font-size:12.5px;font-weight:600;margin-top:12px;align-items:center;justify-content:center;gap:6px;">
+                                <span class="material-symbols-outlined" style="font-size:18px;">error</span>
+                                <span id="importFileErrorMsgText">Silakan pilih file Excel terlebih dahulu!</span>
+                            </div>
                         </div>
 
                         <!-- ACTION BUTTONS -->
                         <div style="display:flex;justify-content:center;gap:12px;flex-wrap:wrap;">
-                            <button type="submit" class="btn btn-primary" id="importButton" disabled>
-                                <span class="material-symbols-outlined" style="font-size:18px;">preview</span>
-                                Unggah & Periksa Pratinjau
-                            </button>
+                            <div id="importButtonWrapper" style="display:inline-block;cursor:not-allowed;" title="Silakan pilih file Excel terlebih dahulu!">
+                                <button type="submit" class="btn btn-primary" id="importButton" disabled>
+                                    <span class="material-symbols-outlined" style="font-size:18px;">upload</span>
+                                    Import Data
+                                </button>
+                            </div>
 
                             <a href="{{ route('materials.import.template') }}" class="btn btn-success">
                                 <span class="material-symbols-outlined" style="font-size:18px;">download</span>
@@ -751,29 +798,159 @@
         </div>
 
         <script>
-            function showFileName(input) {
-                const fileNameEl    = document.getElementById('fileName');
-                const importBtn     = document.getElementById('importButton');
+            const fileInput              = document.getElementById('file');
+            const fileNameEl             = document.getElementById('fileName');
+            const importBtn              = document.getElementById('importButton');
+            const importBtnWrapper       = document.getElementById('importButtonWrapper');
+            const uploadBox              = document.getElementById('uploadBox');
+            const uploadBoxIcon          = document.getElementById('uploadBoxIcon');
+            const importFileAlert        = document.getElementById('importFileAlert');
+            const importFileAlertText    = document.getElementById('importFileAlertText');
+            const closeImportAlertBtn    = document.getElementById('closeImportAlertBtn');
+            const importFileErrorMsg     = document.getElementById('importFileErrorMsg');
+            const importFileErrorMsgText = document.getElementById('importFileErrorMsgText');
+            const importForm             = document.getElementById('importForm');
 
-                if (input.files && input.files.length > 0) {
-                    const file = input.files[0];
-                    fileNameEl.style.display = 'block';
-                    fileNameEl.innerHTML     = 'File dipilih: <strong>' + file.name + '</strong> (' + (file.size / 1024).toFixed(1) + ' KB)';
-                    if (importBtn) importBtn.disabled = false;
-                } else {
-                    fileNameEl.style.display = 'none';
-                    fileNameEl.innerHTML     = '';
-                    if (importBtn) importBtn.disabled = true;
+            function escapeHtml(text) {
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
+            }
+
+            function showImportError(msg) {
+                const message = msg || 'Silakan pilih file Excel terlebih dahulu!';
+                if (importFileAlert) {
+                    if (importFileAlertText) importFileAlertText.textContent = message;
+                    importFileAlert.style.display = 'flex';
+                }
+                if (importFileErrorMsg) {
+                    if (importFileErrorMsgText) importFileErrorMsgText.textContent = message;
+                    importFileErrorMsg.style.display = 'flex';
+                }
+                if (uploadBox) {
+                    uploadBox.classList.add('has-error');
+                    uploadBox.classList.remove('has-file');
                 }
             }
 
-            const importForm = document.getElementById('importForm');
+            function hideImportError() {
+                if (importFileAlert) importFileAlert.style.display = 'none';
+                if (importFileErrorMsg) importFileErrorMsg.style.display = 'none';
+                if (uploadBox) uploadBox.classList.remove('has-error');
+            }
+
+            function showFileName(input) {
+                if (input && input.files && input.files.length > 0) {
+                    const file = input.files[0];
+                    hideImportError();
+                    if (uploadBox) {
+                        uploadBox.classList.remove('has-error');
+                        uploadBox.classList.add('has-file');
+                    }
+                    if (uploadBoxIcon) {
+                        uploadBoxIcon.textContent = 'description';
+                        uploadBoxIcon.style.color = 'var(--blue)';
+                    }
+                    if (fileNameEl) {
+                        fileNameEl.style.display = 'block';
+                        fileNameEl.innerHTML = 'File dipilih: <strong style="color:var(--blue);">' + escapeHtml(file.name) + '</strong> (' + (file.size / 1024).toFixed(1) + ' KB)';
+                    }
+                    if (importBtn) {
+                        importBtn.disabled = false;
+                    }
+                    if (importBtnWrapper) {
+                        importBtnWrapper.style.cursor = 'default';
+                        importBtnWrapper.removeAttribute('title');
+                    }
+                } else {
+                    hideImportError();
+                    if (uploadBox) {
+                        uploadBox.classList.remove('has-error', 'has-file');
+                    }
+                    if (uploadBoxIcon) {
+                        uploadBoxIcon.textContent = 'cloud_upload';
+                        uploadBoxIcon.style.color = '#94A3B8';
+                    }
+                    if (fileNameEl) {
+                        fileNameEl.style.display = 'none';
+                        fileNameEl.innerHTML = '';
+                    }
+                    if (importBtn) {
+                        importBtn.disabled = true;
+                    }
+                    if (importBtnWrapper) {
+                        importBtnWrapper.style.cursor = 'not-allowed';
+                        importBtnWrapper.title = 'Silakan pilih file Excel terlebih dahulu!';
+                    }
+                }
+            }
+
+            function validateImportFile(e) {
+                if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
+                    if (e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                    }
+                    showImportError('Silakan pilih file Excel terlebih dahulu!');
+                    return false;
+                }
+                return true;
+            }
+
+            if (closeImportAlertBtn) {
+                closeImportAlertBtn.addEventListener('click', hideImportError);
+            }
+
+            if (importBtnWrapper) {
+                importBtnWrapper.addEventListener('click', function (e) {
+                    if (importBtn && importBtn.disabled) {
+                        validateImportFile(e);
+                    }
+                });
+            }
+
+            if (importBtn) {
+                importBtn.addEventListener('click', function (e) {
+                    if (!validateImportFile(e)) {
+                        return false;
+                    }
+                });
+            }
+
             if (importForm) {
-                importForm.addEventListener('submit', function () {
-                    const btn = document.getElementById('importButton');
-                    if (btn) {
-                        btn.disabled = true;
-                        btn.innerHTML = '<span class="material-symbols-outlined" style="font-size:18px;">hourglass_top</span> Memeriksa File...';
+                importForm.addEventListener('submit', function (e) {
+                    if (!validateImportFile(e)) {
+                        return false;
+                    }
+                    if (importBtn) {
+                        importBtn.disabled = true;
+                        importBtn.innerHTML = '<span class="material-symbols-outlined" style="font-size:18px;">hourglass_top</span> Memeriksa File...';
+                    }
+                });
+            }
+
+            // Drag and drop support pada uploadBox
+            if (uploadBox && fileInput) {
+                uploadBox.addEventListener('dragover', function (e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    uploadBox.style.borderColor = 'var(--blue)';
+                    uploadBox.style.background = '#F0F7FF';
+                });
+                uploadBox.addEventListener('dragleave', function (e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    if (!fileInput.files || fileInput.files.length === 0) {
+                        uploadBox.style.borderColor = '#CBD5E1';
+                        uploadBox.style.background = '#FAFBFD';
+                    }
+                });
+                uploadBox.addEventListener('drop', function (e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+                        fileInput.files = e.dataTransfer.files;
+                        showFileName(fileInput);
                     }
                 });
             }
