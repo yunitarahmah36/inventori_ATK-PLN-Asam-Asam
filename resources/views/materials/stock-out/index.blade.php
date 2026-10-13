@@ -313,6 +313,30 @@
             color: #fff;
         }
 
+        .btn-yellow {
+            background: var(--yellow);
+            color: var(--blue-dark);
+            border-color: transparent;
+        }
+
+        .btn-yellow:hover {
+            background: #F4B2C2;
+            color: var(--blue-dark);
+        }
+
+        .btn:disabled,
+        .btn[disabled] {
+            opacity: 0.55;
+            cursor: not-allowed !important;
+            box-shadow: none !important;
+        }
+
+        .btn:disabled:hover,
+        .btn[disabled]:hover {
+            opacity: 0.55;
+            cursor: not-allowed !important;
+        }
+
         /* KPI Stats Grid */
         .kpi-grid {
             display: grid;
@@ -825,6 +849,159 @@
 
         .modal-header-icon.blue { background: var(--blue-light); color: var(--blue); }
         .modal-header-icon.red { background: var(--red-light); color: var(--red); }
+        .modal-header-icon.yellow { background: var(--yellow-light); color: #B45309; }
+        .modal-header-icon.green { background: #ECFDF5; color: #059669; }
+
+        .callout-info {
+            background: #EFF6FF;
+            border: 1px solid #BFDBFE;
+            color: #1E40AF;
+            border-radius: 8px;
+            padding: 12px 14px;
+            font-size: 12.5px;
+            line-height: 1.5;
+            margin-bottom: 16px;
+        }
+
+        .callout-info ul {
+            margin: 6px 0 0 16px;
+            padding: 0;
+        }
+
+        .callout-danger {
+            background: #FEF2F2;
+            border: 1px solid #FECACA;
+            color: #991B1B;
+            border-radius: 8px;
+            padding: 12px 14px;
+            font-size: 12.5px;
+            line-height: 1.5;
+            margin-bottom: 16px;
+        }
+
+        .callout-danger ul {
+            margin: 6px 0 0 16px;
+            padding: 0;
+        }
+
+        .dropzone-area {
+            border: 2px dashed #CBD5E1;
+            border-radius: 12px;
+            padding: 24px 16px;
+            text-align: center;
+            background: #F8FAFC;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .dropzone-area:hover,
+        .dropzone-area.dragover {
+            border-color: var(--blue);
+            background: #FFF5F7;
+        }
+
+        .modal-box-large {
+            max-width: 920px;
+            width: 95%;
+        }
+
+        .preview-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+
+        .preview-stat-card {
+            background: #F8FAFC;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 12px 14px;
+            text-align: center;
+        }
+
+        .preview-stat-card.valid {
+            background: #F0FDF4;
+            border-color: #BBF7D0;
+        }
+
+        .preview-stat-card.invalid {
+            background: #FEF2F2;
+            border-color: #FECACA;
+        }
+
+        .preview-stat-label {
+            font-size: 11.5px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+
+        .preview-stat-val {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--text-dark);
+            margin-top: 3px;
+        }
+
+        .preview-table-container {
+            max-height: 280px;
+            overflow-y: auto;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            margin-bottom: 16px;
+        }
+
+        .preview-mini-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+        }
+
+        .preview-mini-table th {
+            background: #F8FAFC;
+            color: var(--text-muted);
+            font-weight: 700;
+            padding: 8px 10px;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 2;
+            text-align: left;
+            white-space: nowrap;
+        }
+
+        .preview-mini-table td {
+            padding: 8px 10px;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-dark);
+        }
+
+        .preview-mini-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .badge-reason {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 6px;
+            background: #FEE2E2;
+            color: #991B1B;
+            font-size: 11.5px;
+            font-weight: 600;
+            line-height: 1.4;
+        }
+
+        .badge-success-pill {
+            display: inline-block;
+            padding: 2px 7px;
+            border-radius: 6px;
+            background: #ECFDF5;
+            color: #065F46;
+            font-size: 11.5px;
+            font-weight: 700;
+        }
 
         .modal-header-custom h3 {
             font-size: 18px;
@@ -1056,6 +1233,20 @@
                         <span class="material-symbols-outlined" style="font-size:19px;">do_not_disturb_on</span>
                         Catat Stok Keluar
                     </button>
+
+                    <!-- Tombol Import Excel -->
+                    <button type="button" class="btn btn-yellow" id="btnOpenImportModal">
+                        <span class="material-symbols-outlined" style="font-size:19px;">upload_file</span>
+                        Import Excel
+                    </button>
+
+                    <!-- Tombol Download Template -->
+                    <a href="{{ route('materials.stock-out.template') }}" 
+                       class="btn btn-outline" 
+                       download>
+                        <span class="material-symbols-outlined" style="font-size:19px;">download</span>
+                        Download Template
+                    </a>
 
                     <!-- Tombol Export Excel -->
                     <a href="{{ route('materials.stock-out.export', ['search' => $search, 'start_date' => $startDate, 'end_date' => $endDate, 'per_page' => $perPage]) }}" 
@@ -1528,6 +1719,230 @@
             </div>
         </div>
 
+        {{-- ============================================================
+             MODAL 4: IMPORT EXCEL STOK KELUAR
+        ============================================================ --}}
+        <div id="importStockOutModal" class="modal-backdrop-custom" aria-hidden="true" role="dialog">
+            <div class="modal-box-custom">
+                <button type="button" class="modal-close-btn" id="closeImportModalBtn" aria-label="Tutup">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+
+                <div class="modal-header-custom">
+                    <div class="modal-header-icon yellow">
+                        <span class="material-symbols-outlined" style="font-size:26px;">upload_file</span>
+                    </div>
+                    <div>
+                        <h3>Import Stok Keluar via Excel</h3>
+                        <p>Catat pengeluaran stok material sekaligus melalui file Excel (.xlsx).</p>
+                    </div>
+                </div>
+
+                <div class="callout-info">
+                    <strong>Ketentuan Import Stok Keluar:</strong>
+                    <ul>
+                        <li>Kolom file Excel harus memuat: <strong>Tanggal, No. Material, Nama Pengambil, Bagian/Divisi, Jumlah Keluar</strong>, dan <strong>Keterangan</strong> (opsional).</li>
+                        <li><strong>No. Material</strong> harus sudah terdaftar di master data. Sistem tidak akan membuat data material baru.</li>
+                        <li><strong>Jumlah Keluar</strong> harus bilangan bulat positif dan tidak boleh melebihi stok yang tersedia.</li>
+                        <li>Sistem akan menampilkan <strong>pratinjau data valid dan data bermasalah</strong> sebelum transaksi disimpan.</li>
+                    </ul>
+                </div>
+
+                <!-- ALERT VALIDASI JIKA FILE BELUM DIPILIH -->
+                <div id="importFileAlert" class="alert alert-error" style="display:none;margin-bottom:16px;padding:12px 14px;border-radius:10px;">
+                    <div style="display:flex;align-items:center;gap:8px;">
+                        <span class="material-symbols-outlined" style="font-size:20px;color:var(--red);">error</span>
+                        <span id="importFileAlertText" style="font-size:13px;font-weight:600;color:#991B1B;">Silakan pilih file Excel terlebih dahulu!</span>
+                    </div>
+                    <button type="button" class="alert-close" id="closeImportAlertBtn" aria-label="Tutup alert">
+                        <span class="material-symbols-outlined" style="font-size:18px;">close</span>
+                    </button>
+                </div>
+
+                <form action="{{ route('materials.stock-out.import') }}" method="POST" enctype="multipart/form-data" id="importStockOutForm" novalidate>
+                    @csrf
+
+                    <div class="form-group-custom">
+                        <label for="importFile" class="form-label-custom">
+                            Pilih File Excel (.xlsx) <span style="color:var(--red);">*</span>
+                        </label>
+                        <div class="dropzone-area" id="importDropzone" onclick="document.getElementById('importFile').click()">
+                            <span class="material-symbols-outlined" id="dropzoneIcon" style="font-size:38px;color:#94A3B8;margin-bottom:6px;">cloud_upload</span>
+                            <div style="font-weight:600;font-size:13.5px;color:var(--text-dark);" id="dropzoneText">Klik atau seret file Excel ke sini</div>
+                            <div style="font-size:11.5px;color:var(--text-muted);margin-top:2px;" id="dropzoneSubtext">Hanya format .xlsx (Maksimal 10MB)</div>
+                        </div>
+                        <input type="file" id="importFile" name="file" accept=".xlsx" style="display:none;">
+                    </div>
+
+                    <div style="margin-top:14px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;">
+                        <a href="{{ route('materials.stock-out.template') }}" class="btn btn-outline" style="font-size:12px;padding:6px 12px;" download>
+                            <span class="material-symbols-outlined" style="font-size:16px;">download</span>
+                            Download Template
+                        </a>
+
+                        <div style="display:flex;gap:8px;">
+                            <button type="button" class="btn btn-outline" id="cancelImportModalBtn">Batal</button>
+                            <button type="submit" class="btn btn-yellow" id="submitImportBtn" disabled>
+                                <span class="material-symbols-outlined" style="font-size:18px;">upload</span>
+                                Unggah & Lihat Preview
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        @if (!empty($preview))
+        {{-- ============================================================
+             MODAL 5: PREVIEW DATA IMPORT STOK KELUAR
+        ============================================================ --}}
+        <div id="previewStockOutModal" class="modal-backdrop-custom show" aria-hidden="false" role="dialog">
+            <div class="modal-box-custom modal-box-large">
+                <form action="{{ route('materials.stock-out.import.cancel') }}" method="POST" id="closePreviewForm" style="display:inline;">
+                    @csrf
+                    <button type="submit" class="modal-close-btn" aria-label="Tutup Pratinjau" title="Batal & Tutup">
+                        <span class="material-symbols-outlined">close</span>
+                    </button>
+                </form>
+
+                <div class="modal-header-custom">
+                    <div class="modal-header-icon blue">
+                        <span class="material-symbols-outlined" style="font-size:26px;">fact_check</span>
+                    </div>
+                    <div>
+                        <h3>Pratinjau Import Stok Keluar</h3>
+                        <p>Periksa hasil analisis file Excel sebelum mengonfirmasi penyimpanan transaksi.</p>
+                    </div>
+                </div>
+
+                {{-- KARTU STATISTIK RINGKASAN PRATINJAU --}}
+                <div class="preview-stats-grid">
+                    <div class="preview-stat-card">
+                        <div class="preview-stat-label">Total Baris File</div>
+                        <div class="preview-stat-val">{{ $preview['total_rows'] }}</div>
+                    </div>
+                    <div class="preview-stat-card valid">
+                        <div class="preview-stat-label" style="color:#16A34A;">Baris Valid</div>
+                        <div class="preview-stat-val" style="color:#16A34A;">{{ $preview['valid_count'] }}</div>
+                    </div>
+                    <div class="preview-stat-card {{ $preview['invalid_count'] > 0 ? 'invalid' : '' }}">
+                        <div class="preview-stat-label" style="{{ $preview['invalid_count'] > 0 ? 'color:#DC2626;' : '' }}">Baris Bermasalah</div>
+                        <div class="preview-stat-val" style="{{ $preview['invalid_count'] > 0 ? 'color:#DC2626;' : '' }}">{{ $preview['invalid_count'] }}</div>
+                    </div>
+                    <div class="preview-stat-card">
+                        <div class="preview-stat-label">Total Unit Keluar</div>
+                        <div class="preview-stat-val" style="color:var(--blue);">-{{ number_format($preview['total_valid_quantity'], 0, ',', '.') }}</div>
+                    </div>
+                </div>
+
+                {{-- BAGIAN 1: BARIS BERMASALAH (JIKA ADA) --}}
+                @if ($preview['invalid_count'] > 0)
+                    <div class="callout-danger">
+                        <div style="font-weight:700;margin-bottom:4px;display:flex;align-items:center;gap:6px;">
+                            <span class="material-symbols-outlined" style="font-size:18px;">warning</span>
+                            <span>Terdapat {{ $preview['invalid_count'] }} baris data yang bermasalah dan tidak dapat disimpan:</span>
+                        </div>
+                        <div style="font-size:12px;color:#7F1D1D;margin-bottom:8px;">
+                            Periksa penyebab kesalahan di bawah ini. Anda dapat membatalkan untuk memperbaiki file Excel, atau melanjutkan menyimpan baris data yang valid.
+                        </div>
+                    </div>
+
+                    <div class="preview-table-container">
+                        <table class="preview-mini-table">
+                            <thead>
+                                <tr>
+                                    <th style="width:60px;">Baris</th>
+                                    <th style="width:130px;">No. Material</th>
+                                    <th>Nama Material</th>
+                                    <th>Pengambil (Divisi)</th>
+                                    <th style="width:70px;text-align:center;">Jumlah</th>
+                                    <th>Alasan / Keterangan Error</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($preview['invalid_rows'] as $inv)
+                                    <tr>
+                                        <td style="font-weight:700;color:#991B1B;">Baris {{ $inv['row'] }}</td>
+                                        <td><span class="badge-material-number">{{ $inv['material_number'] }}</span></td>
+                                        <td>{{ $inv['material_name'] }}</td>
+                                        <td>{{ $inv['recipient'] }} {{ $inv['division'] !== '-' ? '(' . $inv['division'] . ')' : '' }}</td>
+                                        <td style="text-align:center;font-weight:700;">{{ $inv['quantity'] }}</td>
+                                        <td><span class="badge-reason">{{ $inv['reason'] }}</span></td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                @endif
+
+                {{-- BAGIAN 2: BARIS VALID (SIAP DISIMPAN) --}}
+                @if ($preview['valid_count'] > 0)
+                    <div style="margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;">
+                        <span style="font-size:13px;font-weight:700;color:var(--text-dark);display:flex;align-items:center;gap:6px;">
+                            <span class="material-symbols-outlined" style="font-size:18px;color:#16A34A;">check_circle</span>
+                            Daftar Transaksi Valid ({{ $preview['valid_count'] }} Data Siap Disimpan):
+                        </span>
+                    </div>
+
+                    <div class="preview-table-container">
+                        <table class="preview-mini-table">
+                            <thead>
+                                <tr>
+                                    <th style="width:40px;">No</th>
+                                    <th style="width:90px;">Tanggal</th>
+                                    <th style="width:120px;">No. Material</th>
+                                    <th>Nama Material</th>
+                                    <th>Penerima (Divisi)</th>
+                                    <th style="width:70px;text-align:center;">Jumlah</th>
+                                    <th style="width:90px;text-align:center;">Sisa Stok</th>
+                                    <th>Keterangan</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($preview['valid_rows'] as $vIdx => $val)
+                                    <tr>
+                                        <td>{{ $vIdx + 1 }}</td>
+                                        <td>{{ $val['date_formatted'] }}</td>
+                                        <td><span class="badge-material-number">{{ $val['material_number'] }}</span></td>
+                                        <td style="font-weight:600;">{{ $val['material_name'] }}</td>
+                                        <td>{{ $val['recipient'] }} ({{ $val['division'] }})</td>
+                                        <td style="text-align:center;font-weight:700;color:var(--red);">-{{ $val['quantity'] }} {{ $val['unit'] }}</td>
+                                        <td style="text-align:center;"><span class="badge-success-pill">{{ $val['remaining_stock'] }} {{ $val['unit'] }}</span></td>
+                                        <td style="color:var(--text-muted);">{{ $val['description'] ?: '-' }}</td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                @else
+                    <div class="callout-danger" style="margin-top:12px;">
+                        <strong>Tidak ada baris data valid yang dapat disimpan.</strong> Seluruh data pada file Excel mengalami kendala validasi. Silakan perbaiki file Excel Anda sesuai keterangan error di atas.
+                    </div>
+                @endif
+
+                {{-- TOMBOL AKSI KONFIRMASI / BATAL --}}
+                <div class="modal-actions-custom" style="display:flex;align-items:center;justify-content:flex-end;gap:10px;">
+                    <form action="{{ route('materials.stock-out.import.cancel') }}" method="POST">
+                        @csrf
+                        <button type="submit" class="btn btn-outline" id="btnCancelPreview">
+                            Batal / Upload Ulang
+                        </button>
+                    </form>
+
+                    @if ($preview['valid_count'] > 0)
+                        <form action="{{ route('materials.stock-out.import.confirm') }}" method="POST" id="confirmImportForm">
+                            @csrf
+                            <button type="submit" class="btn btn-primary" id="btnConfirmImport">
+                                <span class="material-symbols-outlined" style="font-size:18px;">check_circle</span>
+                                Konfirmasi & Simpan {{ $preview['valid_count'] }} Transaksi
+                            </button>
+                        </form>
+                    @endif
+                </div>
+            </div>
+        </div>
+        @endif
+
     {{-- Script Interaktif Halaman Stok Keluar --}}
     <script>
         function initStockOutPage() {
@@ -1746,11 +2161,131 @@
 
             if (cancelDeleteBtn) cancelDeleteBtn.addEventListener('click', closeDeleteModal);
 
+            // ==========================================
+            // MODAL IMPORT EXCEL STOK KELUAR
+            // ==========================================
+            const importModal         = document.getElementById('importStockOutModal');
+            const btnOpenImportModal  = document.getElementById('btnOpenImportModal');
+            const closeImportModalBtn = document.getElementById('closeImportModalBtn');
+            const cancelImportModalBtn= document.getElementById('cancelImportModalBtn');
+            const importDropzone      = document.getElementById('importDropzone');
+            const importFile          = document.getElementById('importFile');
+            const dropzoneText        = document.getElementById('dropzoneText');
+            const dropzoneSubtext     = document.getElementById('dropzoneSubtext');
+            const dropzoneIcon        = document.getElementById('dropzoneIcon');
+            const submitImportBtn     = document.getElementById('submitImportBtn');
+            const importStockOutForm  = document.getElementById('importStockOutForm');
+            const importFileAlert     = document.getElementById('importFileAlert');
+            const closeImportAlertBtn = document.getElementById('closeImportAlertBtn');
+
+            function openImportModal() {
+                if (importModal) {
+                    importModal.classList.add('show');
+                    document.body.style.overflow = 'hidden';
+                }
+            }
+
+            function closeImportModal() {
+                if (importModal) {
+                    importModal.classList.remove('show');
+                    document.body.style.overflow = '';
+                    if (importStockOutForm) importStockOutForm.reset();
+                    if (dropzoneText) dropzoneText.textContent = 'Klik atau seret file Excel ke sini';
+                    if (dropzoneSubtext) dropzoneSubtext.textContent = 'Hanya format .xlsx (Maksimal 10MB)';
+                    if (dropzoneIcon) dropzoneIcon.textContent = 'cloud_upload';
+                    if (submitImportBtn) submitImportBtn.disabled = true;
+                    if (importFileAlert) importFileAlert.style.display = 'none';
+                }
+            }
+
+            if (btnOpenImportModal) btnOpenImportModal.addEventListener('click', openImportModal);
+            if (closeImportModalBtn) closeImportModalBtn.addEventListener('click', closeImportModal);
+            if (cancelImportModalBtn) cancelImportModalBtn.addEventListener('click', closeImportModal);
+            if (closeImportAlertBtn) {
+                closeImportAlertBtn.addEventListener('click', function () {
+                    if (importFileAlert) importFileAlert.style.display = 'none';
+                });
+            }
+
+            function handleFileSelected(file) {
+                if (!file) {
+                    if (submitImportBtn) submitImportBtn.disabled = true;
+                    return;
+                }
+
+                const fileName = file.name;
+                const fileExt  = fileName.split('.').pop().toLowerCase();
+
+                if (fileExt !== 'xlsx') {
+                    if (importFileAlert) {
+                        const alertText = document.getElementById('importFileAlertText');
+                        if (alertText) alertText.textContent = 'Format file tidak didukung! Hanya file .xlsx yang diperbolehkan.';
+                        importFileAlert.style.display = 'flex';
+                    }
+                    if (submitImportBtn) submitImportBtn.disabled = true;
+                    return;
+                }
+
+                if (importFileAlert) importFileAlert.style.display = 'none';
+                if (dropzoneText) dropzoneText.textContent = fileName;
+                const sizeKb = (file.size / 1024).toFixed(1);
+                if (dropzoneSubtext) dropzoneSubtext.textContent = `Ukuran: ${sizeKb} KB (Siap diunggah)`;
+                if (dropzoneIcon) dropzoneIcon.textContent = 'description';
+                if (submitImportBtn) submitImportBtn.disabled = false;
+            }
+
+            if (importFile) {
+                importFile.addEventListener('change', function () {
+                    handleFileSelected(this.files[0]);
+                });
+            }
+
+            if (importDropzone) {
+                ['dragenter', 'dragover'].forEach(eventName => {
+                    importDropzone.addEventListener(eventName, function (e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        importDropzone.classList.add('dragover');
+                    });
+                });
+
+                ['dragleave', 'drop'].forEach(eventName => {
+                    importDropzone.addEventListener(eventName, function (e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        importDropzone.classList.remove('dragover');
+                    });
+                });
+
+                importDropzone.addEventListener('drop', function (e) {
+                    const dt = e.dataTransfer;
+                    const files = dt.files;
+                    if (files && files.length > 0) {
+                        importFile.files = files;
+                        handleFileSelected(files[0]);
+                    }
+                });
+            }
+
+            if (importStockOutForm) {
+                importStockOutForm.addEventListener('submit', function (e) {
+                    if (!importFile || !importFile.files || importFile.files.length === 0) {
+                        e.preventDefault();
+                        if (importFileAlert) {
+                            const alertText = document.getElementById('importFileAlertText');
+                            if (alertText) alertText.textContent = 'Silakan pilih file Excel terlebih dahulu!';
+                            importFileAlert.style.display = 'flex';
+                        }
+                    }
+                });
+            }
+
             // Tutup modal jika klik di luar box
             window.addEventListener('click', function (e) {
                 if (e.target === createModal) closeCreateModal();
                 if (e.target === editModal) closeEditModal();
                 if (e.target === deleteModal) closeDeleteModal();
+                if (e.target === importModal) closeImportModal();
             });
 
             // Tutup modal dengan tombol Escape
@@ -1759,6 +2294,7 @@
                     closeCreateModal();
                     closeEditModal();
                     closeDeleteModal();
+                    closeImportModal();
                 }
             });
         }

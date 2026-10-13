@@ -127,6 +127,18 @@ Route::middleware('auth')->group(function () {
     Route::post('/materials/stock-out', [StockOutController::class, 'store'])
         ->name('materials.stock-out.store');
 
+    Route::get('/materials/stock-out/template', [StockOutController::class, 'downloadTemplate'])
+        ->name('materials.stock-out.template');
+
+    Route::post('/materials/stock-out/import', [StockOutController::class, 'import'])
+        ->name('materials.stock-out.import');
+
+    Route::post('/materials/stock-out/import/confirm', [StockOutController::class, 'confirmImport'])
+        ->name('materials.stock-out.import.confirm');
+
+    Route::post('/materials/stock-out/import/cancel', [StockOutController::class, 'cancelImport'])
+        ->name('materials.stock-out.import.cancel');
+
     Route::get('/materials/stock-out/export', [StockOutController::class, 'export'])
         ->name('materials.stock-out.export');
 

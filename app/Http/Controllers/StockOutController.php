@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Exports\StockOutExport;
+use App\Exports\StockOutTemplateExport;
+use App\Imports\StockOutImport;
 use App\Models\Material;
 use App\Models\StockMovement;
 use Carbon\Carbon;
@@ -78,6 +80,8 @@ class StockOutController extends Controller
 
         $stockOuts = $query->paginate($perPageValue)->withQueryString();
 
+        $preview = session('stock_out_import_preview');
+
         return view('materials.stock-out.index', compact(
             'stockOuts',
             'allMaterials',
@@ -87,7 +91,8 @@ class StockOutController extends Controller
             'search',
             'startDate',
             'endDate',
-            'perPage'
+            'perPage',
+            'preview'
         ));
     }
 
@@ -323,5 +328,167 @@ class StockOutController extends Controller
             ),
             $filename
         );
+    }
+
+    /**
+     * Unduh template file Excel untuk Stok Keluar.
+     */
+    public function downloadTemplate()
+    {
+        return Excel::download(
+            new StockOutTemplateExport(),
+            'Template_Stok_Keluar_ATK_PLN.xlsx'
+        );
+    }
+
+    /**
+     * Analisis dan pratinjau file Excel Stok Keluar sebelum konfirmasi penyimpanan.
+     */
+    public function import(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|file|mimes:xlsx|max:10240',
+        ], [
+            'file.required' => 'Silakan pilih file Excel terlebih dahulu!',
+            'file.file'     => 'File yang diunggah tidak valid.',
+            'file.mimes'    => 'Format file tidak didukung. Hanya file Excel dengan format .xlsx yang diperbolehkan.',
+            'file.max'      => 'Ukuran file maksimal 10MB.',
+        ]);
+
+        try {
+            $preview = StockOutImport::parseFile($request->file('file'));
+
+            // Simpan pratinjau ke sesi
+            session(['stock_out_import_preview' => $preview]);
+
+            return redirect()
+                ->route('materials.stock-out.index')
+                ->with('info_preview_stock_out', true);
+        } catch (\Exception $e) {
+            return redirect()
+                ->route('materials.stock-out.index')
+                ->with('error', 'Gagal memproses file import: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Konfirmasi import: Simpan transaksi stok keluar dari baris yang valid ke database,
+     * kurangi stok material secara atomik, dan catat riwayat pergerakan stok.
+     */
+    public function confirmImport(Request $request)
+    {
+        $preview = session('stock_out_import_preview');
+
+        if (empty($preview) || empty($preview['valid_rows'])) {
+            return redirect()
+                ->route('materials.stock-out.index')
+                ->with('error', 'Tidak ada data stok keluar valid yang dapat disimpan. Silakan unggah file Excel yang sesuai.');
+        }
+
+        $validRows        = $preview['valid_rows'];
+        $savedCount       = 0;
+        $totalQtyDeducted = 0;
+        $userId           = Auth::id() ?? 1;
+
+        try {
+            DB::transaction(function () use ($validRows, $userId, &$savedCount, &$totalQtyDeducted) {
+                // Kumpulkan semua nomor material unik
+                $materialNumbers = array_unique(array_column($validRows, 'material_number'));
+
+                // Kunci baris material untuk update demi mencegah race condition
+                $materials = Material::whereIn('material_number', $materialNumbers)
+                    ->lockForUpdate()
+                    ->get()
+                    ->keyBy(function ($m) {
+                        return strtolower(trim($m->material_number));
+                    });
+
+                // Hitung total kebutuhan stok per material untuk memastikan stok cukup saat transaksi dieksekusi
+                $neededPerMaterial = [];
+                foreach ($validRows as $row) {
+                    $norm = strtolower(trim($row['material_number']));
+                    $neededPerMaterial[$norm] = ($neededPerMaterial[$norm] ?? 0) + (int) $row['quantity'];
+                }
+
+                foreach ($neededPerMaterial as $norm => $totalQty) {
+                    if (!isset($materials[$norm])) {
+                        throw new \Exception("Material dengan nomor '{$norm}' tidak ditemukan di database saat memproses konfirmasi.");
+                    }
+                    $mat = $materials[$norm];
+                    if ((int) $mat->quantity < $totalQty) {
+                        throw new \Exception("Stok material '{$mat->name}' ({$mat->material_number}) tidak mencukupi saat proses simpan. Tersedia: {$mat->quantity} {$mat->unit}, total kebutuhan: {$totalQty} {$mat->unit}.");
+                    }
+                }
+
+                // Proses setiap baris transaksi
+                foreach ($validRows as $row) {
+                    $norm        = strtolower(trim($row['material_number']));
+                    $material    = $materials[$norm];
+                    $qtyOut      = (int) $row['quantity'];
+                    $currentQty  = (int) $material->quantity;
+                    $newQty      = $currentQty - $qtyOut;
+
+                    // Kurangi stok material
+                    $material->update([
+                        'quantity' => $newQty,
+                    ]);
+
+                    // Format tanggal dan waktu transaksi
+                    $exitDateTime = Carbon::parse($row['exit_date'])->setTime(
+                        now()->hour,
+                        now()->minute,
+                        now()->second
+                    );
+
+                    // Susun nama penerima beserta divisi/bagian
+                    $recipientText = trim($row['recipient']);
+                    if (!empty($row['division'])) {
+                        $recipientText .= ' (' . trim($row['division']) . ')';
+                    }
+
+                    // Catat ke riwayat pergerakan stok
+                    $movement = new StockMovement([
+                        'material_id'     => $material->id,
+                        'material_name'   => $material->name,
+                        'material_number' => $material->material_number,
+                        'user_id'         => $userId,
+                        'activity'        => 'Keluar',
+                        'quantity_before' => $currentQty,
+                        'quantity_after'  => $newQty,
+                        'quantity_change' => -$qtyOut,
+                        'recipient'       => $recipientText,
+                        'description'     => !empty($row['description']) ? trim($row['description']) : null,
+                    ]);
+                    $movement->created_at = $exitDateTime;
+                    $movement->save();
+
+                    $savedCount++;
+                    $totalQtyDeducted += $qtyOut;
+                }
+            });
+
+            // Bersihkan sesi pratinjau import setelah berhasil disimpan
+            session()->forget('stock_out_import_preview');
+
+            return redirect()
+                ->route('materials.stock-out.index')
+                ->with('success', "Berhasil mengimpor stok keluar: {$savedCount} transaksi berhasil dicatat, total {$totalQtyDeducted} unit material dikeluarkan.");
+        } catch (\Exception $e) {
+            return redirect()
+                ->route('materials.stock-out.index')
+                ->with('error', 'Gagal memproses import stok keluar: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Batalkan pratinjau import stok keluar dan hapus data sesi.
+     */
+    public function cancelImport()
+    {
+        session()->forget('stock_out_import_preview');
+
+        return redirect()
+            ->route('materials.stock-out.index')
+            ->with('info', 'Pratinjau import stok keluar dibatalkan.');
     }
 }
