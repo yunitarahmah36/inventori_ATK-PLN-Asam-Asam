@@ -424,6 +424,13 @@ class StockOutController extends Controller
                 foreach ($validRows as $row) {
                     $norm        = strtolower(trim($row['material_number']));
                     $material    = $materials[$norm];
+
+                    // Validasi tanggal: tidak boleh lebih awal dari tanggal masuk material
+                    $entryDate = StockOutImport::getMaterialEntryDate($material);
+                    if ($entryDate !== null && $row['exit_date'] < $entryDate) {
+                        throw new \Exception("Tanggal stok keluar tidak boleh lebih awal dari tanggal masuk material ({$material->name} - {$material->material_number}).");
+                    }
+
                     $qtyOut      = (int) $row['quantity'];
                     $currentQty  = (int) $material->quantity;
                     $newQty      = $currentQty - $qtyOut;

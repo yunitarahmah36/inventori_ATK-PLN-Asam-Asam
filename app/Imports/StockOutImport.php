@@ -3,12 +3,46 @@
 namespace App\Imports;
 
 use App\Models\Material;
+use App\Models\StockMovement;
 use Carbon\Carbon;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
 
 class StockOutImport
 {
+    /**
+     * Dapatkan tanggal masuk material berdasarkan data stok masuk di database:
+     * 1. Cek riwayat pergerakan stok masuk di tabel stock_movements (quantity_change > 0 atau activity Tambah/Import).
+     * 2. Fallback ke kolom entry_date pada tabel master materials.
+     */
+    public static function getMaterialEntryDate(Material $material): ?string
+    {
+        // 1. Cek dari transaksi stok masuk di StockMovement
+        $stockIn = StockMovement::where(function ($q) use ($material) {
+                $q->where('material_id', $material->id)
+                  ->orWhere('material_number', $material->material_number);
+            })
+            ->where(function ($q) {
+                $q->where('quantity_change', '>', 0)
+                  ->orWhere(function ($sub) {
+                      $sub->whereIn('activity', ['Tambah', 'Import'])
+                          ->where('description', 'not like', '%Pendaftaran material baru%');
+                  });
+            })
+            ->orderBy('created_at', 'asc')
+            ->first();
+
+        if ($stockIn && $stockIn->created_at) {
+            return Carbon::parse($stockIn->created_at)->format('Y-m-d');
+        }
+
+        // 2. Fallback ke kolom entry_date pada master data material
+        if ($material->entry_date) {
+            return Carbon::parse($material->entry_date)->format('Y-m-d');
+        }
+
+        return null;
+    }
     /**
      * Normalisasi nomor material: trim dan lowercase.
      */
@@ -272,7 +306,17 @@ class StockOutImport
             $rowPayload['material_name']   = $material->name;
             $rowPayload['material_number'] = $material->material_number;
 
-            // 4. Validasi Jumlah Keluar harus bilangan bulat positif
+            // 4. Validasi Tanggal Stok Keluar tidak boleh lebih awal dari Tanggal Masuk Material
+            $entryDate = self::getMaterialEntryDate($material);
+            if ($entryDate !== null && $convertedDate < $entryDate) {
+                $formattedOutDate = Carbon::parse($convertedDate)->format('d/m/Y');
+                $formattedInDate  = Carbon::parse($entryDate)->format('d/m/Y');
+                $rowPayload['reason'] = "Tanggal stok keluar tidak boleh lebih awal dari tanggal masuk material ({$formattedInDate}). Tanggal pada file: {$formattedOutDate}.";
+                $invalidRows[] = $rowPayload;
+                continue;
+            }
+
+            // 5. Validasi Jumlah Keluar harus bilangan bulat positif
             // Bersihkan format ribuan jika ada titik/koma
             $cleanQty = str_replace([' ', '.'], '', $quantityRaw);
             if (!is_numeric($cleanQty) || (int) $cleanQty <= 0 || (int) $cleanQty != (float) $cleanQty) {

@@ -324,4 +324,170 @@ class StockOutImportTest extends TestCase
         $response->assertRedirect(route('materials.stock-out.index'));
         $this->assertFalse(session()->has('stock_out_import_preview'));
     }
+
+    public function test_import_rejects_row_when_exit_date_is_earlier_than_material_entry_date(): void
+    {
+        $admin = $this->createUser();
+
+        $mat = Material::create([
+            'material_number' => 'MAT-DATE-01',
+            'name'            => 'Kertas Folio F4',
+            'entry_date'      => '2026-10-10',
+            'quantity'        => 50,
+            'unit'            => 'Rim',
+        ]);
+
+        // File dengan tanggal keluar 05/10/2026 (lebih awal dari entry_date 10/10/2026)
+        $file = $this->createStockOutExcel([
+            ['05/10/2026', 'MAT-DATE-01', 'Budi Santoso', 'Keuangan', 10, 'Pengeluaran sebelum barang masuk'],
+        ]);
+
+        $response = $this->actingAs($admin)->post(route('materials.stock-out.import'), [
+            'file' => $file,
+        ]);
+
+        $response->assertRedirect(route('materials.stock-out.index'));
+        $this->assertTrue(session()->has('stock_out_import_preview'));
+
+        $preview = session('stock_out_import_preview');
+        $this->assertEquals(0, $preview['valid_count']);
+        $this->assertEquals(1, $preview['invalid_count']);
+
+        $invalid = $preview['invalid_rows'][0];
+        $this->assertEquals('MAT-DATE-01', $invalid['material_number']);
+        $this->assertStringContainsString('Tanggal stok keluar tidak boleh lebih awal dari tanggal masuk material', $invalid['reason']);
+
+        // Pastikan tidak ada transaksi yang disimpan
+        $this->assertEquals(0, StockMovement::count());
+        $this->assertEquals(50, $mat->fresh()->quantity);
+    }
+
+    public function test_import_validates_date_based_on_stock_movement_in_database(): void
+    {
+        $admin = $this->createUser();
+
+        $mat = Material::create([
+            'material_number' => 'MAT-DATE-02',
+            'name'            => 'Tinta Printer Epson',
+            'entry_date'      => '2026-10-01',
+            'quantity'        => 20,
+            'unit'            => 'Botol',
+        ]);
+
+        // Simulasikan transaksi stok masuk pada tanggal 12/10/2026
+        StockMovement::create([
+            'material_id'     => $mat->id,
+            'material_name'   => $mat->name,
+            'material_number' => $mat->material_number,
+            'user_id'         => $admin->id,
+            'activity'        => 'Tambah',
+            'quantity_before' => 0,
+            'quantity_after'  => 20,
+            'quantity_change' => 20,
+            'created_at'      => \Carbon\Carbon::parse('2026-10-12 09:00:00'),
+        ]);
+
+        // Baris 1: 08/10/2026 (lebih awal dari stok masuk 12/10/2026) -> harus ditolak
+        // Baris 2: 15/10/2026 (setelah stok masuk 12/10/2026) -> valid
+        $file = $this->createStockOutExcel([
+            ['08/10/2026', 'MAT-DATE-02', 'Doni', 'IT Support', 2, 'Sebelum stok masuk'],
+            ['15/10/2026', 'MAT-DATE-02', 'Rian', 'SDM', 3, 'Setelah stok masuk'],
+        ]);
+
+        $this->actingAs($admin)->post(route('materials.stock-out.import'), [
+            'file' => $file,
+        ]);
+
+        $preview = session('stock_out_import_preview');
+        $this->assertEquals(1, $preview['valid_count']);
+        $this->assertEquals(1, $preview['invalid_count']);
+
+        // Baris bermasalah terdeteksi dengan tepat
+        $this->assertEquals(2, $preview['invalid_rows'][0]['row']);
+        $this->assertStringContainsString('Tanggal stok keluar tidak boleh lebih awal dari tanggal masuk material', $preview['invalid_rows'][0]['reason']);
+
+        // Baris valid dapat dikonfirmasi
+        $this->assertEquals(3, $preview['valid_rows'][0]['row']);
+        $this->assertEquals(3, $preview['valid_rows'][0]['quantity']);
+
+        // Saat konfirmasi, hanya baris valid yang disimpan
+        $this->actingAs($admin)->post(route('materials.stock-out.import.confirm'));
+        $this->assertEquals(17, $mat->fresh()->quantity);
+        $this->assertDatabaseHas('stock_movements', [
+            'material_id'     => $mat->id,
+            'activity'        => 'Keluar',
+            'quantity_change' => -3,
+        ]);
+    }
+
+    public function test_import_validates_dates_per_material_number_individually(): void
+    {
+        $admin = $this->createUser();
+
+        // Material A masuk tanggal 10 Oktober 2026
+        $matA = Material::create([
+            'material_number' => 'MAT-A',
+            'name'            => 'Material A',
+            'entry_date'      => '2026-10-10',
+            'quantity'        => 30,
+            'unit'            => 'Pcs',
+        ]);
+
+        // Material B masuk tanggal 1 Oktober 2026
+        $matB = Material::create([
+            'material_number' => 'MAT-B',
+            'name'            => 'Material B',
+            'entry_date'      => '2026-10-01',
+            'quantity'        => 30,
+            'unit'            => 'Pcs',
+        ]);
+
+        // Tanggal keluar sama-sama 05/10/2026:
+        // Untuk MAT-A: 05/10/2026 < 10/10/2026 -> INVALID
+        // Untuk MAT-B: 05/10/2026 >= 01/10/2026 -> VALID
+        $file = $this->createStockOutExcel([
+            ['05/10/2026', 'MAT-A', 'User 1', 'Divisi 1', 5, 'Uji Material A'],
+            ['05/10/2026', 'MAT-B', 'User 2', 'Divisi 2', 5, 'Uji Material B'],
+        ]);
+
+        $this->actingAs($admin)->post(route('materials.stock-out.import'), [
+            'file' => $file,
+        ]);
+
+        $preview = session('stock_out_import_preview');
+        $this->assertEquals(1, $preview['valid_count']);
+        $this->assertEquals(1, $preview['invalid_count']);
+
+        $this->assertEquals('MAT-A', $preview['invalid_rows'][0]['material_number']);
+        $this->assertStringContainsString('Tanggal stok keluar tidak boleh lebih awal dari tanggal masuk material', $preview['invalid_rows'][0]['reason']);
+
+        $this->assertEquals('MAT-B', $preview['valid_rows'][0]['material_number']);
+    }
+
+    public function test_import_allows_same_day_stock_out(): void
+    {
+        $admin = $this->createUser();
+
+        $mat = Material::create([
+            'material_number' => 'MAT-SAMEDAY',
+            'name'            => 'Spidol Whiteboard',
+            'entry_date'      => '2026-10-10',
+            'quantity'        => 20,
+            'unit'            => 'Pcs',
+        ]);
+
+        // Tanggal keluar sama dengan tanggal masuk (10/10/2026) -> diperbolehkan
+        $file = $this->createStockOutExcel([
+            ['10/10/2026', 'MAT-SAMEDAY', 'Agus', 'Operasional', 4, 'Pengeluaran di hari yang sama'],
+        ]);
+
+        $this->actingAs($admin)->post(route('materials.stock-out.import'), [
+            'file' => $file,
+        ]);
+
+        $preview = session('stock_out_import_preview');
+        $this->assertEquals(1, $preview['valid_count']);
+        $this->assertEquals(0, $preview['invalid_count']);
+    }
 }
+
