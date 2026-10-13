@@ -717,6 +717,25 @@
         }
 
         /* Material List */
+        .material-list {
+            max-height: 520px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+
+        .material-list::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        .material-list::-webkit-scrollbar-thumb {
+            background: #E2E8F0;
+            border-radius: 4px;
+        }
+
+        .material-list::-webkit-scrollbar-thumb:hover {
+            background: #CBD5E1;
+        }
+
         .material-item {
             display: flex;
             align-items: center;
@@ -1490,45 +1509,47 @@
                         </div>
 
                         @if ($latestMaterials->count() > 0)
-                            @foreach ($latestMaterials as $mat)
-                                @php
-                                    $isCritical = $mat->quantity <= 5;
-                                    $isLow = $mat->quantity <= 15;
-                                @endphp
-                                <div class="material-item {{ $isCritical ? 'is-critical-stock' : ($isLow ? 'is-low-stock' : '') }}">
-                                    <div class="material-item-left">
-                                        <div class="material-item-top">
-                                            <span class="material-badge-no {{ $isLow ? 'low-stock' : '' }}">
-                                                {{ $mat->material_number }}
-                                            </span>
-                                            <span class="material-name" title="{{ $mat->name }}">{{ $mat->name }}</span>
-                                        </div>
-                                        @if ($isLow)
-                                            <div class="material-low-label {{ $isCritical ? 'critical' : '' }}">
-                                                <span class="material-symbols-outlined">{{ $isCritical ? 'error' : 'warning' }}</span>
-                                                <span>{{ $isCritical ? 'Stok Kritis' : 'Stok Menipis' }}</span>
-                                                <span class="material-date-ago">
-                                                    • Masuk: {{ $mat->entry_date ? $mat->entry_date->translatedFormat('j M Y') : '-' }}
+                            <div class="material-list">
+                                @foreach ($latestMaterials as $mat)
+                                    @php
+                                        $isCritical = $mat->quantity <= 5;
+                                        $isLow = $mat->quantity <= 15;
+                                    @endphp
+                                    <div class="material-item {{ $isCritical ? 'is-critical-stock' : ($isLow ? 'is-low-stock' : '') }}">
+                                        <div class="material-item-left">
+                                            <div class="material-item-top">
+                                                <span class="material-badge-no {{ $isLow ? 'low-stock' : '' }}">
+                                                    {{ $mat->material_number }}
                                                 </span>
+                                                <span class="material-name" title="{{ $mat->name }}">{{ $mat->name }}</span>
                                             </div>
-                                        @else
-                                            <div class="material-date">
-                                                Masuk: {{ $mat->entry_date ? $mat->entry_date->translatedFormat('j M Y') : '-' }}
-                                            </div>
-                                        @endif
-                                    </div>
-                                    <div class="material-item-right">
-                                        <div class="material-qty {{ $isLow ? 'low' : '' }}" style="{{ $isCritical ? 'color:#B91C1C;' : '' }}">
-                                            {{ number_format($mat->quantity, 0, ',', '.') }} {{ $mat->unit }}
+                                            @if ($isLow)
+                                                <div class="material-low-label {{ $isCritical ? 'critical' : '' }}">
+                                                    <span class="material-symbols-outlined">{{ $isCritical ? 'error' : 'warning' }}</span>
+                                                    <span>{{ $isCritical ? 'Stok Kritis' : 'Stok Menipis' }}</span>
+                                                    <span class="material-date-ago">
+                                                        • Masuk: {{ $mat->entry_date ? $mat->entry_date->translatedFormat('j M Y') : '-' }}
+                                                    </span>
+                                                </div>
+                                            @else
+                                                <div class="material-date">
+                                                    Masuk: {{ $mat->entry_date ? $mat->entry_date->translatedFormat('j M Y') : '-' }}
+                                                </div>
+                                            @endif
                                         </div>
-                                        @if ($isCritical)
-                                            <span class="pill-badge pill-critical">Stok Kritis</span>
-                                        @elseif ($isLow)
-                                            <span class="pill-badge pill-warning">Perlu Restock</span>
-                                        @endif
+                                        <div class="material-item-right">
+                                            <div class="material-qty {{ $isLow ? 'low' : '' }}" style="{{ $isCritical ? 'color:#B91C1C;' : '' }}">
+                                                {{ number_format($mat->quantity, 0, ',', '.') }} {{ $mat->unit }}
+                                            </div>
+                                            @if ($isCritical)
+                                                <span class="pill-badge pill-critical">Stok Kritis</span>
+                                            @elseif ($isLow)
+                                                <span class="pill-badge pill-warning">Perlu Restock</span>
+                                            @endif
+                                        </div>
                                     </div>
-                                </div>
-                            @endforeach
+                                @endforeach
+                            </div>
                         @else
                             <div class="empty-state">
                                 <span class="material-symbols-outlined">inventory_2</span>

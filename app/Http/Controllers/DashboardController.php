@@ -43,14 +43,14 @@ class DashboardController extends Controller
             $otherMaterials = Material::where('id', '!=', $criticalLowStock->id)
                 ->orderBy('entry_date', 'desc')
                 ->orderBy('id', 'desc')
-                ->take(5)
+                ->take(9)
                 ->get();
 
             $latestMaterials = collect([$criticalLowStock])->merge($otherMaterials);
         } else {
             $latestMaterials = Material::orderBy('entry_date', 'desc')
                 ->orderBy('id', 'desc')
-                ->take(6)
+                ->take(10)
                 ->get();
         }
 
