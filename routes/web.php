@@ -95,6 +95,9 @@ Route::middleware('auth')->group(function () {
     Route::post('/materials/{material}/stock-out', [MaterialController::class, 'stockOut'])
         ->name('materials.stock-out');
 
+    Route::match(['put', 'post'], '/materials/{material}/min-stock', [MaterialController::class, 'updateMinStock'])
+        ->name('materials.update-min-stock');
+
     // ==========================
     // STOK MASUK (SUBMENU DATA MATERIAL)
     // ==========================

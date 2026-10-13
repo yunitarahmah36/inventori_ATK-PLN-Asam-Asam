@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Inventori Material - PT PLN Indonesia Power UBP Asam Asam</title>
+    <title>SISTEM PERSEDIAAN ATK - PT PLN Indonesia Power UBP Asam Asam</title>
     <link rel="icon" type="image/png" href="{{ asset('images/pln_bulat.png') }}">
 
     <!-- Google Fonts: Inter -->
@@ -97,12 +97,12 @@
         }
 
         .navbar-inner {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            height: 72px;
-            gap: 16px;
-        }
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 72px;
+    gap: 12px;
+}
 
         .brand-link {
             display: flex;
@@ -113,14 +113,14 @@
         }
 
         .brand-logo {
-            width: 44px;
-            height: 44px;
-            object-fit: contain;
-            border-radius: 50%;
-            background: #ffffff;
-            box-shadow: 0 2px 8px rgba(180, 106, 114, 0.1);
-            flex-shrink: 0;
-        }
+    width: 44px;
+    height: 44px;
+    object-fit: contain;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    flex-shrink: 0;
+}
 
         .brand-text {
             min-width: 0;
@@ -149,21 +149,23 @@
         }
 
         .nav-menu {
-            display: flex;
-            align-items: center;
-            gap: 22px;
-            list-style: none;
-        }
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    list-style: none;
+    flex-shrink: 0;
+}
 
         .nav-link {
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--text-secondary);
-            transition: var(--transition);
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+}
 
         .nav-link:hover {
             color: var(--rosewood);
@@ -1250,7 +1252,7 @@
     <nav class="navbar" id="navbar">
         <div class="container navbar-inner">
             <a href="{{ route('landing') }}" class="brand-link">
-                <img src="{{ asset('images/pln_bulat.png') }}" alt="PLN Logo" class="brand-logo">
+                <img src="{{ asset('images/logo-pln.png') }}" alt="PLN Logo" class="brand-logo">
                 <div class="brand-text">
                     <h1>INVENTORI MATERIAL</h1>
                     <p>PT PLN INDONESIA POWER UBP ASAM ASAM</p>
@@ -1342,16 +1344,16 @@
             <div class="hero-content">
                 <div class="hero-badge">
                     <span class="dot"></span>
-                    Portal Layanan Pengambilan Terbuka Karyawan & Mitra
+                    SISTEM INFORMASI PERSEDIAAN ATK
                 </div>
 
                 <h1 class="hero-title">
-                    Pencatatan Mandiri & Transparan <br>
-                    <span class="highlight">Pengambilan Material</span> Gudang
+                    Kelola Persediaan ATK <br>
+                    Lebih <span class="highlight">Mudah dan Teratur</span> 
                 </h1>
 
                 <p class="hero-subtitle">
-                    Akses cepat pencatatan barang keluar bagi seluruh bagian/divisi PT PLN Indonesia Power UBP Asam Asam tanpa perlu login. Transaksi tervalidasi secara instan dan stok terpotong otomatis.
+                    Pantau stok alat tulis kantor, catat pengambilan, dan akses informasi ketersediaan barang di PT PLN Indonesia Power UBP Asam Asam melalui satu sistem.
                 </p>
 
                 <div class="hero-actions">
@@ -1423,8 +1425,8 @@
                             <span class="material-symbols-outlined" style="font-size: 22px;">output</span>
                         </div>
                         <div>
-                            <h3>Formulir Stok Keluar Publik</h3>
-                            <p>Tanpa login • Otomatis memotong stok gudang</p>
+                            <h3>Formulir Pengambilan ATK</h3>
+                            <p>Catat pengambilan ATK</p>
                         </div>
                     </div>
                     <span class="form-badge-open">
@@ -1796,34 +1798,34 @@
     <section class="section-workflow" id="alur">
         <div class="container">
             <div class="section-header">
-                <div class="section-tag">Prosedur Operasional</div>
-                <h2 class="section-title">4 Langkah Mudah Pengambilan Material</h2>
-                <p class="section-desc">Standar alur kerja pengambilan barang yang tertib, transparan, dan terkontrol.</p>
+                <div class="section-tag">CARA PENGAMBILAN ATK</div>
+                <h2 class="section-title">Bagaimana Cara Mengambil ATK?</h2>
+                <p class="section-desc">Ikuti empat langkah berikut untuk mencatat pengambilan ATK dengan mudah dan memastikan stok tercatat dengan benar.</p>
             </div>
 
             <div class="steps-grid">
                 <div class="step-card">
                     <div class="step-badge">1</div>
-                    <h3 class="step-title">Pilih Barang</h3>
-                    <p class="step-desc">Cek ketersediaan material yang dibutuhkan pada katalog atau formulir pencatatan.</p>
+                    <h3 class="step-title">Cek Ketersediaan Stok</h3>
+                    <p class="step-desc">Periksa ketersediaan dan jumlah stok ATK sebelum melakukan pengambilan.</p>
                 </div>
 
                 <div class="step-card">
                     <div class="step-badge">2</div>
-                    <h3 class="step-title">Isi Formulir</h3>
-                    <p class="step-desc">Tulis nama personel, bagian/divisi, jumlah material yang diambil, dan peruntukannya.</p>
+                    <h3 class="step-title">Pilih ATK yang Dibutuhkan</h3>
+                    <p class="step-desc">Pilih satu atau beberapa jenis ATK beserta jumlahnya sesuai kebutuhan.</p>
                 </div>
 
                 <div class="step-card">
                     <div class="step-badge">3</div>
-                    <h3 class="step-title">Validasi Otomatis</h3>
-                    <p class="step-desc">Sistem memverifikasi batas stok secara real-time dan langsung memotong saldo stok gudang.</p>
+                    <h3 class="step-title">Konfirmasi Pengambilan</h3>
+                    <p class="step-desc">Lengkapi data pengambilan lalu periksa kembali daftar ATK sebelum mengonfirmasi.</p>
                 </div>
 
                 <div class="step-card">
                     <div class="step-badge">4</div>
-                    <h3 class="step-title">Tercatat di Sistem</h3>
-                    <p class="step-desc">Transaksi resmi tersimpan ke database riwayat stok keluar dan dapat diaudit petugas admin.</p>
+                    <h3 class="step-title">Selesai!</h3>
+                    <p class="step-desc">Data pengambilan berhasil disimpan dan stok ATK otomatis diperbarui sesuai jumlah yang diambil.</p>
                 </div>
             </div>
         </div>

@@ -32,9 +32,9 @@ class DashboardController extends Controller
         })->count();
 
         // 5. Daftar material di dashboard:
-        // Cukup 1 material stok menipis (<= 15 unit) paling prioritas yang dimunculkan di paling atas.
+        // Cukup 1 material stok menipis (<= batas minimum) paling prioritas yang dimunculkan di paling atas.
         // Sisanya diisi oleh urutan data material paling baru ke lama berdasarkan tanggal masuk / nomor material.
-        $criticalLowStock = Material::where('quantity', '<=', 15)
+        $criticalLowStock = Material::whereRaw('quantity <= COALESCE(min_stock, 15)')
             ->orderBy('quantity', 'asc')
             ->orderBy('entry_date', 'asc')
             ->first();
@@ -54,8 +54,8 @@ class DashboardController extends Controller
                 ->get();
         }
 
-        // 6. Total jenis material dengan stok menipis (<= 15 unit)
-        $lowStockCount = Material::where('quantity', '<=', 15)->count();
+        // 6. Total jenis material dengan stok menipis (<= batas minimum)
+        $lowStockCount = Material::whereRaw('quantity <= COALESCE(min_stock, 15)')->count();
 
         // 7. Aktivitas terbaru (mencakup semua transaksi CRUD dari Data Material, Stok Masuk, dan Stok Keluar)
         $latestActivities = StockMovement::with(['material', 'user'])

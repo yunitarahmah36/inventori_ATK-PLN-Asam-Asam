@@ -1521,8 +1521,9 @@
                             <div class="material-list">
                                 @foreach ($latestMaterials as $mat)
                                     @php
+                                        $minStock = (int) ($mat->min_stock ?? 15);
                                         $isCritical = $mat->quantity <= 5;
-                                        $isLow = $mat->quantity <= 15;
+                                        $isLow = $mat->quantity <= $minStock;
                                     @endphp
                                     <div class="material-item {{ $isCritical ? 'is-critical-stock' : ($isLow ? 'is-low-stock' : '') }}">
                                         <div class="material-item-left">

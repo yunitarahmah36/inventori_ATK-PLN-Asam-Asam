@@ -51,6 +51,11 @@ class MaterialController extends Controller
             case 'number_desc':
                 $query->orderBy('material_number', 'desc')->orderBy('id', 'desc');
                 break;
+            case 'low_stock':
+                $query->orderByRaw('CASE WHEN quantity <= COALESCE(min_stock, 15) THEN 0 ELSE 1 END')
+                      ->orderBy('quantity', 'asc')
+                      ->orderBy('id', 'desc');
+                break;
             case 'latest':
             default:
                 $sort = 'latest';
@@ -207,23 +212,42 @@ class MaterialController extends Controller
                 'string',
                 'max:50',
             ],
+            'min_stock' => [
+                'nullable',
+                'integer',
+                'min:0',
+            ],
         ], [
-            'name.required' => 'Nama Material wajib diisi.',
-            'name.max'      => 'Nama Material maksimal 255 karakter.',
-            'unit.required' => 'Satuan wajib diisi.',
-            'unit.max'      => 'Satuan maksimal 50 karakter.',
+            'name.required'     => 'Nama Material wajib diisi.',
+            'name.max'          => 'Nama Material maksimal 255 karakter.',
+            'unit.required'     => 'Satuan wajib diisi.',
+            'unit.max'          => 'Satuan maksimal 50 karakter.',
+            'min_stock.integer' => 'Batas minimum stok harus berupa angka bulat.',
+            'min_stock.min'     => 'Batas minimum stok minimal 0.',
         ]);
 
         $oldName = $material->name;
         $oldUnit = $material->unit;
+        $oldMin  = (int) ($material->min_stock ?? 15);
         $newName = trim($validated['name']);
         $newUnit = trim($validated['unit']);
 
-        // Perbarui data master material (material_number permanen dan tidak diubah)
-        $material->update([
+        $updateData = [
             'name' => $newName,
             'unit' => $newUnit,
-        ]);
+        ];
+
+        $minStockChanged = false;
+        if ($request->has('min_stock') && $request->input('min_stock') !== null && $request->input('min_stock') !== '') {
+            $newMin = (int) $request->input('min_stock');
+            $updateData['min_stock'] = $newMin;
+            if ($oldMin !== $newMin) {
+                $minStockChanged = true;
+            }
+        }
+
+        // Perbarui data master material (material_number permanen dan tidak diubah)
+        $material->update($updateData);
 
         // Jika Nama Material berubah, perbarui juga snapshot pada riwayat pergerakan stok
         if ($oldName !== $newName) {
@@ -239,6 +263,9 @@ class MaterialController extends Controller
         }
         if ($oldUnit !== $newUnit) {
             $changes[] = "Satuan diubah dari '{$oldUnit}' menjadi '{$newUnit}'";
+        }
+        if ($minStockChanged) {
+            $changes[] = "Batas minimum stok diubah dari {$oldMin} menjadi {$updateData['min_stock']} unit";
         }
         $editDesc = !empty($changes)
             ? implode(', ', $changes) . '.'
@@ -260,6 +287,68 @@ class MaterialController extends Controller
         return redirect()
             ->route('materials.index')
             ->with('success', "Data master material \"{$newName}\" ({$material->material_number}) berhasil diperbarui.");
+    }
+
+    /**
+     * Perbarui batas minimum stok (min_stock) untuk material secara individual.
+     * Fitur Atur Batas Stok agar admin dapat mengubah batas minimum material sesuai kebutuhan.
+     */
+    public function updateMinStock(Request $request, Material $material)
+    {
+        $validated = $request->validate([
+            'min_stock' => [
+                'required',
+                'integer',
+                'min:0',
+            ],
+        ], [
+            'min_stock.required' => 'Batas minimum stok wajib diisi.',
+            'min_stock.integer'  => 'Batas minimum stok harus berupa bilangan bulat.',
+            'min_stock.min'      => 'Batas minimum stok tidak boleh negatif (minimal 0).',
+        ]);
+
+        $oldMin = (int) ($material->min_stock ?? 15);
+        $newMin = (int) $validated['min_stock'];
+
+        $material->update([
+            'min_stock' => $newMin,
+        ]);
+
+        $status = $material->quantity <= $newMin ? 'Stok Menipis' : 'Stok Aman';
+        $statusClass = $material->quantity <= $newMin ? 'warning' : 'success';
+
+        // Catat riwayat jika batas stok berubah
+        if ($oldMin !== $newMin) {
+            StockMovement::create([
+                'material_id'     => $material->id,
+                'material_name'   => $material->name,
+                'material_number' => $material->material_number,
+                'user_id'         => Auth::id(),
+                'activity'        => 'Edit',
+                'quantity_before' => (int) $material->quantity,
+                'quantity_after'  => (int) $material->quantity,
+                'quantity_change' => 0,
+                'description'     => "Perubahan batas minimum stok material {$material->name} dari {$oldMin} unit menjadi {$newMin} unit. (Status: {$status}).",
+            ]);
+        }
+
+        $successMsg = "Batas minimum stok untuk material \"{$material->name}\" ({$material->material_number}) berhasil diubah menjadi {$newMin} {$material->unit}. Status saat ini: {$status}.";
+
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'success'      => true,
+                'message'      => $successMsg,
+                'min_stock'    => $newMin,
+                'status'       => $status,
+                'status_class' => $statusClass,
+                'quantity'     => (int) $material->quantity,
+                'unit'         => $material->unit,
+            ]);
+        }
+
+        return redirect()
+            ->back()
+            ->with('success', $successMsg);
     }
 
     /**

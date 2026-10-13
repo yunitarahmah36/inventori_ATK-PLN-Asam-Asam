@@ -63,11 +63,13 @@ class MaterialAnalysisController extends Controller
                 $effectiveMasuk = $totalMasuk;
             }
 
+            $minStock = (int) ($mat->min_stock ?? 15);
+
             // Status ketersediaan stok
             if ($currentQty <= 0) {
                 $status = 'Habis';
                 $statusClass = 'danger';
-            } elseif ($currentQty <= 15) {
+            } elseif ($currentQty <= $minStock) {
                 $status = 'Menipis';
                 $statusClass = 'warning';
             } else {
@@ -103,6 +105,7 @@ class MaterialAnalysisController extends Controller
                 'has_duplicates'     => false,
                 'material_numbers'   => [$matNumber],
                 'total_quantity'     => $currentQty,
+                'min_stock'          => $minStock,
                 'unit'               => $mat->unit ?: '-',
                 'total_masuk'        => $effectiveMasuk,
                 'total_keluar'       => $totalKeluar,

@@ -1257,7 +1257,7 @@
 
                                     <span class="status-badge status-{{ $grp['status_class'] }}">
                                         <span class="status-dot"></span>
-                                        {{ $grp['status'] }}
+                                        Stok {{ $grp['status'] }}
                                     </span>
                                 </div>
 
@@ -1270,9 +1270,8 @@
 
                                 <!-- Meta Row (Fixed Height: 26px) -->
                                 <div class="material-card-meta-row">
-                                    
-
                                     <span class="unit-pill">Satuan: <strong>{{ $grp['unit'] }}</strong></span>
+                                    <span class="unit-pill" style="margin-left:auto;" title="Batas minimum stok untuk peringatan">Min: <strong>{{ $grp['min_stock'] ?? 15 }} {{ $grp['unit'] }}</strong></span>
                                 </div>
 
                                 <!-- Hero Stock Block (Stok Fisik Saat Ini) -->

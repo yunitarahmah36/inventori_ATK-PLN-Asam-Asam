@@ -536,6 +536,23 @@
                                 </span>
                             </div>
 
+                            <!-- Batas Minimum Stok -->
+                            <div class="form-group">
+                                <label for="min_stock" class="form-label">
+                                    Batas Minimum Stok (Peringatan Stok Menipis)
+                                </label>
+                                <input type="number" id="min_stock" name="min_stock" min="0" step="1"
+                                    class="form-control @error('min_stock') is-invalid @enderror"
+                                    value="{{ old('min_stock', $material->min_stock ?? 15) }}"
+                                    placeholder="15">
+                                @error('min_stock')
+                                    <span class="invalid-feedback">{{ $message }}</span>
+                                @enderror
+                                <span class="form-helper">
+                                    Batas jumlah unit untuk status Stok Menipis (Default sistem: 15 unit). Jika stok material ≤ batas ini, status otomatis menjadi "Stok Menipis".
+                                </span>
+                            </div>
+
                         </div>
 
                         <div class="form-actions">

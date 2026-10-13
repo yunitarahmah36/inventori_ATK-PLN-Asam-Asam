@@ -402,10 +402,255 @@ body {
             border-color: var(--blue);
         }
 
+        .btn-tune:hover {
+            background: #EFF6FF;
+            color: #2563EB;
+            border-color: #93C5FD;
+        }
+
         .btn-delete:hover {
             background: var(--red-light);
             color: var(--red);
             border-color: var(--red);
+        }
+
+        /* Limit Badge & Status Pill */
+        .btn-badge-limit {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            border: 1px dashed #CBD5E1;
+            background: #F8FAFC;
+            color: var(--text-dark);
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-badge-limit:hover {
+            background: #EFF6FF;
+            border-color: #3B82F6;
+            color: #1D4ED8;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 5px rgba(59, 130, 246, 0.15);
+        }
+
+        .badge-status-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.01em;
+            white-space: nowrap;
+        }
+
+        .badge-status-menipis {
+            background: #FEF2F2;
+            color: #991B1B;
+            border: 1px solid #FECACA;
+        }
+
+        .badge-status-aman {
+            background: #ECFDF5;
+            color: #065F46;
+            border: 1px solid #A7F3D0;
+        }
+
+        .status-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: currentColor;
+            display: inline-block;
+        }
+
+        .status-dot-blink {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #DC2626;
+            display: inline-block;
+            box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.7);
+            animation: dotPulse 1.8s infinite;
+        }
+
+        @keyframes dotPulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.6);
+            }
+            70% {
+                box-shadow: 0 0 0 5px rgba(220, 38, 38, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(220, 38, 38, 0);
+            }
+        }
+
+        /* Modal Atur Batas Stok */
+        .min-stock-modal-box {
+            max-width: 480px;
+            text-align: left;
+        }
+
+        .min-stock-modal-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: #EFF6FF;
+            color: #2563EB;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+        }
+
+        .min-stock-modal-icon .material-symbols-outlined {
+            font-size: 30px;
+        }
+
+        .min-stock-modal-box h3 {
+            text-align: center;
+            font-size: 19px;
+            font-weight: 800;
+            color: var(--blue-dark);
+            margin-bottom: 6px;
+        }
+
+        .min-stock-modal-box p {
+            text-align: center;
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        .min-stock-info-card {
+            background: #F8FAFC;
+            border: 1px solid #E2E8F0;
+            border-radius: 10px;
+            padding: 12px 16px;
+            margin-bottom: 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .min-stock-info-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 12.5px;
+        }
+
+        .min-stock-info-row .lbl {
+            color: var(--text-muted);
+        }
+
+        .min-stock-info-row .val {
+            color: var(--text-dark);
+        }
+
+        .badge-current-stock {
+            font-weight: 700;
+            color: var(--blue-dark);
+            background: #E2E8F0;
+            padding: 2px 8px;
+            border-radius: 6px;
+        }
+
+        .form-group-modal {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-bottom: 14px;
+        }
+
+        .form-label-modal {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+
+        .input-with-suffix {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .modal-input-field {
+            width: 100%;
+            height: 44px;
+            padding: 0 60px 0 14px;
+            border-radius: 8px;
+            border: 1.5px solid var(--border);
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text-dark);
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        .modal-input-field:focus {
+            border-color: #2563EB;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+        }
+
+        .input-suffix {
+            position: absolute;
+            right: 14px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #64748B;
+            pointer-events: none;
+        }
+
+        .modal-input-hint {
+            font-size: 11.5px;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+
+        .status-preview-box {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 14px;
+            background: #F8FAFC;
+            border-radius: 8px;
+            border: 1px dashed #CBD5E1;
+            margin-top: 10px;
+        }
+
+        .preview-lbl {
+            font-size: 12.5px;
+            color: var(--text-mid);
+            font-weight: 600;
+        }
+
+        .btn-save-threshold {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            background: var(--blue);
+            font-size: 13px;
+            font-weight: 700;
+            color: #fff;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0, 87, 184, 0.25);
+            transition: all 0.2s ease;
+        }
+
+        .btn-save-threshold:hover {
+            background: var(--blue-dark);
+            transform: translateY(-1px);
         }
 
         /* ============================================================
@@ -1252,6 +1497,7 @@ body {
                                 <span class="material-symbols-outlined sort-icon">swap_vert</span>
                                 <select name="sort" id="sortSelect" onchange="document.getElementById('searchForm').submit()" title="Urutkan data material">
                                     <option value="latest" {{ ($sort ?? 'latest') === 'latest' ? 'selected' : '' }}>Terbaru (Paling Atas)</option>
+                                    <option value="low_stock" {{ ($sort ?? '') === 'low_stock' ? 'selected' : '' }}>Stok Menipis (Prioritas)</option>
                                     <option value="oldest" {{ ($sort ?? '') === 'oldest' ? 'selected' : '' }}>Terlama</option>
                                     <option value="name_asc" {{ ($sort ?? '') === 'name_asc' ? 'selected' : '' }}>Nama Material (A - Z)</option>
                                     <option value="name_desc" {{ ($sort ?? '') === 'name_desc' ? 'selected' : '' }}>Nama Material (Z - A)</option>
@@ -1293,6 +1539,7 @@ body {
                                     @if (($sort ?? 'latest') !== 'latest')
                                         <span style="color:var(--text-muted);font-size:12px;">• Urutan: 
                                             @if ($sort === 'oldest') Terlama
+                                            @elseif ($sort === 'low_stock') Stok Menipis (Prioritas)
                                             @elseif ($sort === 'name_asc') Nama (A - Z)
                                             @elseif ($sort === 'name_desc') Nama (Z - A)
                                             @elseif ($sort === 'number_asc') No. Material (A - Z)
@@ -1330,10 +1577,12 @@ body {
                                             <input type="checkbox" class="check-all" id="checkAll" title="Pilih Semua">
                                         </th>
                                         <th style="width: 50px;">No</th>
-                                        <th style="width: 160px;">No. Material</th>
+                                        <th style="width: 150px;">No. Material</th>
                                         <th>Nama Material</th>
-                                        <th style="width: 140px;">Satuan</th>
-                                        <th style="width: 130px; text-align: center;">Aksi</th>
+                                        <th style="width: 110px;">Satuan</th>
+                                        <th style="width: 140px; text-align: center;">Batas Minimum</th>
+                                        <th style="width: 140px; text-align: center;">Status Stok</th>
+                                        <th style="width: 150px; text-align: center;">Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -1357,8 +1606,49 @@ body {
                                             <td>
                                                 <span style="font-weight: 500; color: var(--text-mid);">{{ $mat->unit }}</span>
                                             </td>
+                                            <td style="text-align: center;">
+                                                <button type="button" class="btn-badge-limit btn-open-min-stock-modal"
+                                                        title="Klik untuk mengubah batas minimum stok material ini"
+                                                        data-id="{{ $mat->id }}"
+                                                        data-name="{{ addslashes($mat->name) }}"
+                                                        data-number="{{ $mat->material_number }}"
+                                                        data-unit="{{ $mat->unit }}"
+                                                        data-stock="{{ (int) $mat->quantity }}"
+                                                        data-min-stock="{{ $mat->effective_min_stock }}"
+                                                        data-action="{{ route('materials.update-min-stock', $mat->id) }}">
+                                                    <span class="material-symbols-outlined" style="font-size: 14px;">tune</span>
+                                                    <span>{{ $mat->effective_min_stock }} {{ $mat->unit }}</span>
+                                                </button>
+                                            </td>
+                                            <td style="text-align: center;">
+                                                @if ($mat->isLowStock())
+                                                    <span class="badge-status-pill badge-status-menipis" title="Stok saat ini ({{ $mat->quantity }}) ≤ batas minimum ({{ $mat->effective_min_stock }})">
+                                                        <span class="status-dot-blink"></span>
+                                                        Stok Menipis
+                                                    </span>
+                                                @else
+                                                    <span class="badge-status-pill badge-status-aman" title="Stok saat ini ({{ $mat->quantity }}) > batas minimum ({{ $mat->effective_min_stock }})">
+                                                        <span class="status-dot"></span>
+                                                        Stok Aman
+                                                    </span>
+                                                @endif
+                                            </td>
                                             <td>
                                                 <div class="actions-cell">
+                                                    <!-- Tombol Atur Batas Stok -->
+                                                    <button type="button"
+                                                            class="btn-icon-only btn-tune btn-open-min-stock-modal"
+                                                            title="Atur Batas Stok"
+                                                            data-id="{{ $mat->id }}"
+                                                            data-name="{{ addslashes($mat->name) }}"
+                                                            data-number="{{ $mat->material_number }}"
+                                                            data-unit="{{ $mat->unit }}"
+                                                            data-stock="{{ (int) $mat->quantity }}"
+                                                            data-min-stock="{{ $mat->effective_min_stock }}"
+                                                            data-action="{{ route('materials.update-min-stock', $mat->id) }}">
+                                                        <span class="material-symbols-outlined" style="font-size: 18px;">tune</span>
+                                                    </button>
+
                                                     <!-- Tombol Edit -->
                                                     <a href="{{ route('materials.edit', $mat->id) }}"
                                                         class="btn-icon-only btn-edit" title="Edit Material">
@@ -1508,6 +1798,71 @@ body {
                 @csrf
                 <input type="hidden" name="all" id="bulkDeleteAllInput" value="0">
             </form>
+
+            <!-- POPUP ATUR BATAS MINIMUM STOK (MODAL ATUR BATAS STOK) -->
+            <div id="minStockModal" class="delete-modal">
+                <div class="delete-modal-box min-stock-modal-box">
+                    <div class="min-stock-modal-icon">
+                        <span class="material-symbols-outlined">tune</span>
+                    </div>
+                    <h3>Atur Batas Minimum Stok</h3>
+                    <p style="margin-bottom: 16px;">
+                        Tentukan batas minimum stok untuk material ini. Jika stok fisik saat ini ≤ batas ini, sistem otomatis menampilkan status <strong>Stok Menipis</strong> dan memicu peringatan di dashboard.
+                    </p>
+
+                    <form id="minStockForm" method="POST" action="">
+                        @csrf
+                        @method('PUT')
+
+                        <div class="min-stock-info-card">
+                            <div class="min-stock-info-row">
+                                <span class="lbl">No. Material:</span>
+                                <strong class="val" id="msmMaterialNumber">-</strong>
+                            </div>
+                            <div class="min-stock-info-row">
+                                <span class="lbl">Nama Material:</span>
+                                <strong class="val" id="msmMaterialName">-</strong>
+                            </div>
+                            <div class="min-stock-info-row">
+                                <span class="lbl">Stok Saat Ini:</span>
+                                <span class="val badge-current-stock" id="msmCurrentStock">0</span>
+                            </div>
+                        </div>
+
+                        <div class="form-group-modal">
+                            <label for="msmMinStockInput" class="form-label-modal">
+                                Batas Minimum Stok Baru
+                            </label>
+                            <div class="input-with-suffix">
+                                <input type="number" id="msmMinStockInput" name="min_stock"
+                                       min="0" step="1" required class="modal-input-field"
+                                       placeholder="15">
+                                <span class="input-suffix" id="msmUnitSuffix">unit</span>
+                            </div>
+                            <span class="modal-input-hint">
+                                Default sistem: <strong>15 unit</strong>. Material yang telah diubah batasnya akan selalu tersimpan di database dan mengikuti nilai terbaru.
+                            </span>
+                        </div>
+
+                        <!-- Live Status Preview -->
+                        <div class="status-preview-box" id="msmStatusPreview">
+                            <span class="preview-lbl">Status yang Dihasilkan:</span>
+                            <span class="badge-status-pill badge-status-aman" id="msmStatusBadge">
+                                <span class="status-dot" id="msmStatusDot"></span>
+                                <span id="msmStatusText">Stok Aman</span>
+                            </span>
+                        </div>
+
+                        <div class="delete-modal-actions" style="margin-top: 22px;">
+                            <button type="button" class="delete-modal-cancel" id="minStockModalCancel">Batal</button>
+                            <button type="submit" class="btn-save-threshold" id="minStockModalSubmit">
+                                <span class="material-symbols-outlined" style="font-size: 18px;">save</span>
+                                Simpan Batas Stok
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
 
             <script>
             (function () {
@@ -1724,6 +2079,100 @@ body {
                         searchInput.focus();
                         const searchForm = document.getElementById('searchForm');
                         if (searchForm) searchForm.submit();
+                    });
+                }
+
+                // ======================================================
+                // 3. ATUR BATAS MINIMUM STOK (Threshold Modal)
+                // ======================================================
+                const minStockModal     = document.getElementById('minStockModal');
+                const minStockForm      = document.getElementById('minStockForm');
+                const minStockCancel    = document.getElementById('minStockModalCancel');
+                const minStockSubmit    = document.getElementById('minStockModalSubmit');
+                const msmNumberEl       = document.getElementById('msmMaterialNumber');
+                const msmNameEl         = document.getElementById('msmMaterialName');
+                const msmCurrentStockEl = document.getElementById('msmCurrentStock');
+                const msmInput          = document.getElementById('msmMinStockInput');
+                const msmUnitSuffix     = document.getElementById('msmUnitSuffix');
+                const msmBadge          = document.getElementById('msmStatusBadge');
+                const msmDot            = document.getElementById('msmStatusDot');
+                const msmText           = document.getElementById('msmStatusText');
+
+                let currentMatStock = 0;
+
+                function updatePreviewStatus() {
+                    if (!msmInput || !msmBadge || !msmDot || !msmText) return;
+                    const val = msmInput.value.trim();
+                    const limit = val === '' ? 15 : parseInt(val, 10);
+                    if (isNaN(limit) || limit < 0) {
+                        return;
+                    }
+                    if (currentMatStock <= limit) {
+                        msmBadge.className = 'badge-status-pill badge-status-menipis';
+                        msmDot.className   = 'status-dot-blink';
+                        msmText.textContent = 'Stok Menipis';
+                    } else {
+                        msmBadge.className = 'badge-status-pill badge-status-aman';
+                        msmDot.className   = 'status-dot';
+                        msmText.textContent = 'Stok Aman';
+                    }
+                }
+
+                if (msmInput) {
+                    msmInput.addEventListener('input', updatePreviewStatus);
+                }
+
+                document.addEventListener('click', function (e) {
+                    const btn = e.target.closest('.btn-open-min-stock-modal');
+                    if (!btn) return;
+                    e.preventDefault();
+
+                    const id       = btn.dataset.id;
+                    const name     = btn.dataset.name || '';
+                    const number   = btn.dataset.number || '';
+                    const unit     = btn.dataset.unit || 'unit';
+                    const stock    = parseInt(btn.dataset.stock || '0', 10);
+                    const minStock = parseInt(btn.dataset.minStock || '15', 10);
+                    const action   = btn.dataset.action || '';
+
+                    currentMatStock = stock;
+                    if (msmNumberEl) msmNumberEl.textContent       = number;
+                    if (msmNameEl) msmNameEl.textContent           = name;
+                    if (msmCurrentStockEl) msmCurrentStockEl.textContent = `${stock} ${unit}`;
+                    if (msmUnitSuffix) msmUnitSuffix.textContent   = unit;
+                    if (msmInput) msmInput.value                   = minStock;
+                    if (minStockForm) minStockForm.action          = action;
+
+                    updatePreviewStatus();
+
+                    if (minStockModal) {
+                        minStockModal.classList.add('show');
+                        setTimeout(() => { if (msmInput) msmInput.focus(); }, 100);
+                    }
+                });
+
+                if (minStockCancel) {
+                    minStockCancel.addEventListener('click', function () {
+                        if (minStockModal) minStockModal.classList.remove('show');
+                    });
+                }
+
+                if (minStockModal) {
+                    minStockModal.addEventListener('click', function (e) {
+                        if (e.target === minStockModal) minStockModal.classList.remove('show');
+                    });
+                }
+
+                document.addEventListener('keydown', function (e) {
+                    if (e.key === 'Escape' && minStockModal && minStockModal.classList.contains('show')) {
+                        minStockModal.classList.remove('show');
+                    }
+                });
+
+                if (minStockForm && minStockSubmit) {
+                    minStockForm.addEventListener('submit', function () {
+                        minStockSubmit.disabled  = true;
+                        minStockSubmit.innerHTML = '<span class="material-symbols-outlined" style="font-size:18px;">hourglass_empty</span> Menyimpan...';
                     });
                 }
 
