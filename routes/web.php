@@ -12,9 +12,19 @@ use App\Http\Controllers\StockOutController;
 use Illuminate\Support\Facades\Route;
 
 
-Route::get('/', function () {
-    return redirect()->route('login');
-});
+use App\Http\Controllers\LandingController;
+
+// ==========================
+// LANDING PAGE & PENGAMBILAN PUBLIK
+// ==========================
+Route::get('/', [LandingController::class, 'index'])
+    ->name('landing');
+
+Route::get('/pengambilan-barang', [LandingController::class, 'pengambilanForm'])
+    ->name('pengambilan.form');
+
+Route::post('/pengambilan-barang', [LandingController::class, 'storePengambilan'])
+    ->name('pengambilan.store');
 
 
 // ==========================
