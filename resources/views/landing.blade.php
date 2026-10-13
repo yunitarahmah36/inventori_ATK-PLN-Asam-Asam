@@ -1434,82 +1434,96 @@
                 </div>
 
                 <div class="form-body">
-                    <!-- Alert Notifikasi Berhasil -->
+                    <!-- Section Resi (Hanya Ditampilkan Saat Konfirmasi Berhasil) -->
                     @if (session('success_pengambilan'))
-                        <div class="alert alert-success">
-                            <span class="material-symbols-outlined" style="font-size: 22px; flex-shrink: 0;">check_circle</span>
-                            <div>
-                                <strong>Transaksi Berhasil!</strong>
-                                <p>{{ session('success_pengambilan') }}</p>
-                            </div>
-                        </div>
-
-                        @if (session('receipt_data'))
-                            @php $receipt = session('receipt_data'); @endphp
-                            <div class="receipt-card">
-                                <div class="receipt-title">
-                                    <span class="material-symbols-outlined" style="font-size: 18px;">receipt_long</span>
-                                    BUKTI RESI PENGAMBILAN BARANG
+                        <div id="receiptSection">
+                            <!-- Alert Notifikasi Berhasil -->
+                            <div class="alert alert-success">
+                                <span class="material-symbols-outlined" style="font-size: 22px; flex-shrink: 0;">check_circle</span>
+                                <div>
+                                    <strong>Transaksi Berhasil!</strong>
+                                    <p>{{ session('success_pengambilan') }}</p>
                                 </div>
-                                <div class="receipt-grid">
-                                    <div><span class="receipt-item-label">Waktu Pencatatan:</span></div>
-                                    <div><span class="receipt-item-val">{{ $receipt['date'] }}</span></div>
+                            </div>
 
-                                    <div><span class="receipt-item-label">Nama Pengambil:</span></div>
-                                    <div><span class="receipt-item-val">{{ $receipt['recipient'] }}</span></div>
+                            @if (session('receipt_data'))
+                                @php $receipt = session('receipt_data'); @endphp
+                                <div class="receipt-card">
+                                    <div class="receipt-title">
+                                        <span class="material-symbols-outlined" style="font-size: 18px;">receipt_long</span>
+                                        BUKTI RESI PENGAMBILAN BARANG
+                                    </div>
+                                    <div class="receipt-grid">
+                                        <div><span class="receipt-item-label">Waktu Pencatatan:</span></div>
+                                        <div><span class="receipt-item-val">{{ $receipt['date'] }}</span></div>
 
-                                    @if (!empty($receipt['items']) && is_array($receipt['items']))
-                                        <div style="grid-column: span 2; margin-top: 10px; border-top: 1px dashed var(--border-soft); padding-top: 10px;">
-                                            <span class="receipt-item-label" style="font-weight: 700; color: var(--rosewood-dark); display: block; margin-bottom: 8px;">
-                                                Daftar Material yang Diambil ({{ count($receipt['items']) }} Item):
-                                            </span>
-                                            <div style="overflow-x: auto;">
-                                                <table style="width: 100%; border-collapse: collapse; font-size: 12.5px;">
-                                                    <thead>
-                                                        <tr style="border-bottom: 1px solid var(--border-soft); color: var(--text-muted); text-align: left;">
-                                                            <th style="padding: 6px 4px;">Material</th>
-                                                            <th style="padding: 6px 4px; text-align: center;">Jumlah Diambil</th>
-                                                            <th style="padding: 6px 4px; text-align: right;">Sisa Stok Terkini</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        @foreach ($receipt['items'] as $item)
-                                                            <tr style="border-bottom: 1px dashed var(--border-soft);">
-                                                                <td style="padding: 8px 4px; font-weight: 600;">
-                                                                    {{ $item['material_name'] }}
-                                                                    @if (!empty($item['material_number']))
-                                                                        <span style="font-size: 11px; color: var(--text-muted); display: block;">No: {{ $item['material_number'] }}</span>
-                                                                    @endif
-                                                                </td>
-                                                                <td style="padding: 8px 4px; text-align: center; font-weight: 700; color: #B46A72;">
-                                                                    {{ $item['qty_out'] }} {{ $item['unit'] }}
-                                                                </td>
-                                                                <td style="padding: 8px 4px; text-align: right; font-weight: 600; color: var(--text-secondary);">
-                                                                    {{ $item['remaining_stock'] }} {{ $item['unit'] }}
-                                                                </td>
+                                        <div><span class="receipt-item-label">Nama Pengambil:</span></div>
+                                        <div><span class="receipt-item-val">{{ $receipt['recipient'] }}</span></div>
+
+                                        @if (!empty($receipt['items']) && is_array($receipt['items']))
+                                            <div style="grid-column: span 2; margin-top: 10px; border-top: 1px dashed var(--border-soft); padding-top: 10px;">
+                                                <span class="receipt-item-label" style="font-weight: 700; color: var(--rosewood-dark); display: block; margin-bottom: 8px;">
+                                                    Daftar Material yang Diambil ({{ count($receipt['items']) }} Item):
+                                                </span>
+                                                <div style="overflow-x: auto;">
+                                                    <table style="width: 100%; border-collapse: collapse; font-size: 12.5px;">
+                                                        <thead>
+                                                            <tr style="border-bottom: 1px solid var(--border-soft); color: var(--text-muted); text-align: left;">
+                                                                <th style="padding: 6px 4px;">Material</th>
+                                                                <th style="padding: 6px 4px; text-align: center;">Jumlah Diambil</th>
+                                                                <th style="padding: 6px 4px; text-align: right;">Sisa Stok Terkini</th>
                                                             </tr>
-                                                        @endforeach
-                                                    </tbody>
-                                                </table>
+                                                        </thead>
+                                                        <tbody>
+                                                            @foreach ($receipt['items'] as $item)
+                                                                <tr style="border-bottom: 1px dashed var(--border-soft);">
+                                                                    <td style="padding: 8px 4px; font-weight: 600;">
+                                                                        {{ $item['material_name'] }}
+                                                                        @if (!empty($item['material_number']))
+                                                                            <span style="font-size: 11px; color: var(--text-muted); display: block;">No: {{ $item['material_number'] }}</span>
+                                                                        @endif
+                                                                    </td>
+                                                                    <td style="padding: 8px 4px; text-align: center; font-weight: 700; color: #B46A72;">
+                                                                        {{ $item['qty_out'] }} {{ $item['unit'] }}
+                                                                    </td>
+                                                                    <td style="padding: 8px 4px; text-align: right; font-weight: 600; color: var(--text-secondary);">
+                                                                        {{ $item['remaining_stock'] }} {{ $item['unit'] }}
+                                                                    </td>
+                                                                </tr>
+                                                            @endforeach
+                                                        </tbody>
+                                                    </table>
+                                                </div>
                                             </div>
-                                        </div>
-                                    @else
-                                        <div><span class="receipt-item-label">Nama Material:</span></div>
-                                        <div><span class="receipt-item-val">{{ $receipt['material_name'] }}</span></div>
+                                        @else
+                                            <div><span class="receipt-item-label">Nama Material:</span></div>
+                                            <div><span class="receipt-item-val">{{ $receipt['material_name'] }}</span></div>
 
-                                        <div><span class="receipt-item-label">No. Material:</span></div>
-                                        <div><span class="receipt-item-val">{{ $receipt['material_number'] ?? '-' }}</span></div>
+                                            <div><span class="receipt-item-label">No. Material:</span></div>
+                                            <div><span class="receipt-item-val">{{ $receipt['material_number'] ?? '-' }}</span></div>
 
-                                        <div><span class="receipt-item-label">Jumlah Diambil:</span></div>
-                                        <div><span class="receipt-item-val" style="color: #B46A72;">{{ $receipt['qty_out'] }} {{ $receipt['unit'] }}</span></div>
+                                            <div><span class="receipt-item-label">Jumlah Diambil:</span></div>
+                                            <div><span class="receipt-item-val" style="color: #B46A72;">{{ $receipt['qty_out'] }} {{ $receipt['unit'] }}</span></div>
 
-                                        <div><span class="receipt-item-label">Sisa Stok Terkini:</span></div>
-                                        <div><span class="receipt-item-val">{{ $receipt['remaining_stock'] }} {{ $receipt['unit'] }}</span></div>
-                                    @endif
+                                            <div><span class="receipt-item-label">Sisa Stok Terkini:</span></div>
+                                            <div><span class="receipt-item-val">{{ $receipt['remaining_stock'] }} {{ $receipt['unit'] }}</span></div>
+                                        @endif
+                                    </div>
                                 </div>
-                            </div>
-                        @endif
+
+                                <!-- Tombol untuk Catat Pengambilan Baru -->
+                                <div style="margin-top: 20px; display: flex; justify-content: flex-end;">
+                                    <a href="{{ route('landing') }}?baru=1#form-pengambilan" id="btnCatatPengambilanBaru" class="btn btn-primary" style="display: inline-flex; align-items: center; gap: 8px;">
+                                        <span class="material-symbols-outlined">add_circle</span>
+                                        Catat Pengambilan Baru
+                                    </a>
+                                </div>
+                            @endif
+                        </div>
                     @endif
+
+                    <!-- Section Form Input (Disembunyikan jika sedang menampilkan resi) -->
+                    <div id="formSection" style="{{ session('success_pengambilan') ? 'display: none;' : '' }}">
 
                     <!-- Alert Notifikasi Error -->
                     @if (session('error_pengambilan'))
@@ -1770,6 +1784,7 @@
                             </button>
                         </div>
                     </form>
+                    </div> <!-- end #formSection -->
                 </div>
             </div>
         </div>
@@ -2136,11 +2151,82 @@
                 });
             }
 
+            // Handler tombol "Catat Pengambilan Baru" setelah resi muncul
+            const btnCatatBaru = document.getElementById('btnCatatPengambilanBaru');
+            const receiptSection = document.getElementById('receiptSection');
+            const formSection = document.getElementById('formSection');
+
+            function resetAndShowNewForm() {
+                if (receiptSection) {
+                    receiptSection.style.display = 'none';
+                }
+                if (formSection) {
+                    formSection.style.display = 'block';
+                }
+
+                // Reset nilai-nilai form agar bersih
+                if (form) {
+                    form.reset();
+                }
+
+                // Kosongkan dan buat 1 baris item baru yang bersih
+                if (itemsContainer) {
+                    itemsContainer.innerHTML = '';
+                    createNewItemRow();
+                }
+
+                // Scroll ke form
+                const target = document.getElementById('form-pengambilan');
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth' });
+                }
+
+                // Focus ke nama pengambil
+                const namaInput = document.getElementById('nama_pengambil');
+                if (namaInput) {
+                    setTimeout(() => namaInput.focus(), 250);
+                }
+            }
+
+            if (btnCatatBaru) {
+                btnCatatBaru.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    resetAndShowNewForm();
+                });
+            }
+
+            // Jika link navbar/CTA #form-pengambilan diklik saat resi tampil
+            document.querySelectorAll('a[href="#form-pengambilan"]').forEach(link => {
+                link.addEventListener('click', function () {
+                    if (receiptSection && receiptSection.style.display !== 'none') {
+                        resetAndShowNewForm();
+                    }
+                });
+            });
+
             // Quick select dari tabel katalog
             btnSelectItems.forEach(btn => {
                 btn.addEventListener('click', function () {
                     const id = this.getAttribute('data-id');
                     if (!id) return;
+
+                    // Jika sedang menampilkan resi, sembunyikan resi dan tampilkan form baru dengan barang terpilih
+                    if (receiptSection && receiptSection.style.display !== 'none') {
+                        receiptSection.style.display = 'none';
+                        if (formSection) formSection.style.display = 'block';
+                        if (form) form.reset();
+                        if (itemsContainer) {
+                            itemsContainer.innerHTML = '';
+                            const newRow = createNewItemRow(id);
+                        }
+                        const formElem = document.getElementById('form-pengambilan');
+                        if (formElem) formElem.scrollIntoView({ behavior: 'smooth' });
+                        const namaInput = document.getElementById('nama_pengambil');
+                        if (namaInput && !namaInput.value.trim()) {
+                            namaInput.focus();
+                        }
+                        return;
+                    }
 
                     let targetRow = null;
                     const rows = itemsContainer ? itemsContainer.querySelectorAll('.item-row') : [];

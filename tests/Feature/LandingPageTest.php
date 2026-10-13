@@ -187,6 +187,32 @@ class LandingPageTest extends TestCase
         ]);
     }
 
+    public function test_only_receipt_is_shown_and_form_is_hidden_when_success_session_exists(): void
+    {
+        $response = $this->withSession([
+            'success_pengambilan' => 'Pengambilan berhasil disimpan!',
+            'receipt_data' => [
+                'date'            => '13 Oktober 2026, 18:00 WITA',
+                'recipient'       => 'Ahmad Fauzi (Operasi)',
+                'material_name'   => 'Kabel NYM',
+                'material_number' => 'MAT-001',
+                'qty_out'         => 2,
+                'unit'            => 'Roll',
+                'remaining_stock' => 8,
+            ],
+        ])->get('/');
+
+        $response->assertStatus(200);
+        $response->assertSee('BUKTI RESI PENGAMBILAN BARANG');
+        $response->assertSee('Catat Pengambilan Baru');
+        $response->assertSee('id="formSection" style="display: none;"', false);
+
+        // Dan ketika membuka parameter ?baru=1, resi hilang dan formSection ditampilkan
+        $responseBaru = $this->get('/?baru=1');
+        $responseBaru->assertDontSee('BUKTI RESI PENGAMBILAN BARANG');
+        $responseBaru->assertSee('id="formSection" style=""', false);
+    }
+
     public function test_dashboard_still_requires_authentication(): void
     {
         $response = $this->get('/dashboard');

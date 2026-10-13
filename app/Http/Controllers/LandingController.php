@@ -15,8 +15,12 @@ class LandingController extends Controller
     /**
      * Tampilkan landing page publik inventori material.
      */
-    public function index()
+    public function index(Request $request)
     {
+        if ($request->has('baru') || $request->has('new')) {
+            session()->forget(['success_pengambilan', 'receipt_data']);
+        }
+
         // Ambil data material yang memiliki stok untuk pilihan form pengambilan
         $materials = Material::where('quantity', '>', 0)
             ->orderBy('name', 'asc')
@@ -46,6 +50,7 @@ class LandingController extends Controller
      */
     public function pengambilanForm()
     {
+        session()->forget(['success_pengambilan', 'receipt_data']);
         return redirect()->to(route('landing') . '#form-pengambilan');
     }
 
