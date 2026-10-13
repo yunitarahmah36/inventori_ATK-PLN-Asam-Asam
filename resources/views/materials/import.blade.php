@@ -797,7 +797,8 @@
 
         </div>
 
-        <script>
+        <script id="material-import-scripts">
+        (function () {
             const fileInput              = document.getElementById('file');
             const fileNameEl             = document.getElementById('fileName');
             const importBtn              = document.getElementById('importButton');
@@ -914,6 +915,9 @@
                 }
             }
 
+            // Bind ke window agar inline onchange="showFileName(this)" selalu berfungsi
+            window.showFileName = showFileName;
+
             function validateImportFile(e) {
                 if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
                     if (e) {
@@ -934,6 +938,15 @@
                     return false;
                 }
                 return true;
+            }
+
+            if (fileInput) {
+                fileInput.addEventListener('click', function () {
+                    this.value = '';
+                });
+                fileInput.addEventListener('change', function () {
+                    showFileName(this);
+                });
             }
 
             if (closeImportAlertBtn) {
@@ -968,8 +981,12 @@
                 });
             }
 
-            // Drag and drop support pada uploadBox
+            // Drag and drop & klik box support pada uploadBox
             if (uploadBox && fileInput) {
+                uploadBox.addEventListener('click', function (e) {
+                    if (e.target.closest('button') || e.target.closest('a') || e.target === fileInput) return;
+                    fileInput.click();
+                });
                 uploadBox.addEventListener('dragover', function (e) {
                     e.preventDefault();
                     e.stopPropagation();
@@ -994,10 +1011,11 @@
                 });
             }
 
-            function openSidebar() {
+            window.openSidebar = window.openSidebar || function () {
                 const sidebar = document.getElementById('sidebar');
                 if (sidebar) sidebar.classList.add('open');
-            }
+            };
+        })();
         </script>
 
     </main>
