@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\StockInExport;
 use App\Exports\StockInTemplateExport;
 use App\Imports\StockInImport;
 use App\Models\Material;
@@ -201,6 +202,23 @@ class StockInController extends Controller
         return Excel::download(
             new StockInTemplateExport(),
             'template-stok-masuk-atk.xlsx'
+        );
+    }
+
+    /**
+     * Ekspor data riwayat transaksi stok masuk ke format Excel.
+     */
+    public function export(Request $request)
+    {
+        return Excel::download(
+            new StockInExport(
+                $request->input('search'),
+                $request->input('start_date'),
+                $request->input('end_date'),
+                $request->input('per_page'),
+                $request->input('page')
+            ),
+            'laporan-stok-masuk-atk.xlsx'
         );
     }
 }

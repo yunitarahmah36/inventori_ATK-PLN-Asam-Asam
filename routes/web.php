@@ -101,6 +101,9 @@ Route::middleware('auth')->group(function () {
     Route::post('/materials/stock-in/import', [StockInController::class, 'import'])
         ->name('materials.stock-in.import');
 
+    Route::get('/materials/stock-in/export', [StockInController::class, 'export'])
+        ->name('materials.stock-in.export');
+
     // ==========================
     // STOK KELUAR (SUBMENU DATA MATERIAL)
     // ==========================

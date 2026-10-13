@@ -1112,6 +1112,14 @@
                         <span class="material-symbols-outlined" style="font-size:19px;">download</span>
                         Template Excel
                     </a>
+
+                    <!-- Tombol Export Excel -->
+                    <a href="{{ route('materials.stock-in.export', ['search' => $search, 'start_date' => $startDate, 'end_date' => $endDate, 'per_page' => $perPage]) }}" 
+                       class="btn btn-outline" 
+                       download>
+                        <span class="material-symbols-outlined" style="font-size:19px;">download</span>
+                        Export Excel
+                    </a>
                 </div>
             </div>
 

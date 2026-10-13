@@ -753,6 +753,131 @@ class StockInTest extends TestCase
             session('errors')->first('file')
         );
     }
+
+    public function test_stock_in_page_renders_export_excel_button(): void
+    {
+        $user = $this->createUser('Admin');
+
+        $response = $this->actingAs($user)->get(route('materials.stock-in.index'));
+
+        $response->assertStatus(200);
+        $response->assertSee('Export Excel');
+        $response->assertSee(route('materials.stock-in.export'));
+        $response->assertSee('download');
+    }
+
+    public function test_stock_in_export_requires_authentication(): void
+    {
+        $response = $this->get(route('materials.stock-in.export'));
+        $response->assertRedirect('/login');
+    }
+
+    public function test_stock_in_export_excel_downloads_file(): void
+    {
+        $user = $this->createUser('Admin');
+
+        $response = $this->actingAs($user)->get(route('materials.stock-in.export'));
+
+        $response->assertStatus(200);
+        $this->assertTrue(
+            str_contains(
+                (string) $response->headers->get('content-disposition'),
+                'laporan-stok-masuk-atk.xlsx'
+            )
+        );
+    }
+
+    public function test_stock_in_export_collection_structure_and_filters(): void
+    {
+        $user = $this->createUser('Admin');
+
+        $mat1 = Material::create([
+            'material_number' => 'MAT101',
+            'name'            => 'Pulpen Gel Hitam',
+            'entry_date'      => '2026-10-01',
+            'quantity'        => 50,
+            'unit'            => 'Pcs',
+        ]);
+
+        $mat2 = Material::create([
+            'material_number' => 'MAT102',
+            'name'            => 'Kertas F4 70gr',
+            'entry_date'      => '2026-10-02',
+            'quantity'        => 20,
+            'unit'            => 'Rim',
+        ]);
+
+        StockMovement::create([
+            'material_id'     => $mat1->id,
+            'material_name'   => $mat1->name,
+            'material_number' => $mat1->material_number,
+            'user_id'         => $user->id,
+            'activity'        => 'Tambah',
+            'quantity_before' => 0,
+            'quantity_after'  => 50,
+            'quantity_change' => 50,
+            'description'     => 'Stok Awal Pengadaan',
+            'created_at'      => '2026-10-01 08:00:00',
+        ]);
+
+        StockMovement::create([
+            'material_id'     => $mat2->id,
+            'material_name'   => $mat2->name,
+            'material_number' => $mat2->material_number,
+            'user_id'         => $user->id,
+            'activity'        => 'Tambah',
+            'quantity_before' => 0,
+            'quantity_after'  => 20,
+            'quantity_change' => 20,
+            'description'     => 'Import Rutin Bulanan',
+            'created_at'      => '2026-10-05 09:30:00',
+        ]);
+
+        // 1. Test semua data export
+        $export = new \App\Exports\StockInExport();
+        $collection = $export->collection();
+
+        // Cek Row 1: Judul
+        $this->assertEquals(
+            'LAPORAN STOK MASUK - INVENTORI ATK PT PLN INDONESIA POWER UBP ASAM ASAM',
+            $collection->get(0)[0]
+        );
+
+        // Cek Row 2: Periode
+        $this->assertEquals(
+            'Semua Periode Transaksi',
+            $collection->get(1)[0]
+        );
+
+        // Cek Row 4: Header kolom
+        $header = $collection->get(3);
+        $this->assertEquals([
+            'No',
+            'No Material',
+            'Nama Material',
+            'Tanggal Masuk',
+            'Jumlah Masuk',
+            'Satuan',
+            'Keterangan / Sumber',
+            'Dicatat Oleh',
+        ], $header);
+
+        // Data rows (Row 5 & 6)
+        $this->assertCount(6, $collection);
+
+        // 2. Test dengan filter search
+        $exportSearch = new \App\Exports\StockInExport('Pulpen');
+        $collectionSearch = $exportSearch->collection();
+        // 4 baris header + 1 baris data matching 'Pulpen'
+        $this->assertCount(5, $collectionSearch);
+        $this->assertEquals('MAT101', $collectionSearch->get(4)[1]);
+
+        // 3. Test dengan filter rentang tanggal
+        $exportDate = new \App\Exports\StockInExport(null, '2026-10-04', '2026-10-06');
+        $collectionDate = $exportDate->collection();
+        $this->assertCount(5, $collectionDate);
+        $this->assertEquals('MAT102', $collectionDate->get(4)[1]);
+    }
 }
 
 
