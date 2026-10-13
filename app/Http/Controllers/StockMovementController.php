@@ -313,10 +313,8 @@ class StockMovementController extends Controller
         );
 
         // Download PDF
-        return $pdf->download(
-            'riwayat-stok-atk-' .
-            now()->format('Y-m-d') .
-            '.pdf'
-        );
+        $filename = 'Riwayat_Stok_PLN_' . now()->format('Ymd_His') . '.pdf';
+
+        return $pdf->download($filename);
     }
 }

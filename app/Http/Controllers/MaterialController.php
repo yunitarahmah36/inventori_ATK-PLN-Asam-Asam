@@ -400,7 +400,7 @@ class MaterialController extends Controller
         $sort    = $request->input('sort', 'latest');
         $perPage = $request->input('per_page', null);
         $page    = (int) $request->input('page', 1);
-        $filename = 'Data_Master_Material_ATK_PLN_' . date('Ymd_His') . '.xlsx';
+        $filename = 'Data_Master_Material_PLN_' . now()->format('Ymd_His') . '.xlsx';
 
         return Excel::download(
             new MaterialsExport($search, $sort, $perPage, $page),

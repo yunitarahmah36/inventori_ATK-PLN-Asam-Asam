@@ -417,6 +417,10 @@ class MaterialTest extends TestCase
         $response = $this->actingAs($admin)->get('/materials/export');
         $response->assertStatus(200);
         $response->assertHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        $this->assertMatchesRegularExpression(
+            '/Data_Master_Material_PLN_\d{8}_\d{6}\.xlsx/',
+            (string) $response->headers->get('content-disposition')
+        );
     }
 
     public function test_download_template_downloads_3_column_excel_template(): void

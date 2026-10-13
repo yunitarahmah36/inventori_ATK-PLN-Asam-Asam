@@ -210,6 +210,8 @@ class StockInController extends Controller
      */
     public function export(Request $request)
     {
+        $filename = 'Stok_Masuk_PLN_' . now()->format('Ymd_His') . '.xlsx';
+
         return Excel::download(
             new StockInExport(
                 $request->input('search'),
@@ -218,7 +220,7 @@ class StockInController extends Controller
                 $request->input('per_page'),
                 $request->input('page')
             ),
-            'laporan-stok-masuk-atk.xlsx'
+            $filename
         );
     }
 }

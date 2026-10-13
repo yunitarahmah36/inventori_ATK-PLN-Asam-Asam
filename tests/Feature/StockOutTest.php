@@ -502,11 +502,9 @@ class StockOutTest extends TestCase
         $response = $this->actingAs($user)->get(route('materials.stock-out.export'));
 
         $response->assertStatus(200);
-        $this->assertTrue(
-            str_contains(
-                (string) $response->headers->get('content-disposition'),
-                'laporan-stok-keluar-atk.xlsx'
-            )
+        $this->assertMatchesRegularExpression(
+            '/Stok_Keluar_PLN_\d{8}_\d{6}\.xlsx/',
+            (string) $response->headers->get('content-disposition')
         );
     }
 
