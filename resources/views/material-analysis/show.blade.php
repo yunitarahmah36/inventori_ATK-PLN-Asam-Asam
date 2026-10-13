@@ -721,46 +721,392 @@
         .table-responsive {
             width: 100%;
             overflow-x: auto;
+            overflow-y: hidden;
         }
 
-        table.data-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 13px;
-            text-align: left;
+        /* =========================================================
+           FILTER CARD (IDENTIK DENGAN RIWAYAT STOK)
+        ========================================================= */
+        .filter-card {
+            background: var(--white);
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow);
         }
 
-        table.data-table thead tr {
-            background: #F8FAFC;
-            border-bottom: 1px solid var(--border);
+        .filter-form {
+            display: grid;
+            grid-template-columns: minmax(250px, 1.6fr) minmax(170px, 1fr) minmax(160px, 1fr) minmax(160px, 1fr) auto;
+            gap: 14px;
+            align-items: end;
         }
 
-        table.data-table th {
-            padding: 13px 18px;
-            font-size: 11.5px;
+        .filter-group {
+            min-width: 0;
+        }
+
+        .filter-group label {
+            display: block;
+            margin-bottom: 7px;
+            font-size: 12px;
             font-weight: 700;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.04em;
-            white-space: nowrap;
-        }
-
-        table.data-table tbody tr {
-            border-bottom: 1px solid #F1F5F9;
-            transition: background 0.15s ease;
-        }
-
-        table.data-table tbody tr:hover {
-            background: #FAFBFD;
-        }
-
-        table.data-table td {
-            padding: 14px 18px;
-            vertical-align: middle;
             color: var(--text-mid);
         }
 
+        .search-input {
+            position: relative;
+            width: 100%;
+        }
+
+        .search-input .material-symbols-outlined {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 20px;
+            pointer-events: none;
+        }
+
+        .search-input input,
+        .filter-group select,
+        .filter-group input[type="date"] {
+            width: 100%;
+            height: 42px;
+            border: 1px solid #D1D5DB;
+            border-radius: 8px;
+            background: #FFFFFF;
+            color: var(--text-dark);
+            font-size: 13px;
+            outline: none;
+            transition: border-color .15s ease, box-shadow .15s ease;
+        }
+
+        .search-input input {
+            padding: 0 12px 0 40px;
+        }
+
+        .filter-group select {
+            padding: 0 38px 0 12px;
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23334155' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 15px;
+        }
+
+        .filter-group input[type="date"] {
+            padding: 0 12px;
+        }
+
+        .search-input input:focus,
+        .filter-group select:focus,
+        .filter-group input[type="date"]:focus {
+            border-color: var(--blue);
+            box-shadow: 0 0 0 3px rgba(180, 106, 114, .15);
+        }
+
+        .filter-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-filter,
+        .btn-reset {
+            height: 42px;
+            border-radius: 8px;
+            padding: 0 16px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: .15s ease;
+        }
+
+        .btn-filter {
+            border: none;
+            background: var(--blue);
+            color: #FFFFFF;
+            box-shadow: 0 2px 6px rgba(180, 106, 114, .25);
+        }
+
+        .btn-filter:hover {
+            background: var(--blue-dark);
+        }
+
+        .btn-reset {
+            background: #FFFFFF;
+            color: var(--text-mid);
+            border: 1px solid var(--border);
+        }
+
+        .btn-reset:hover {
+            background: #F9FAFB;
+            border-color: #CBD5E1;
+        }
+
+        /* =========================================================
+           TABLE CARD ACTIONS, PER-PAGE & PDF EXPORT
+        ========================================================= */
+        .table-card-actions {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 12px;
+            flex-shrink: 0;
+        }
+
+        .per-page-form {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            font-size: 12px;
+            color: var(--text-muted);
+            white-space: nowrap;
+        }
+
+        .per-page-form label {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .per-page-form select {
+            width: 72px;
+            height: 40px;
+            padding: 0 9px;
+            border: 1px solid #D1D5DB;
+            border-radius: 8px;
+            background: #FFFFFF;
+            color: var(--text-dark);
+            font-size: 12px;
+            font-weight: 600;
+            outline: none;
+            cursor: pointer;
+        }
+
+        .per-page-form select:hover {
+            border-color: #94A3B8;
+        }
+
+        .per-page-form select:focus {
+            border-color: var(--blue);
+            box-shadow: 0 0 0 3px rgba(180, 106, 114, .15);
+        }
+
+        .btn-export-pdf {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+            height: 40px;
+            padding: 0 15px;
+            border-radius: 8px;
+            background: var(--blue);
+            color: #FFFFFF;
+            font-size: 12.5px;
+            font-weight: 700;
+            text-decoration: none;
+            white-space: nowrap;
+            transition: .15s ease;
+            box-shadow: 0 2px 6px rgba(180, 106, 114, .20);
+        }
+
+        .btn-export-pdf:hover {
+            background: var(--blue-dark);
+            color: #FFFFFF;
+        }
+
+        .btn-export-pdf .material-symbols-outlined {
+            font-size: 18px;
+        }
+
+        /* =========================================================
+           DATA TABLE (SERAGAM DENGAN RIWAYAT STOK)
+        ========================================================= */
+        table.data-table {
+            width: 100%;
+            min-width: 1000px;
+            border-collapse: collapse;
+            font-size: 12px;
+            text-align: left;
+        }
+
+        table.data-table thead {
+            background: #F8FAFC;
+            border-bottom: 2px solid var(--border);
+        }
+
+        table.data-table th {
+            padding: 11px 10px;
+            font-weight: 700;
+            color: var(--text-mid);
+            font-size: 10.5px;
+            text-transform: uppercase;
+            letter-spacing: .3px;
+            white-space: nowrap;
+            vertical-align: middle;
+        }
+
+        table.data-table tbody tr {
+            border-bottom: 1px solid var(--border);
+            transition: background var(--transition);
+        }
+
+        table.data-table tbody tr:last-child {
+            border-bottom: none;
+        }
+
+        table.data-table tbody tr:hover {
+            background: #F9FBFF;
+        }
+
+        table.data-table td {
+            padding: 11px 10px;
+            vertical-align: middle;
+            color: var(--text-dark);
+            font-size: 12px;
+        }
+
+        .text-center {
+            text-align: center !important;
+        }
+
+        .date-main {
+            font-weight: 700;
+            color: var(--text-dark);
+            font-size: 11.5px;
+        }
+
+        .date-time {
+            margin-top: 2px;
+            font-size: 10px;
+            color: var(--text-muted);
+        }
+
+        .user-name {
+            font-weight: 700;
+            font-size: 11.5px;
+            color: var(--text-dark);
+            text-transform: uppercase;
+        }
+
+        .user-role {
+            margin-top: 2px;
+            font-size: 9px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        .material-name {
+            font-weight: 700;
+            color: var(--text-dark);
+            font-size: 11.5px;
+            line-height: 1.3;
+        }
+
+        .material-number {
+            margin-top: 2px;
+            font-size: 9.5px;
+            color: var(--text-muted);
+        }
+
         /* Activity Badges */
+        .activity-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 4px 8px;
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .activity-tambah {
+            background: var(--green-light);
+            color: #059669;
+        }
+
+        .activity-kurang {
+            background: var(--red-light);
+            color: var(--red);
+        }
+
+        .activity-edit {
+            background: var(--blue-light);
+            color: var(--blue);
+        }
+
+        .activity-import {
+            background: #FFF3E0;
+            color: #E65100;
+        }
+
+        .activity-hapus {
+            background: var(--red-light);
+            color: var(--red);
+        }
+
+        .activity-default {
+            background: #F1F5F9;
+            color: var(--text-mid);
+        }
+
+        /* Stock Numbers & Changes */
+        .stock-number {
+            font-size: 11.5px;
+            font-weight: 700;
+            color: var(--text-dark);
+            white-space: nowrap;
+        }
+
+        .stock-change-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 48px;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+            line-height: 1.2;
+            white-space: nowrap;
+        }
+
+        .stock-change-positive {
+            color: #047857;
+            background: #D1FAE5;
+            border: 1px solid #A7F3D0;
+        }
+
+        .stock-change-negative {
+            color: #B91C1C;
+            background: #FEE2E2;
+            border: 1px solid #FECACA;
+        }
+
+        .stock-change-zero {
+            color: #6B7280;
+            background: #F3F4F6;
+            border: 1px solid #E5E7EB;
+        }
+
+        .description {
+            max-width: 180px;
+            color: var(--text-muted);
+            font-size: 10px;
+            line-height: 1.4;
+        }
+
+        /* Legacy fallback badge classes */
         .badge-act {
             display: inline-flex;
             align-items: center;
@@ -778,7 +1124,6 @@
         .act-hapus  { background: #FEE2E2; color: #991B1B; }
         .act-import { background: #FEF3C7; color: #92400E; }
 
-        /* Movement Change Badges */
         .change-badge {
             display: inline-flex;
             align-items: center;
@@ -821,9 +1166,130 @@
         .status-warning .status-dot { background: var(--yellow); }
         .status-danger  .status-dot { background: var(--red); }
 
+        /* =========================================================
+           EMPTY STATE & TABLE FOOTER
+        ========================================================= */
+        .empty-state {
+            padding: 70px 20px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .empty-state .material-symbols-outlined {
+            font-size: 54px;
+            color: #94A3B8;
+            margin-bottom: 14px;
+        }
+
+        .empty-state h3 {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 6px;
+        }
+
+        .empty-state p {
+            font-size: 13px;
+            color: var(--text-muted);
+            max-width: 420px;
+            line-height: 1.5;
+        }
+
+        .table-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 20px;
+            background: #FAFBFD;
+            border-top: 1px solid var(--border);
+            gap: 15px;
+        }
+
+        .table-footer-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .data-info {
+            font-size: 12px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .data-info strong {
+            color: var(--text-dark);
+            font-weight: 700;
+        }
+
+        .simple-pagination {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .pagination-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            min-width: 110px;
+            height: 36px;
+            padding: 0 14px;
+            border-radius: 7px;
+            font-size: 12px;
+            font-weight: 600;
+            background: var(--white);
+            color: var(--text-dark);
+            border: 1px solid var(--border);
+            transition: var(--transition);
+        }
+
+        .pagination-btn:hover:not(.disabled) {
+            background: var(--blue-light);
+            border-color: #F7C8D3;
+            color: var(--blue);
+        }
+
+        .pagination-btn.disabled {
+            opacity: .45;
+            cursor: not-allowed;
+            pointer-events: none;
+            background: #F1F5F9;
+        }
+
         /* ============================================================
-           RESPONSIVE MOBILE
+           RESPONSIVE MOBILE & MEDIA QUERIES
         ============================================================ */
+        @media (max-width: 1550px) {
+            .filter-form {
+                grid-template-columns: 1.5fr 1fr 1fr 1fr auto;
+                gap: 12px;
+            }
+
+            .filter-actions {
+                grid-column: auto;
+                display: flex;
+                gap: 8px;
+            }
+        }
+
+        @media (max-width: 1100px) {
+            .filter-form {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .filter-actions {
+                grid-column: span 2;
+                display: flex;
+                gap: 8px;
+            }
+        }
+
         @media (max-width: 1024px) {
             .stats-grid {
                 grid-template-columns: repeat(2, 1fr);
@@ -867,6 +1333,64 @@
 
             .chart-container {
                 min-height: 250px;
+            }
+
+            .filter-form {
+                grid-template-columns: 1fr;
+            }
+
+            .filter-actions {
+                grid-column: auto;
+                width: 100%;
+                justify-content: stretch;
+            }
+
+            .filter-actions .btn-filter,
+            .filter-actions .btn-reset {
+                flex: 1;
+            }
+
+            .table-card-header {
+                padding: 16px;
+                flex-direction: column;
+                align-items: stretch;
+                gap: 14px;
+            }
+
+            .table-card-actions {
+                width: 100%;
+                justify-content: space-between;
+                gap: 10px;
+            }
+
+            .per-page-form {
+                flex: 1;
+            }
+
+            .per-page-form select {
+                width: 70px;
+            }
+
+            .btn-export-pdf {
+                flex-shrink: 0;
+            }
+
+            .table-footer {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .table-footer-left {
+                justify-content: space-between;
+            }
+
+            .simple-pagination {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .pagination-btn {
+                flex: 1;
             }
         }
     </style>
@@ -1134,6 +1658,59 @@
                     </div>
                 @endif
 
+                <!-- FILTER CARD RIWAYAT PERGERAKAN STOK MATERIAL -->
+                <div class="filter-card">
+                    <form action="{{ route('material-analysis.show', $group['slug']) }}" method="GET" class="filter-form">
+                        <!-- SEARCH -->
+                        <div class="filter-group">
+                            <label for="search">Cari Riwayat</label>
+                            <div class="search-input">
+                                <span class="material-symbols-outlined">search</span>
+                                <input type="text" id="search" name="search" value="{{ request('search') }}"
+                                    placeholder="Cari aktivitas, pengambil, atau keterangan..." autocomplete="off">
+                            </div>
+                        </div>
+
+                        <!-- AKTIVITAS -->
+                        <div class="filter-group">
+                            <label for="activity">Aktivitas</label>
+                            <select name="activity" id="activity">
+                                <option value="">Semua Aktivitas</option>
+                                <option value="Tambah" {{ request('activity') == 'Tambah' ? 'selected' : '' }}>Tambah</option>
+                                <option value="Edit" {{ request('activity') == 'Edit' ? 'selected' : '' }}>Edit</option>
+                                <option value="Import" {{ request('activity') == 'Import' ? 'selected' : '' }}>Import</option>
+                                <option value="Hapus" {{ request('activity') == 'Hapus' ? 'selected' : '' }}>Hapus</option>
+                                <option value="Keluar" {{ request('activity') == 'Keluar' ? 'selected' : '' }}>Keluar</option>
+                            </select>
+                        </div>
+
+                        <!-- DARI TANGGAL -->
+                        <div class="filter-group">
+                            <label for="start_date">Dari Tanggal</label>
+                            <input type="date" id="start_date" name="start_date" value="{{ request('start_date') }}">
+                        </div>
+
+                        <!-- SAMPAI TANGGAL -->
+                        <div class="filter-group">
+                            <label for="end_date">Sampai Tanggal</label>
+                            <input type="date" id="end_date" name="end_date" value="{{ request('end_date') }}">
+                        </div>
+
+                        <!-- BUTTON -->
+                        <div class="filter-actions">
+                            <button type="submit" class="btn-filter">
+                                <span class="material-symbols-outlined" style="font-size:18px;">filter_alt</span>
+                                Filter
+                            </button>
+                            @if (request('search') || request('activity') || request('start_date') || request('end_date'))
+                                <a href="{{ route('material-analysis.show', $group['slug']) }}" class="btn-reset">
+                                    Reset
+                                </a>
+                            @endif
+                        </div>
+                    </form>
+                </div>
+
                 <!-- TABEL RIWAYAT PERGERAKAN MATERIAL -->
                 <div class="table-card">
                     <div class="table-card-header">
@@ -1141,94 +1718,197 @@
                             <h3>
                                 <span class="material-symbols-outlined" style="color:var(--blue);">receipt_long</span>
                                 <span>Riwayat Pergerakan Material</span>
-                                <span class="badge-count">{{ $transactions->count() }} Pergerakan Material</span>
+                                <span class="badge-count">{{ method_exists($movements, 'total') ? $movements->total() : $movements->count() }} Aktivitas</span>
                             </h3>
-                            <p>Catatan lengkap seluruh pergerakan material masuk, keluar, penyesuaian, dan penghapusan</p>
+                            <p>Riwayat aktivitas perubahan stok material ini</p>
+                        </div>
+
+                        <div class="table-card-actions">
+                            <!-- PER PAGE -->
+                            <div class="per-page-form">
+                                <label for="per_page_select">Tampilkan</label>
+                                <select id="per_page_select" onchange="changePerPage(this.value)">
+                                    <option value="10" {{ request('per_page', 25) == 10 ? 'selected' : '' }}>10</option>
+                                    <option value="25" {{ request('per_page', 25) == 25 ? 'selected' : '' }}>25</option>
+                                    <option value="50" {{ request('per_page', 25) == 50 ? 'selected' : '' }}>50</option>
+                                    <option value="100" {{ request('per_page', 25) == 100 ? 'selected' : '' }}>100</option>
+                                    <option value="250" {{ request('per_page', 25) == 250 ? 'selected' : '' }}>250</option>
+                                    <option value="all" {{ request('per_page') === 'all' ? 'selected' : '' }}>Semua</option>
+                                </select>
+                            </div>
+
+                            <!-- EXPORT PDF -->
+                            <a href="{{ route('stock-movements.export-pdf', array_merge(request()->query(), ['search' => request('search', $group['material_number'])])) }}"
+                                class="btn-export-pdf">
+                                <span class="material-symbols-outlined">picture_as_pdf</span>
+                                Export PDF
+                            </a>
                         </div>
                     </div>
 
-                    <div class="table-responsive">
-                        <table class="data-table">
-                            <thead>
-                                <tr>
-                                    <th style="width:50px;text-align:center;">No</th>
-                                    <th>Tanggal & Waktu</th>
-                                    <th>Aktivitas</th>
-                                    <th>Stok Sebelum</th>
-                                    <th>Perubahan Stok</th>
-                                    <th>Stok Sesudah</th>
-                                    <th>Operator</th>
-                                    <th>Keterangan</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @forelse ($transactions as $tIdx => $trx)
+                    @if ($movements->count() > 0)
+                        <div class="table-responsive">
+                            <table class="data-table">
+                                <thead>
                                     <tr>
-                                        <td style="text-align:center;font-weight:600;color:var(--text-muted);">
-                                            {{ $tIdx + 1 }}
-                                        </td>
-                                        <td style="white-space:nowrap;font-weight:600;color:var(--text-dark);">
-                                            {{ $trx->created_at ? $trx->created_at->format('d/m/Y H:i') : '-' }}
-                                        </td>
-                                        <td>
-                                            @php
-                                                $actClass = match($trx->activity) {
-                                                    'Tambah' => 'act-tambah',
-                                                    'Edit'   => 'act-edit',
-                                                    'Hapus'  => 'act-hapus',
-                                                    'Import' => 'act-import',
-                                                    default  => 'act-edit'
-                                                };
-                                            @endphp
-                                            <span class="badge-act {{ $actClass }}">
-                                                {{ $trx->activity }}
-                                            </span>
-                                        </td>
-                                        <td>
-                                            {{ number_format($trx->quantity_before, 0, ',', '.') }} {{ $group['unit'] }}
-                                        </td>
-                                        <td>
-                                            @if ($trx->quantity_change > 0)
-                                                <span class="change-badge change-in">
-                                                    <span class="material-symbols-outlined" style="font-size:15px;">arrow_upward</span>
-                                                    +{{ number_format($trx->quantity_change, 0, ',', '.') }}
-                                                </span>
-                                            @elseif ($trx->quantity_change < 0)
-                                                <span class="change-badge change-out">
-                                                    <span class="material-symbols-outlined" style="font-size:15px;">arrow_downward</span>
-                                                    {{ number_format($trx->quantity_change, 0, ',', '.') }}
-                                                </span>
-                                            @else
-                                                <span class="change-badge change-none">0</span>
-                                            @endif
-                                        </td>
-                                        <td>
-                                            <strong style="color:var(--blue);">
-                                                {{ number_format($trx->quantity_after, 0, ',', '.') }} {{ $group['unit'] }}
-                                            </strong>
-                                        </td>
-                                        <td>
-                                            <span style="font-weight:600;color:var(--text-mid);">
-                                                {{ $trx->user ? $trx->user->name : 'Sistem' }}
-                                            </span>
-                                        </td>
-                                        <td style="color:var(--text-muted);max-width:280px;">
-                                            {{ $trx->description ?: '-' }}
-                                        </td>
+                                        <th style="width:45px;">No</th>
+                                        <th style="width:125px;">Tanggal & Waktu</th>
+                                        <th style="width:110px;">Pengguna</th>
+                                        <th style="min-width:170px;">Material</th>
+                                        <th style="width:90px;">Aktivitas</th>
+                                        <th style="width:95px;">Stok Sebelum</th>
+                                        <th style="width:95px; text-align:center;">Perubahan</th>
+                                        <th style="width:95px;">Stok Sesudah</th>
+                                        <th style="min-width:150px;">Keterangan</th>
                                     </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="8" style="text-align:center;padding:40px 20px;color:var(--text-muted);">
-                                            <div style="display:flex;flex-direction:column;align-items:center;gap:10px;">
-                                                <span class="material-symbols-outlined" style="font-size:44px;color:#CBD5E1;">history_toggle_off</span>
-                                                <p style="font-size:14px;font-weight:600;">Belum ada catatan pergerakan material untuk item ini.</p>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
+                                </thead>
+                                <tbody>
+                                    @foreach ($movements as $index => $movement)
+                                        @php
+                                            if (method_exists($movements, 'firstItem') && $movements->firstItem() !== null) {
+                                                $rowNumber = $movements->firstItem() + $index;
+                                            } else {
+                                                $rowNumber = $index + 1;
+                                            }
+
+                                            if (!empty($movement->recipient)) {
+                                                $displayUserName = $movement->recipient;
+                                                $userRoleDisplay = 'Peminjam / Pengambil';
+                                            } else {
+                                                $userName = $movement->user->name ?? 'Unknown';
+                                                $userEmail = $movement->user->email ?? '';
+                                                $displayUserName = $userEmail
+                                                    ? strtoupper(strstr($userEmail, '@', true))
+                                                    : strtoupper($userName);
+                                                $userRoleDisplay = $movement->user->role ?? '-';
+                                            }
+
+                                            $activity = strtolower($movement->activity ?? '');
+                                            if (str_contains($activity, 'tambah')) {
+                                                $activityClass = 'activity-tambah';
+                                            } elseif (str_contains($activity, 'kurang') || str_contains($activity, 'keluar')) {
+                                                $activityClass = 'activity-kurang';
+                                            } elseif (str_contains($activity, 'edit')) {
+                                                $activityClass = 'activity-edit';
+                                            } elseif (str_contains($activity, 'import')) {
+                                                $activityClass = 'activity-import';
+                                            } elseif (str_contains($activity, 'hapus')) {
+                                                $activityClass = 'activity-hapus';
+                                            } else {
+                                                $activityClass = 'activity-default';
+                                            }
+
+                                            $change = (int) ($movement->quantity_change ?? 0);
+                                        @endphp
+                                        <tr>
+                                            <td>{{ $rowNumber }}</td>
+                                            <td>
+                                                <div class="date-main">
+                                                    {{ $movement->created_at ? $movement->created_at->format('d/m/Y') : '-' }}
+                                                </div>
+                                                <div class="date-time">
+                                                    {{ $movement->created_at ? $movement->created_at->format('H:i') . ' WITA' : '-' }}
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="user-name">{{ $displayUserName }}</div>
+                                                <div class="user-role">{{ $userRoleDisplay }}</div>
+                                            </td>
+                                            <td>
+                                                <div class="material-name">
+                                                    {{ $movement->material->name ?? ($movement->material_name ?? '-') }}
+                                                </div>
+                                                <div class="material-number">
+                                                    No: {{ $movement->material->material_number ?? ($movement->material_number ?? '-') }}
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <span class="activity-badge {{ $activityClass }}">
+                                                    {{ $movement->activity ?? '-' }}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <span class="stock-number">
+                                                    {{ number_format($movement->quantity_before ?? 0, 0, ',', '.') }}
+                                                </span>
+                                            </td>
+                                            <td class="text-center">
+                                                @if ($change > 0)
+                                                    <span class="stock-change-badge stock-change-positive">
+                                                        +{{ number_format($change, 0, ',', '.') }}
+                                                    </span>
+                                                @elseif ($change < 0)
+                                                    <span class="stock-change-badge stock-change-negative">
+                                                        {{ number_format($change, 0, ',', '.') }}
+                                                    </span>
+                                                @else
+                                                    <span class="stock-change-badge stock-change-zero">0</span>
+                                                @endif
+                                            </td>
+                                            <td>
+                                                <span class="stock-number">
+                                                    {{ number_format($movement->quantity_after ?? 0, 0, ',', '.') }}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <div class="description">
+                                                    {{ $movement->description ?: '-' }}
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- TABLE FOOTER -->
+                        <div class="table-footer">
+                            <div class="table-footer-left">
+                                <div class="data-info">
+                                    @if (request('per_page') === 'all' || request('per_page') === 'Semua')
+                                        Menampilkan <strong>1–{{ $movements->count() }}</strong> dari <strong>{{ $movements->count() }}</strong> aktivitas
+                                    @else
+                                        Menampilkan <strong>{{ $movements->firstItem() ?? 0 }}–{{ $movements->lastItem() ?? 0 }}</strong> dari <strong>{{ $movements->total() }}</strong> aktivitas
+                                    @endif
+                                </div>
+                            </div>
+
+                            @if (method_exists($movements, 'hasPages'))
+                                <div class="simple-pagination">
+                                    @if ($movements->onFirstPage())
+                                        <span class="pagination-btn disabled">
+                                            <span class="material-symbols-outlined" style="font-size:16px;">arrow_back</span>
+                                            Sebelumnya
+                                        </span>
+                                    @else
+                                        <a href="{{ $movements->previousPageUrl() }}" class="pagination-btn">
+                                            <span class="material-symbols-outlined" style="font-size:16px;">arrow_back</span>
+                                            Sebelumnya
+                                        </a>
+                                    @endif
+
+                                    @if ($movements->hasMorePages())
+                                        <a href="{{ $movements->nextPageUrl() }}" class="pagination-btn">
+                                            Berikutnya
+                                            <span class="material-symbols-outlined" style="font-size:16px;">arrow_forward</span>
+                                        </a>
+                                    @else
+                                        <span class="pagination-btn disabled">
+                                            Berikutnya
+                                            <span class="material-symbols-outlined" style="font-size:16px;">arrow_forward</span>
+                                        </span>
+                                    @endif
+                                </div>
+                            @endif
+                        </div>
+                    @else
+                        <!-- EMPTY STATE -->
+                        <div class="empty-state">
+                            <span class="material-symbols-outlined">history</span>
+                            <h3>Belum Ada Riwayat Stok</h3>
+                            <p>Belum terdapat aktivitas perubahan stok untuk material ini.</p>
+                        </div>
+                    @endif
                 </div>
 
             </div>
@@ -1530,6 +2210,33 @@
 
                     // Jalankan inisialisasi awal
                     initTimelineChart();
+                })();
+
+                /* =========================================================
+                   CHANGE PER PAGE & SEARCH (RIWAYAT PERGERAKAN MATERIAL)
+                ========================================================= */
+                function changePerPage(value) {
+                    const url = new URL(window.location.href);
+                    url.searchParams.set('per_page', value);
+                    url.searchParams.delete('page');
+                    if (typeof navigatePage === 'function') {
+                        navigatePage(url.toString(), true);
+                    } else {
+                        window.location.href = url.toString();
+                    }
+                }
+                window.changePerPage = changePerPage;
+
+                (function setupTableControls() {
+                    const searchInput = document.getElementById('search');
+                    if (searchInput) {
+                        searchInput.addEventListener('keydown', function(event) {
+                            if (event.key === 'Enter') {
+                                event.preventDefault();
+                                this.closest('form').submit();
+                            }
+                        });
+                    }
                 })();
             </script>
 

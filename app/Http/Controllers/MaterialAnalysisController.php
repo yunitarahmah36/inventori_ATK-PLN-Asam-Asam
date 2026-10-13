@@ -363,7 +363,7 @@ class MaterialAnalysisController extends Controller
      * Menampilkan halaman Detail Material.
      * Berisi informasi stok, grafik pergerakan stok masuk dan keluar, serta riwayat transaksi.
      */
-    public function show($key)
+    public function show(Request $request, $key)
     {
         $user = Auth::user();
         $groups = $this->getGroupedMaterials();
@@ -386,19 +386,99 @@ class MaterialAnalysisController extends Controller
 
         $materialId = $group['material_id'];
         $matNumber  = $group['material_number'];
+        $matIds = !empty($group['items']) ? $group['items']->pluck('id')->filter()->all() : array_filter([$materialId]);
+        $matNumbers = !empty($group['material_numbers']) ? $group['material_numbers'] : array_filter([$matNumber]);
 
-        // Ambil seluruh riwayat transaksi / mutasi khusus untuk material ini
+        // Ambil seluruh riwayat transaksi / mutasi khusus untuk material ini (untuk grafik & KPI)
         $transactions = StockMovement::with(['user', 'material'])
-            ->where(function ($q) use ($materialId, $matNumber) {
-                if ($materialId) {
+            ->where(function ($q) use ($materialId, $matNumber, $matIds, $matNumbers) {
+                if (!empty($matIds)) {
+                    $q->whereIn('material_id', $matIds);
+                } elseif ($materialId) {
                     $q->where('material_id', $materialId);
                 }
-                if ($matNumber) {
+                if (!empty($matNumbers)) {
+                    $q->orWhereIn('material_number', $matNumbers);
+                } elseif ($matNumber) {
                     $q->orWhere('material_number', $matNumber);
                 }
             })
             ->orderBy('created_at', 'desc')
             ->get();
+
+        // Query riwayat pergerakan stok khusus material ini dengan filter dan paginasi (mengikuti format Riwayat Stok)
+        $movementQuery = StockMovement::with(['material', 'user'])
+            ->where(function ($q) use ($materialId, $matNumber, $matIds, $matNumbers) {
+                if (!empty($matIds)) {
+                    $q->whereIn('material_id', $matIds);
+                } elseif ($materialId) {
+                    $q->where('material_id', $materialId);
+                }
+                if (!empty($matNumbers)) {
+                    $q->orWhereIn('material_number', $matNumbers);
+                } elseif ($matNumber) {
+                    $q->orWhere('material_number', $matNumber);
+                }
+            })
+            ->latest('created_at')
+            ->latest('id');
+
+        // ==============================
+        // SEARCH
+        // ==============================
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $movementQuery->where(function ($q) use ($search) {
+                $q->where('activity', 'like', '%' . $search . '%')
+                    ->orWhere('description', 'like', '%' . $search . '%')
+                    ->orWhere('recipient', 'like', '%' . $search . '%')
+                    ->orWhere('material_name', 'like', '%' . $search . '%')
+                    ->orWhere('material_number', 'like', '%' . $search . '%')
+                    ->orWhereHas('material', function ($materialQuery) use ($search) {
+                        $materialQuery->where('name', 'like', '%' . $search . '%')
+                            ->orWhere('material_number', 'like', '%' . $search . '%');
+                    })
+                    ->orWhereHas('user', function ($userQuery) use ($search) {
+                        $userQuery->where('name', 'like', '%' . $search . '%')
+                            ->orWhere('email', 'like', '%' . $search . '%');
+                    });
+            });
+        }
+
+        // ==============================
+        // FILTER AKTIVITAS
+        // ==============================
+        if ($request->filled('activity')) {
+            $movementQuery->where('activity', $request->activity);
+        }
+
+        // ==============================
+        // FILTER TANGGAL MULAI
+        // ==============================
+        if ($request->filled('start_date')) {
+            $movementQuery->whereDate('created_at', '>=', $request->start_date);
+        }
+
+        // ==============================
+        // FILTER TANGGAL SELESAI
+        // ==============================
+        if ($request->filled('end_date')) {
+            $movementQuery->whereDate('created_at', '<=', $request->end_date);
+        }
+
+        // ==============================
+        // JUMLAH DATA PER HALAMAN
+        // ==============================
+        $perPage = $request->input('per_page', 25);
+        if ($perPage === 'all' || $perPage === 'Semua') {
+            $movements = $movementQuery->get();
+        } else {
+            $allowedPerPage = [10, 25, 50, 100, 250];
+            if (!in_array((int) $perPage, $allowedPerPage)) {
+                $perPage = 25;
+            }
+            $movements = $movementQuery->paginate((int) $perPage)->withQueryString();
+        }
 
         // Siapkan data grafik kronologis mutasi stok khusus material ini
         $chronologicalMovements = $transactions->sortBy('created_at')->values();
@@ -447,6 +527,8 @@ class MaterialAnalysisController extends Controller
             'user'               => $user,
             'group'              => $group,
             'transactions'       => $transactions,
+            'movements'          => $movements,
+            'perPage'            => $perPage,
             'timelineLabels'     => $timelineLabels,
             'timelineMasuk'      => $timelineMasuk,
             'timelineKeluar'     => $timelineKeluar,
