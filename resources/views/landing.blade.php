@@ -676,6 +676,123 @@
             color: #C62828;
         }
 
+        /* Multi-item Form Styling */
+        .items-list-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .item-row {
+            background: #FAFAFA;
+            border: 1px solid var(--border-soft);
+            border-radius: var(--radius-md);
+            padding: 14px 16px;
+            transition: var(--transition);
+        }
+
+        .item-row:hover {
+            border-color: var(--blush-petal);
+            background: #FFFFFF;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .item-row.highlighted {
+            animation: rowPulse 1.2s ease;
+        }
+
+        @keyframes rowPulse {
+            0% { background: #FFF8E1; border-color: #FFE082; }
+            50% { background: #FFF3E0; border-color: var(--rosewood); }
+            100% { background: #FAFAFA; border-color: var(--border-soft); }
+        }
+
+        .item-row-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding-bottom: 6px;
+            border-bottom: 1px dashed var(--border-soft);
+        }
+
+        .item-row-badge {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--rosewood);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-remove-item {
+            background: #FFF5F5;
+            border: 1px solid #FFCDD2;
+            color: #C62828;
+            border-radius: var(--radius-sm);
+            padding: 4px 10px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            transition: var(--transition);
+            font-family: inherit;
+        }
+
+        .btn-remove-item:hover {
+            background: #C62828;
+            color: #FFFFFF;
+            border-color: #C62828;
+        }
+
+        .item-row-grid {
+            display: grid;
+            grid-template-columns: 1fr 180px;
+            gap: 14px;
+            align-items: start;
+        }
+
+        @media (max-width: 640px) {
+            .item-row-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .item-sublabel {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+            display: block;
+        }
+
+        .btn-add-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--blush-light);
+            color: var(--rosewood-dark);
+            border: 1.5px dashed var(--rosewood);
+            border-radius: var(--radius-md);
+            padding: 10px 18px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: inherit;
+            width: 100%;
+            justify-content: center;
+        }
+
+        .btn-add-item:hover {
+            background: var(--rosewood);
+            color: #FFFFFF;
+            border-color: var(--rosewood);
+            box-shadow: var(--shadow-sm);
+        }
+
         /* Success & Error Alert */
         .alert {
             padding: 16px 20px;
@@ -1341,17 +1458,54 @@
                                     <div><span class="receipt-item-label">Nama Pengambil:</span></div>
                                     <div><span class="receipt-item-val">{{ $receipt['recipient'] }}</span></div>
 
-                                    <div><span class="receipt-item-label">Nama Material:</span></div>
-                                    <div><span class="receipt-item-val">{{ $receipt['material_name'] }}</span></div>
+                                    @if (!empty($receipt['items']) && is_array($receipt['items']))
+                                        <div style="grid-column: span 2; margin-top: 10px; border-top: 1px dashed var(--border-soft); padding-top: 10px;">
+                                            <span class="receipt-item-label" style="font-weight: 700; color: var(--rosewood-dark); display: block; margin-bottom: 8px;">
+                                                Daftar Material yang Diambil ({{ count($receipt['items']) }} Item):
+                                            </span>
+                                            <div style="overflow-x: auto;">
+                                                <table style="width: 100%; border-collapse: collapse; font-size: 12.5px;">
+                                                    <thead>
+                                                        <tr style="border-bottom: 1px solid var(--border-soft); color: var(--text-muted); text-align: left;">
+                                                            <th style="padding: 6px 4px;">Material</th>
+                                                            <th style="padding: 6px 4px; text-align: center;">Jumlah Diambil</th>
+                                                            <th style="padding: 6px 4px; text-align: right;">Sisa Stok Terkini</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @foreach ($receipt['items'] as $item)
+                                                            <tr style="border-bottom: 1px dashed var(--border-soft);">
+                                                                <td style="padding: 8px 4px; font-weight: 600;">
+                                                                    {{ $item['material_name'] }}
+                                                                    @if (!empty($item['material_number']))
+                                                                        <span style="font-size: 11px; color: var(--text-muted); display: block;">No: {{ $item['material_number'] }}</span>
+                                                                    @endif
+                                                                </td>
+                                                                <td style="padding: 8px 4px; text-align: center; font-weight: 700; color: #B46A72;">
+                                                                    {{ $item['qty_out'] }} {{ $item['unit'] }}
+                                                                </td>
+                                                                <td style="padding: 8px 4px; text-align: right; font-weight: 600; color: var(--text-secondary);">
+                                                                    {{ $item['remaining_stock'] }} {{ $item['unit'] }}
+                                                                </td>
+                                                            </tr>
+                                                        @endforeach
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    @else
+                                        <div><span class="receipt-item-label">Nama Material:</span></div>
+                                        <div><span class="receipt-item-val">{{ $receipt['material_name'] }}</span></div>
 
-                                    <div><span class="receipt-item-label">No. Material:</span></div>
-                                    <div><span class="receipt-item-val">{{ $receipt['material_number'] ?? '-' }}</span></div>
+                                        <div><span class="receipt-item-label">No. Material:</span></div>
+                                        <div><span class="receipt-item-val">{{ $receipt['material_number'] ?? '-' }}</span></div>
 
-                                    <div><span class="receipt-item-label">Jumlah Diambil:</span></div>
-                                    <div><span class="receipt-item-val" style="color: #B46A72;">{{ $receipt['qty_out'] }} {{ $receipt['unit'] }}</span></div>
+                                        <div><span class="receipt-item-label">Jumlah Diambil:</span></div>
+                                        <div><span class="receipt-item-val" style="color: #B46A72;">{{ $receipt['qty_out'] }} {{ $receipt['unit'] }}</span></div>
 
-                                    <div><span class="receipt-item-label">Sisa Stok Terkini:</span></div>
-                                    <div><span class="receipt-item-val">{{ $receipt['remaining_stock'] }} {{ $receipt['unit'] }}</span></div>
+                                        <div><span class="receipt-item-label">Sisa Stok Terkini:</span></div>
+                                        <div><span class="receipt-item-val">{{ $receipt['remaining_stock'] }} {{ $receipt['unit'] }}</span></div>
+                                    @endif
                                 </div>
                             </div>
                         @endif
@@ -1436,55 +1590,158 @@
                                 <span class="form-hint">Pilih dari saran atau ketik unit kerja Anda.</span>
                             </div>
 
-                            <!-- Nama Barang (Material) -->
+                            <!-- Daftar Barang / Material yang Dipinjam (Multi-Item) -->
                             <div class="form-group form-grid-full">
-                                <label for="material_id" class="form-label">
-                                    Nama Barang / Material <span class="req">*</span>
-                                </label>
-                                <div class="form-input-wrap">
-                                    <span class="material-symbols-outlined form-input-icon">inventory_2</span>
-                                    <select name="material_id" id="material_id" class="form-select" required>
-                                        <option value="" data-stock="0" data-unit="">-- Silakan Pilih Barang yang Diambil --</option>
-                                        @foreach ($materials as $mat)
-                                            <option value="{{ $mat->id }}"
-                                                    data-stock="{{ $mat->quantity }}"
-                                                    data-unit="{{ $mat->unit }}"
-                                                    data-name="{{ $mat->name }}"
-                                                    {{ old('material_id') == $mat->id ? 'selected' : '' }}>
-                                                {{ $mat->name }} {{ $mat->material_number ? '(' . $mat->material_number . ')' : '' }} — Stok: {{ $mat->quantity }} {{ $mat->unit }}
-                                            </option>
-                                        @endforeach
-                                    </select>
+                                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+                                    <label class="form-label" style="margin-bottom: 0;">
+                                        <span class="material-symbols-outlined" style="font-size: 18px; color: var(--rosewood);">inventory_2</span>
+                                        Daftar Barang / Material yang Dipinjam <span class="req">*</span>
+                                    </label>
+                                    <span class="form-hint" style="margin: 0; font-size: 11.5px;">Bisa pilih lebih dari 1 barang</span>
                                 </div>
-                                <div id="liveStockInfo" style="display: none;">
-                                    <div class="stock-badge-live" id="stockBadgeText">
-                                        <span class="material-symbols-outlined" style="font-size: 16px;">info</span>
-                                        <span id="stockValue">Pilih barang</span>
+
+                                <div id="itemsContainer" class="items-list-container">
+                                    @php
+                                        $oldItems = old('items');
+                                        if (!$oldItems || !is_array($oldItems)) {
+                                            $oldItems = [
+                                                [
+                                                    'material_id' => old('material_id', ''),
+                                                    'quantity'    => old('quantity', 1)
+                                                ]
+                                            ];
+                                        }
+                                    @endphp
+
+                                    @foreach ($oldItems as $idx => $itemData)
+                                        <div class="item-row" data-index="{{ $idx }}">
+                                            <div class="item-row-header">
+                                                <span class="item-row-badge">
+                                                    <span class="material-symbols-outlined" style="font-size: 16px;">tag</span>
+                                                    Barang #<span class="item-row-number">{{ $idx + 1 }}</span>
+                                                </span>
+                                                <button type="button" class="btn-remove-item" style="{{ count($oldItems) > 1 ? '' : 'display: none;' }}" title="Hapus barang ini">
+                                                    <span class="material-symbols-outlined" style="font-size: 15px;">delete</span>
+                                                    Hapus
+                                                </button>
+                                            </div>
+
+                                            <div class="item-row-grid">
+                                                <!-- Pilihan Material -->
+                                                <div class="form-group">
+                                                    <label class="item-sublabel">Nama Barang / Material <span class="req">*</span></label>
+                                                    <div class="form-input-wrap">
+                                                        <span class="material-symbols-outlined form-input-icon">inventory_2</span>
+                                                        <select name="items[{{ $idx }}][material_id]" class="form-select item-select" required>
+                                                            <option value="" data-stock="0" data-unit="">-- Silakan Pilih Barang yang Diambil --</option>
+                                                            @foreach ($materials as $mat)
+                                                                <option value="{{ $mat->id }}"
+                                                                        data-stock="{{ $mat->quantity }}"
+                                                                        data-unit="{{ $mat->unit }}"
+                                                                        data-name="{{ $mat->name }}"
+                                                                        {{ ($itemData['material_id'] ?? '') == $mat->id ? 'selected' : '' }}>
+                                                                    {{ $mat->name }} {{ $mat->material_number ? '(' . $mat->material_number . ')' : '' }} — Stok: {{ $mat->quantity }} {{ $mat->unit }}
+                                                                </option>
+                                                            @endforeach
+                                                        </select>
+                                                    </div>
+                                                    <div class="item-stock-info" style="display: none;">
+                                                        <div class="stock-badge-live">
+                                                            <span class="material-symbols-outlined" style="font-size: 15px;">info</span>
+                                                            <span class="stock-badge-text">Pilih barang</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Jumlah Dipinjam -->
+                                                <div class="form-group">
+                                                    <label class="item-sublabel">Jumlah Dipinjam <span class="req">*</span></label>
+                                                    <div class="form-input-wrap">
+                                                        <span class="material-symbols-outlined form-input-icon">pin</span>
+                                                        <input type="number"
+                                                               name="items[{{ $idx }}][quantity]"
+                                                               class="form-input item-qty-input"
+                                                               value="{{ $itemData['quantity'] ?? 1 }}"
+                                                               min="1"
+                                                               placeholder="1"
+                                                               required>
+                                                    </div>
+                                                    <span class="form-hint item-qty-hint">Maksimal: -</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
+
+                                <div style="margin-top: 10px;">
+                                    <button type="button" id="btnAddItem" class="btn-add-item">
+                                        <span class="material-symbols-outlined" style="font-size: 18px;">add_circle</span>
+                                        + Tambah Barang Lainnya
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Template untuk Baris Barang Baru (Hidden) -->
+                            <template id="itemRowTemplate">
+                                <div class="item-row" data-index="__INDEX__">
+                                    <div class="item-row-header">
+                                        <span class="item-row-badge">
+                                            <span class="material-symbols-outlined" style="font-size: 16px;">tag</span>
+                                            Barang #<span class="item-row-number">__NUMBER__</span>
+                                        </span>
+                                        <button type="button" class="btn-remove-item" title="Hapus barang ini">
+                                            <span class="material-symbols-outlined" style="font-size: 15px;">delete</span>
+                                            Hapus
+                                        </button>
+                                    </div>
+
+                                    <div class="item-row-grid">
+                                        <!-- Pilihan Material -->
+                                        <div class="form-group">
+                                            <label class="item-sublabel">Nama Barang / Material <span class="req">*</span></label>
+                                            <div class="form-input-wrap">
+                                                <span class="material-symbols-outlined form-input-icon">inventory_2</span>
+                                                <select name="items[__INDEX__][material_id]" class="form-select item-select" required>
+                                                    <option value="" data-stock="0" data-unit="">-- Silakan Pilih Barang yang Diambil --</option>
+                                                    @foreach ($materials as $mat)
+                                                        <option value="{{ $mat->id }}"
+                                                                data-stock="{{ $mat->quantity }}"
+                                                                data-unit="{{ $mat->unit }}"
+                                                                data-name="{{ $mat->name }}">
+                                                            {{ $mat->name }} {{ $mat->material_number ? '(' . $mat->material_number . ')' : '' }} — Stok: {{ $mat->quantity }} {{ $mat->unit }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                            <div class="item-stock-info" style="display: none;">
+                                                <div class="stock-badge-live">
+                                                    <span class="material-symbols-outlined" style="font-size: 15px;">info</span>
+                                                    <span class="stock-badge-text">Pilih barang</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Jumlah Dipinjam -->
+                                        <div class="form-group">
+                                            <label class="item-sublabel">Jumlah Dipinjam <span class="req">*</span></label>
+                                            <div class="form-input-wrap">
+                                                <span class="material-symbols-outlined form-input-icon">pin</span>
+                                                <input type="number"
+                                                       name="items[__INDEX__][quantity]"
+                                                       class="form-input item-qty-input"
+                                                       value="1"
+                                                       min="1"
+                                                       placeholder="1"
+                                                       required>
+                                            </div>
+                                            <span class="form-hint item-qty-hint">Maksimal: -</span>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-
-                            <!-- Jumlah Barang -->
-                            <div class="form-group">
-                                <label for="quantity" class="form-label">
-                                    Jumlah Pengambilan <span class="req">*</span>
-                                </label>
-                                <div class="form-input-wrap">
-                                    <span class="material-symbols-outlined form-input-icon">pin</span>
-                                    <input type="number"
-                                           name="quantity"
-                                           id="quantity"
-                                           class="form-input"
-                                           value="{{ old('quantity', 1) }}"
-                                           min="1"
-                                           placeholder="1"
-                                           required>
-                                </div>
-                                <span class="form-hint" id="quantityHint">Jumlah tidak boleh melebihi stok yang tersedia.</span>
-                            </div>
+                            </template>
 
                             <!-- Keterangan / Keperluan -->
-                            <div class="form-group">
+                            <div class="form-group form-grid-full">
                                 <label for="description" class="form-label">
                                     Keterangan / Keperluan
                                 </label>
@@ -1676,94 +1933,264 @@
                 });
             }
 
-            // Material Form & Stock Validation
-            const materialSelect = document.getElementById('material_id');
-            const qtyInput = document.getElementById('quantity');
-            const qtyHint = document.getElementById('quantityHint');
-            const liveStockInfo = document.getElementById('liveStockInfo');
-            const stockBadgeText = document.getElementById('stockBadgeText');
-            const stockValue = document.getElementById('stockValue');
+            // Material Form Multi-Item & Stock Management
+            const itemsContainer = document.getElementById('itemsContainer');
+            const btnAddItem = document.getElementById('btnAddItem');
+            const itemRowTemplate = document.getElementById('itemRowTemplate');
             const form = document.getElementById('pengambilanForm');
             const catalogSearch = document.getElementById('catalogSearch');
             const catalogRows = document.querySelectorAll('.catalog-row');
             const btnSelectItems = document.querySelectorAll('.btn-select-item');
 
-            function updateStockDisplay() {
-                const selectedOption = materialSelect.options[materialSelect.selectedIndex];
+            function updateRemoveButtonsVisibility() {
+                if (!itemsContainer) return;
+                const rows = itemsContainer.querySelectorAll('.item-row');
+                rows.forEach(row => {
+                    const removeBtn = row.querySelector('.btn-remove-item');
+                    if (removeBtn) {
+                        removeBtn.style.display = rows.length > 1 ? 'inline-flex' : 'none';
+                    }
+                });
+            }
+
+            function reindexItemRows() {
+                if (!itemsContainer) return;
+                const rows = itemsContainer.querySelectorAll('.item-row');
+                rows.forEach((row, idx) => {
+                    row.setAttribute('data-index', idx);
+                    const numberSpan = row.querySelector('.item-row-number');
+                    if (numberSpan) {
+                        numberSpan.textContent = idx + 1;
+                    }
+                    const select = row.querySelector('.item-select');
+                    if (select) {
+                        select.name = `items[${idx}][material_id]`;
+                    }
+                    const qtyInput = row.querySelector('.item-qty-input');
+                    if (qtyInput) {
+                        qtyInput.name = `items[${idx}][quantity]`;
+                    }
+                });
+                updateRemoveButtonsVisibility();
+            }
+
+            function updateRowStockDisplay(row) {
+                const select = row.querySelector('.item-select');
+                const qtyInput = row.querySelector('.item-qty-input');
+                const qtyHint = row.querySelector('.item-qty-hint');
+                const stockInfo = row.querySelector('.item-stock-info');
+                const stockBadge = row.querySelector('.stock-badge-live');
+                const stockBadgeText = row.querySelector('.stock-badge-text');
+
+                if (!select || !qtyInput) return;
+
+                const selectedOption = select.options[select.selectedIndex];
                 if (!selectedOption || !selectedOption.value) {
-                    liveStockInfo.style.display = 'none';
+                    if (stockInfo) stockInfo.style.display = 'none';
                     qtyInput.removeAttribute('max');
-                    qtyHint.textContent = 'Jumlah tidak boleh melebihi stok yang tersedia.';
+                    if (qtyHint) qtyHint.textContent = 'Maksimal: -';
+                    validateRowQuantity(row);
                     return;
                 }
 
                 const stock = parseInt(selectedOption.getAttribute('data-stock') || '0', 10);
                 const unit = selectedOption.getAttribute('data-unit') || '';
 
-                liveStockInfo.style.display = 'block';
-                stockBadgeText.className = 'stock-badge-live';
-
-                if (stock <= 0) {
-                    stockBadgeText.classList.add('danger');
-                    stockValue.textContent = `Stok Habis (0 ${unit})`;
-                } else if (stock <= 5) {
-                    stockBadgeText.classList.add('warning');
-                    stockValue.textContent = `Stok Terbatas: ${stock} ${unit} tersedia`;
-                } else {
-                    stockValue.textContent = `Stok Tersedia: ${stock} ${unit}`;
+                if (stockInfo && stockBadge && stockBadgeText) {
+                    stockInfo.style.display = 'block';
+                    stockBadge.className = 'stock-badge-live';
+                    if (stock <= 0) {
+                        stockBadge.classList.add('danger');
+                        stockBadgeText.textContent = `Stok Habis (0 ${unit})`;
+                    } else if (stock <= 5) {
+                        stockBadge.classList.add('warning');
+                        stockBadgeText.textContent = `Stok Terbatas: ${stock} ${unit}`;
+                    } else {
+                        stockBadgeText.textContent = `Stok Tersedia: ${stock} ${unit}`;
+                    }
                 }
 
                 qtyInput.setAttribute('max', stock);
-                qtyHint.textContent = `Maksimal pengambilan saat ini: ${stock} ${unit}`;
+                if (qtyHint) {
+                    qtyHint.textContent = `Maksimal saat ini: ${stock} ${unit}`;
+                }
 
-                // Validasi live jika input quantity melebihi stok
-                validateLiveQuantity();
+                validateRowQuantity(row);
             }
 
-            function validateLiveQuantity() {
-                const selectedOption = materialSelect.options[materialSelect.selectedIndex];
-                if (!selectedOption || !selectedOption.value) return;
+            function validateRowQuantity(row) {
+                const select = row.querySelector('.item-select');
+                const qtyInput = row.querySelector('.item-qty-input');
+                const qtyHint = row.querySelector('.item-qty-hint');
+                if (!select || !qtyInput) return true;
+
+                const selectedOption = select.options[select.selectedIndex];
+                if (!selectedOption || !selectedOption.value) {
+                    qtyInput.style.borderColor = '';
+                    qtyInput.style.boxShadow = '';
+                    return true;
+                }
 
                 const stock = parseInt(selectedOption.getAttribute('data-stock') || '0', 10);
                 const currentQty = parseInt(qtyInput.value || '0', 10);
+                const unit = selectedOption.getAttribute('data-unit') || '';
 
                 if (currentQty > stock) {
                     qtyInput.style.borderColor = '#C62828';
                     qtyInput.style.boxShadow = '0 0 0 3px rgba(198, 40, 40, 0.15)';
-                    qtyHint.innerHTML = `<span style="color: #C62828; font-weight: 700;">Jumlah (${currentQty}) melebihi stok tersedia (${stock})!</span>`;
+                    if (qtyHint) {
+                        qtyHint.innerHTML = `<span style="color: #C62828; font-weight: 700;">Jumlah (${currentQty}) melebihi stok (${stock} ${unit})!</span>`;
+                    }
+                    return false;
+                } else if (currentQty < 1) {
+                    qtyInput.style.borderColor = '#C62828';
+                    qtyInput.style.boxShadow = '0 0 0 3px rgba(198, 40, 40, 0.15)';
+                    if (qtyHint) {
+                        qtyHint.innerHTML = `<span style="color: #C62828; font-weight: 700;">Minimal pengambilan adalah 1 unit.</span>`;
+                    }
+                    return false;
                 } else {
                     qtyInput.style.borderColor = '';
                     qtyInput.style.boxShadow = '';
-                    qtyHint.textContent = `Maksimal pengambilan saat ini: ${stock} ${selectedOption.getAttribute('data-unit') || ''}`;
+                    if (qtyHint) {
+                        qtyHint.textContent = `Maksimal saat ini: ${stock} ${unit}`;
+                    }
+                    return true;
                 }
             }
 
-            materialSelect.addEventListener('change', updateStockDisplay);
-            qtyInput.addEventListener('input', validateLiveQuantity);
+            function bindRowEvents(row) {
+                const select = row.querySelector('.item-select');
+                const qtyInput = row.querySelector('.item-qty-input');
+                const removeBtn = row.querySelector('.btn-remove-item');
 
-            // Inisialisasi awal jika ada old() value
-            if (materialSelect.value) {
-                updateStockDisplay();
+                if (select) {
+                    select.addEventListener('change', function () {
+                        updateRowStockDisplay(row);
+                    });
+                }
+
+                if (qtyInput) {
+                    qtyInput.addEventListener('input', function () {
+                        validateRowQuantity(row);
+                    });
+                }
+
+                if (removeBtn) {
+                    removeBtn.addEventListener('click', function () {
+                        const rows = itemsContainer.querySelectorAll('.item-row');
+                        if (rows.length > 1) {
+                            row.remove();
+                            reindexItemRows();
+                        }
+                    });
+                }
+            }
+
+            function createNewItemRow(selectedMaterialId = null) {
+                if (!itemRowTemplate || !itemsContainer) return null;
+                const rows = itemsContainer.querySelectorAll('.item-row');
+                const newIndex = rows.length;
+                const newNumber = newIndex + 1;
+
+                let html = itemRowTemplate.innerHTML;
+                html = html.replace(/__INDEX__/g, newIndex).replace(/__NUMBER__/g, newNumber);
+
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = html.trim();
+                const newRow = tempDiv.firstElementChild;
+
+                itemsContainer.appendChild(newRow);
+                bindRowEvents(newRow);
+
+                if (selectedMaterialId) {
+                    const select = newRow.querySelector('.item-select');
+                    if (select) {
+                        select.value = selectedMaterialId;
+                        updateRowStockDisplay(newRow);
+                    }
+                }
+
+                reindexItemRows();
+                return newRow;
+            }
+
+            // Inisialisasi baris yang sudah ada
+            if (itemsContainer) {
+                const existingRows = itemsContainer.querySelectorAll('.item-row');
+                existingRows.forEach(row => {
+                    bindRowEvents(row);
+                    updateRowStockDisplay(row);
+                });
+                updateRemoveButtonsVisibility();
+            }
+
+            // Tombol tambah baris
+            if (btnAddItem) {
+                btnAddItem.addEventListener('click', function () {
+                    const newRow = createNewItemRow();
+                    if (newRow) {
+                        const select = newRow.querySelector('.item-select');
+                        if (select) select.focus();
+                    }
+                });
             }
 
             // Quick select dari tabel katalog
             btnSelectItems.forEach(btn => {
                 btn.addEventListener('click', function () {
                     const id = this.getAttribute('data-id');
-                    if (id && materialSelect) {
-                        materialSelect.value = id;
-                        updateStockDisplay();
-                        // Scroll ke form
-                        const formSection = document.getElementById('form-pengambilan');
-                        if (formSection) {
-                            formSection.scrollIntoView({ behavior: 'smooth' });
+                    if (!id) return;
+
+                    let targetRow = null;
+                    const rows = itemsContainer ? itemsContainer.querySelectorAll('.item-row') : [];
+
+                    // Cek apakah material ini sudah dipilih di salah satu baris
+                    for (let row of rows) {
+                        const sel = row.querySelector('.item-select');
+                        if (sel && sel.value === id) {
+                            targetRow = row;
+                            break;
                         }
-                        // Focus ke nama pengambil atau quantity
+                    }
+
+                    // Jika belum, cek apakah ada baris yang pilihannya masih kosong
+                    if (!targetRow) {
+                        for (let row of rows) {
+                            const sel = row.querySelector('.item-select');
+                            if (sel && !sel.value) {
+                                sel.value = id;
+                                updateRowStockDisplay(row);
+                                targetRow = row;
+                                break;
+                            }
+                        }
+                    }
+
+                    // Jika semua baris sudah terisi dan material belum ada, buat baris baru
+                    if (!targetRow) {
+                        targetRow = createNewItemRow(id);
+                    }
+
+                    // Scroll ke form
+                    const formSection = document.getElementById('form-pengambilan');
+                    if (formSection) {
+                        formSection.scrollIntoView({ behavior: 'smooth' });
+                    }
+
+                    // Beri efek highlight pada baris yang dipilih
+                    if (targetRow) {
+                        targetRow.classList.remove('highlighted');
+                        void targetRow.offsetWidth; // trigger reflow
+                        targetRow.classList.add('highlighted');
+
+                        // Focus ke nama pengambil atau ke quantity baris ini
                         const namaInput = document.getElementById('nama_pengambil');
-                        if (namaInput && !namaInput.value) {
+                        if (namaInput && !namaInput.value.trim()) {
                             namaInput.focus();
                         } else {
-                            qtyInput.focus();
+                            const qtyInput = targetRow.querySelector('.item-qty-input');
+                            if (qtyInput) qtyInput.focus();
                         }
                     }
                 });
@@ -1785,17 +2212,64 @@
                 });
             }
 
-            // Submit validation prevent submit jika stock tidak mencukupi
+            // Submit validation form pengambilan
             if (form) {
                 form.addEventListener('submit', function (e) {
-                    const selectedOption = materialSelect.options[materialSelect.selectedIndex];
-                    if (selectedOption && selectedOption.value) {
+                    const rows = itemsContainer ? itemsContainer.querySelectorAll('.item-row') : [];
+                    if (rows.length === 0) {
+                        e.preventDefault();
+                        alert('Silakan tambahkan minimal satu barang yang akan dipinjam/diambil.');
+                        return;
+                    }
+
+                    let hasError = false;
+                    const materialTotals = {};
+
+                    rows.forEach((row, i) => {
+                        const select = row.querySelector('.item-select');
+                        const qtyInput = row.querySelector('.item-qty-input');
+                        if (!select || !qtyInput) return;
+
+                        if (!select.value) {
+                            e.preventDefault();
+                            alert(`Barang #${i + 1}: Silakan pilih barang/material.`);
+                            select.focus();
+                            hasError = true;
+                            return;
+                        }
+
+                        const selectedOption = select.options[select.selectedIndex];
                         const stock = parseInt(selectedOption.getAttribute('data-stock') || '0', 10);
                         const qty = parseInt(qtyInput.value || '0', 10);
-                        if (qty > stock) {
+                        const name = selectedOption.getAttribute('data-name') || 'Material';
+                        const unit = selectedOption.getAttribute('data-unit') || '';
+
+                        if (isNaN(qty) || qty < 1) {
                             e.preventDefault();
-                            alert(`Jumlah pengambilan (${qty}) melebihi stok fisik yang tersedia (${stock})! Silakan sesuaikan jumlah.`);
+                            alert(`Barang #${i + 1} (${name}): Jumlah peminjaman minimal 1 unit.`);
                             qtyInput.focus();
+                            hasError = true;
+                            return;
+                        }
+
+                        // Akumulasi total jika material yang sama dipilih lebih dari 1 kali
+                        const matId = select.value;
+                        if (!materialTotals[matId]) {
+                            materialTotals[matId] = { totalQty: 0, stock: stock, name: name, unit: unit, input: qtyInput };
+                        }
+                        materialTotals[matId].totalQty += qty;
+                    });
+
+                    if (hasError) return;
+
+                    // Periksa apakah akumulasi melebihi stok yang tersedia
+                    for (const matId in materialTotals) {
+                        const item = materialTotals[matId];
+                        if (item.totalQty > item.stock) {
+                            e.preventDefault();
+                            alert(`Total pengambilan barang "${item.name}" (${item.totalQty} ${item.unit}) melebihi stok yang tersedia (${item.stock} ${item.unit})! Silakan sesuaikan jumlah.`);
+                            item.input.focus();
+                            return;
                         }
                     }
                 });

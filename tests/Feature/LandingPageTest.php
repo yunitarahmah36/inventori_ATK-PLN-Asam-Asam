@@ -118,6 +118,75 @@ class LandingPageTest extends TestCase
         ]);
     }
 
+    public function test_public_user_can_record_multiple_materials_stock_taking(): void
+    {
+        $this->createTestUser();
+
+        $mat1 = Material::create([
+            'material_number' => 'MAT-MULTI-001',
+            'name'            => 'Kertas HVS A4 80gr',
+            'quantity'        => 20,
+            'unit'            => 'Rim',
+            'description'     => 'Kertas cetak',
+        ]);
+
+        $mat2 = Material::create([
+            'material_number' => 'MAT-MULTI-002',
+            'name'            => 'Spidol Whiteboard Snowman',
+            'quantity'        => 50,
+            'unit'            => 'Pcs',
+            'description'     => 'Spidol hitam',
+        ]);
+
+        $payload = [
+            'nama_pengambil' => 'Rina Wijaya',
+            'divisi'         => 'Administrasi & Keuangan',
+            'items'          => [
+                [
+                    'material_id' => $mat1->id,
+                    'quantity'    => 5,
+                ],
+                [
+                    'material_id' => $mat2->id,
+                    'quantity'    => 10,
+                ],
+            ],
+            'description'    => 'Kebutuhan rapat koordinasi',
+        ];
+
+        $response = $this->post('/pengambilan-barang', $payload);
+
+        $response->assertRedirect(route('landing') . '#form-pengambilan');
+        $response->assertSessionHas('success_pengambilan');
+        $response->assertSessionHas('receipt_data');
+
+        // Verifikasi stok kedua barang berkurang
+        $mat1->refresh();
+        $this->assertEquals(15, $mat1->quantity);
+
+        $mat2->refresh();
+        $this->assertEquals(40, $mat2->quantity);
+
+        // Verifikasi stock movements tercatat untuk kedua barang
+        $this->assertDatabaseHas('stock_movements', [
+            'material_id'     => $mat1->id,
+            'activity'        => 'Keluar',
+            'quantity_before' => 20,
+            'quantity_after'  => 15,
+            'quantity_change' => -5,
+            'recipient'       => 'Rina Wijaya (Administrasi & Keuangan)',
+        ]);
+
+        $this->assertDatabaseHas('stock_movements', [
+            'material_id'     => $mat2->id,
+            'activity'        => 'Keluar',
+            'quantity_before' => 50,
+            'quantity_after'  => 40,
+            'quantity_change' => -10,
+            'recipient'       => 'Rina Wijaya (Administrasi & Keuangan)',
+        ]);
+    }
+
     public function test_dashboard_still_requires_authentication(): void
     {
         $response = $this->get('/dashboard');
