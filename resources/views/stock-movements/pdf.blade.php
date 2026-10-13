@@ -563,14 +563,20 @@
                     $change = (int) ($movement->quantity_change ?? 0);
 
                     /*
-                     * USER
+                     * USER / PEMINJAM
                      */
-                    $userEmail = $movement->user->email ?? '';
-                    $userName = $movement->user->name ?? 'Unknown';
+                    if (!empty($movement->recipient)) {
+                        $displayUserName = strtoupper($movement->recipient);
+                        $displayRole = 'Peminjam / Pengambil';
+                    } else {
+                        $userEmail = $movement->user->email ?? '';
+                        $userName = $movement->user->name ?? 'Unknown';
 
-                    $displayUserName = $userEmail
-                        ? strtoupper(strstr($userEmail, '@', true))
-                        : strtoupper($userName);
+                        $displayUserName = $userEmail
+                            ? strtoupper(strstr($userEmail, '@', true))
+                            : strtoupper($userName);
+                        $displayRole = $movement->user->role ?? '-';
+                    }
 
 
                     /*
@@ -677,7 +683,7 @@
 
                         <div class="user-role">
 
-                            {{ $movement->user->role ?? '-' }}
+                            {{ $displayRole ?? '-' }}
 
                         </div>
 
