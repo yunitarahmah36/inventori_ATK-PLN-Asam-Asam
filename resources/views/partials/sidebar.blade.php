@@ -1292,6 +1292,15 @@
                 // 2. Ganti konten main
                 currentMain.innerHTML = newMain.innerHTML;
 
+                // Sinkronkan token CSRF di sidebar jika halaman baru memiliki token segar
+                const newCsrf = newDoc.querySelector('input[name="_token"]')?.value
+                             || newDoc.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+                if (newCsrf) {
+                    document.querySelectorAll('input[name="_token"]').forEach(input => input.value = newCsrf);
+                    const metaCsrf = document.querySelector('meta[name="csrf-token"]');
+                    if (metaCsrf) metaCsrf.setAttribute('content', newCsrf);
+                }
+
                 // 3. Jalankan ulang script halaman baru
                 currentMain.querySelectorAll('script').forEach(oldScript => {
                     const newScript = document.createElement('script');

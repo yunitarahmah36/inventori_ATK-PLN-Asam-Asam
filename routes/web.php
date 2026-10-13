@@ -191,7 +191,7 @@ Route::get('/stock-history/export-pdf', [StockMovementController::class, 'export
     // LOGOUT
     // ==========================
 
-    Route::post('/logout', [AuthController::class, 'logout'])
+    Route::match(['get', 'post'], '/logout', [AuthController::class, 'logout'])
         ->name('logout');
 
 });
