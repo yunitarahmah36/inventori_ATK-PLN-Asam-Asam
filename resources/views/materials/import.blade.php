@@ -753,13 +753,13 @@
                             </p>
 
                             <!-- FILE INPUT -->
-                            <input type="file" id="file" name="file" accept=".xlsx,.xls" style="display:none;" onchange="showFileName(this)">
+                            <input type="file" id="file" name="file" accept=".xlsx" style="display:none;" onchange="showFileName(this)">
 
                             <!-- TOMBOL PILIH FILE -->
                             <div>
                                 <button type="button" class="btn btn-outline" onclick="document.getElementById('file').click()">
                                     <span class="material-symbols-outlined" style="font-size:18px;">folder_open</span>
-                                    Pilih File Excel (.xlsx / .xls)
+                                    Pilih File Excel (.xlsx)
                                 </button>
                             </div>
 
@@ -817,6 +817,11 @@
                 return div.innerHTML;
             }
 
+            function isXlsxFile(file) {
+                if (!file || !file.name) return false;
+                return file.name.toLowerCase().endsWith('.xlsx');
+            }
+
             function showImportError(msg) {
                 const message = msg || 'Silakan pilih file Excel terlebih dahulu!';
                 if (importFileAlert) {
@@ -842,6 +847,30 @@
             function showFileName(input) {
                 if (input && input.files && input.files.length > 0) {
                     const file = input.files[0];
+                    if (!isXlsxFile(file)) {
+                        input.value = '';
+                        showImportError('Format file tidak didukung! Hanya file Excel dengan format .xlsx yang diperbolehkan.');
+                        if (uploadBox) {
+                            uploadBox.classList.add('has-error');
+                            uploadBox.classList.remove('has-file');
+                        }
+                        if (uploadBoxIcon) {
+                            uploadBoxIcon.textContent = 'warning';
+                            uploadBoxIcon.style.color = 'var(--red)';
+                        }
+                        if (fileNameEl) {
+                            fileNameEl.style.display = 'none';
+                            fileNameEl.innerHTML = '';
+                        }
+                        if (importBtn) {
+                            importBtn.disabled = true;
+                        }
+                        if (importBtnWrapper) {
+                            importBtnWrapper.style.cursor = 'not-allowed';
+                            importBtnWrapper.title = 'Silakan pilih file Excel terlebih dahulu!';
+                        }
+                        return;
+                    }
                     hideImportError();
                     if (uploadBox) {
                         uploadBox.classList.remove('has-error');
@@ -892,6 +921,16 @@
                         e.stopPropagation();
                     }
                     showImportError('Silakan pilih file Excel terlebih dahulu!');
+                    return false;
+                }
+                const file = fileInput.files[0];
+                if (!isXlsxFile(file)) {
+                    if (e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                    }
+                    fileInput.value = '';
+                    showImportError('Format file tidak didukung! Hanya file Excel dengan format .xlsx yang diperbolehkan.');
                     return false;
                 }
                 return true;

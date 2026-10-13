@@ -439,13 +439,13 @@ class MaterialController extends Controller
             'file' => [
                 'required',
                 'file',
-                'mimes:xlsx,xls',
+                'mimes:xlsx',
                 'max:5120',
             ],
         ], [
             'file.required' => 'Silakan pilih file Excel terlebih dahulu!',
             'file.file'     => 'File yang dipilih tidak valid. Pastikan file tidak rusak.',
-            'file.mimes'    => 'Format file tidak didukung. Gunakan file Excel dengan ekstensi .xlsx atau .xls.',
+            'file.mimes'    => 'Format file tidak didukung. Hanya file Excel dengan format .xlsx yang diperbolehkan.',
             'file.max'      => 'Ukuran file terlalu besar. Maksimal 5 MB.',
         ]);
 

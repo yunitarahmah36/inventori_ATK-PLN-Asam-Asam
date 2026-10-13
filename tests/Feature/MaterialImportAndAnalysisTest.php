@@ -295,6 +295,25 @@ class MaterialImportAndAnalysisTest extends TestCase
         $response->assertSee('importButtonWrapper');
         $response->assertSee('Import Data');
         $response->assertSee('Silakan pilih file Excel terlebih dahulu!');
+        $response->assertSee('accept=".xlsx"', false);
+    }
+
+    public function test_import_material_rejects_non_xlsx_file(): void
+    {
+        $admin = $this->createUser();
+
+        $fakeCsv = UploadedFile::fake()->create('data_material.csv', 100, 'text/csv');
+
+        $response = $this->actingAs($admin)->post('/materials/import', [
+            'file' => $fakeCsv,
+        ]);
+
+        $response->assertSessionHasErrors(['file']);
+        $this->assertEquals(
+            'Format file tidak didukung. Hanya file Excel dengan format .xlsx yang diperbolehkan.',
+            session('errors')->first('file')
+        );
     }
 }
+
 

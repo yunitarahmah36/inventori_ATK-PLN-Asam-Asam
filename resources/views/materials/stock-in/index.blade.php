@@ -1431,14 +1431,14 @@
 
                     <div class="form-group-custom">
                         <label for="importFile" class="form-label-custom">
-                            Pilih File Excel (.xlsx, .xls, .csv) <span style="color:var(--red);">*</span>
+                            Pilih File Excel (.xlsx) <span style="color:var(--red);">*</span>
                         </label>
                         <div class="dropzone-area" id="importDropzone" onclick="document.getElementById('importFile').click()">
                             <span class="material-symbols-outlined" id="dropzoneIcon">cloud_upload</span>
                             <div style="font-weight:600;font-size:13.5px;color:var(--text-dark);" id="dropzoneText">Klik untuk memilih file Excel</div>
-                            <div style="font-size:11.5px;color:var(--text-muted);margin-top:2px;" id="dropzoneSubtext">Format .xlsx, .xls, .csv (Maksimal 10MB)</div>
+                            <div style="font-size:11.5px;color:var(--text-muted);margin-top:2px;" id="dropzoneSubtext">Format .xlsx (Maksimal 10MB)</div>
                         </div>
-                        <input type="file" id="importFile" name="file" accept=".xlsx,.xls,.csv" style="display:none;">
+                        <input type="file" id="importFile" name="file" accept=".xlsx" style="display:none;">
                         <div id="importFileErrorMsg" style="display:none;color:var(--red);font-size:12px;font-weight:600;margin-top:6px;align-items:center;gap:4px;">
                             <span class="material-symbols-outlined" style="font-size:16px;">error</span>
                             <span id="importFileErrorMsgText">Silakan pilih file Excel terlebih dahulu!</span>
@@ -1547,6 +1547,11 @@
             return div.innerHTML;
         }
 
+        function isXlsxFile(file) {
+            if (!file || !file.name) return false;
+            return file.name.toLowerCase().endsWith('.xlsx');
+        }
+
         function showImportError(msg) {
             const message = msg || 'Silakan pilih file Excel terlebih dahulu!';
             if (importFileAlert) {
@@ -1584,7 +1589,7 @@
                 dropzoneText.style.color = 'var(--text-dark)';
             }
             if (dropzoneSubtext) {
-                dropzoneSubtext.textContent = 'Format .xlsx, .xls, .csv (Maksimal 10MB)';
+                dropzoneSubtext.textContent = 'Format .xlsx (Maksimal 10MB)';
             }
             if (submitImportBtn) {
                 submitImportBtn.disabled = true;
@@ -1599,6 +1604,30 @@
         function handleFileChange() {
             if (importFileInput && importFileInput.files && importFileInput.files.length > 0) {
                 const file = importFileInput.files[0];
+                if (!isXlsxFile(file)) {
+                    importFileInput.value = '';
+                    showImportError('Format file tidak didukung! Hanya file Excel dengan format .xlsx yang diperbolehkan.');
+                    if (importDropzone) {
+                        importDropzone.classList.add('has-error');
+                        importDropzone.classList.remove('has-file');
+                    }
+                    if (dropzoneIcon) {
+                        dropzoneIcon.textContent = 'warning';
+                        dropzoneIcon.style.color = 'var(--red)';
+                    }
+                    if (dropzoneText) {
+                        dropzoneText.textContent = 'Format file tidak sesuai (.xlsx saja)';
+                        dropzoneText.style.color = 'var(--red)';
+                    }
+                    if (submitImportBtn) {
+                        submitImportBtn.disabled = true;
+                    }
+                    if (submitImportBtnWrapper) {
+                        submitImportBtnWrapper.style.cursor = 'not-allowed';
+                        submitImportBtnWrapper.title = 'Silakan pilih file Excel terlebih dahulu!';
+                    }
+                    return;
+                }
                 hideImportError();
                 if (importDropzone) {
                     importDropzone.classList.remove('has-error');
@@ -1635,6 +1664,16 @@
                     e.stopPropagation();
                 }
                 showImportError('Silakan pilih file Excel terlebih dahulu!');
+                return false;
+            }
+            const file = importFileInput.files[0];
+            if (!isXlsxFile(file)) {
+                if (e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }
+                importFileInput.value = '';
+                showImportError('Format file tidak didukung! Hanya file Excel dengan format .xlsx yang diperbolehkan.');
                 return false;
             }
             return true;
