@@ -237,7 +237,7 @@
             font-size: 15px;
             font-weight: 800;
             flex-shrink: 0;
-            box-shadow: 0 2px 6px rgba(0, 59, 115, 0.25);
+            box-shadow: 0 2px 6px rgba(180, 106, 114, 0.25);
         }
 
         /* ============================================================
@@ -252,17 +252,18 @@
         }
 
         /* ============================================================
-           PROFILE HERO BANNER
+           PROFILE HERO BANNER (Palet Baru: Rosewood & Maroon)
         ============================================================ */
         .profile-banner {
             position: relative;
-            background: linear-gradient(135deg, #002855 0%, #003B73 45%, #0057B8 100%);
+            background: linear-gradient(135deg, var(--blue-dark) 0%, #4D2C32 40%, var(--blue) 100%);
             border-radius: var(--radius);
             padding: 36px 36px 32px;
             color: #FFFFFF;
             overflow: hidden;
-            box-shadow: var(--shadow-lg);
+            box-shadow: 0 10px 30px rgba(180, 106, 114, 0.16);
             margin-bottom: 24px;
+            border: 1px solid rgba(247, 200, 211, 0.2);
         }
 
         /* Decorative glowing pattern */
@@ -273,7 +274,7 @@
             right: -60px;
             width: 320px;
             height: 320px;
-            background: radial-gradient(circle, rgba(255, 193, 7, 0.22) 0%, rgba(0, 87, 184, 0) 70%);
+            background: radial-gradient(circle, rgba(247, 200, 211, 0.25) 0%, rgba(180, 106, 114, 0) 70%);
             border-radius: 50%;
             pointer-events: none;
         }
@@ -285,7 +286,7 @@
             left: 20%;
             width: 260px;
             height: 260px;
-            background: radial-gradient(circle, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0) 70%);
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.10) 0%, rgba(255, 255, 255, 0) 70%);
             border-radius: 50%;
             pointer-events: none;
         }
@@ -315,15 +316,15 @@
             width: 90px;
             height: 90px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #FFC107 0%, #FF9800 100%);
-            color: #003B73;
+            background: linear-gradient(135deg, #FFF5F7 0%, #F7C8D3 100%);
+            color: var(--blue-dark);
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 38px;
             font-weight: 900;
             border: 4px solid rgba(255, 255, 255, 0.95);
-            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+            box-shadow: 0 6px 18px rgba(61, 34, 39, 0.25);
             text-transform: uppercase;
         }
 
@@ -335,7 +336,7 @@
             height: 20px;
             border-radius: 50%;
             background: #10B981;
-            border: 3px solid #003B73;
+            border: 3px solid var(--blue-dark);
             box-shadow: 0 0 10px rgba(16, 185, 129, 0.8);
         }
 
@@ -351,7 +352,7 @@
 
         .banner-verified {
             font-size: 20px;
-            color: #FFC107;
+            color: var(--yellow);
             vertical-align: middle;
         }
 
@@ -368,16 +369,17 @@
             align-items: center;
             gap: 6px;
             font-size: 13px;
-            color: rgba(255, 255, 255, 0.85);
-            background: rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.90);
+            background: rgba(255, 255, 255, 0.12);
             padding: 4px 12px;
             border-radius: 20px;
             backdrop-filter: blur(4px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
         }
 
         .banner-meta-item .material-symbols-outlined {
             font-size: 16px;
-            color: #FFC107;
+            color: var(--yellow);
         }
 
         .banner-role-badge {
@@ -390,9 +392,9 @@
             font-weight: 800;
             letter-spacing: 0.03em;
             text-transform: uppercase;
-            background: #FFC107;
-            color: #003B73;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            background: var(--yellow);
+            color: var(--blue-dark);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
         }
 
         /* Banner quick stats pills */
@@ -405,7 +407,7 @@
         .banner-stat-card {
             background: rgba(255, 255, 255, 0.12);
             backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.18);
+            border: 1px solid rgba(255, 255, 255, 0.20);
             border-radius: 12px;
             padding: 12px 18px;
             min-width: 120px;
@@ -415,7 +417,7 @@
 
         .banner-stat-card:hover {
             transform: translateY(-2px);
-            background: rgba(255, 255, 255, 0.18);
+            background: rgba(255, 255, 255, 0.20);
         }
 
         .banner-stat-val {
@@ -553,7 +555,7 @@
         .tab-btn.active {
             background: var(--blue);
             color: #FFFFFF;
-            box-shadow: 0 4px 12px rgba(0, 87, 184, 0.25);
+            box-shadow: 0 4px 12px rgba(180, 106, 114, 0.25);
         }
 
         .tab-btn.active .material-symbols-outlined {
@@ -625,13 +627,9 @@
         }
 
         .card-header-icon.security {
-            background: #FEF3C7;
-            color: #D97706;
-        }
-
-        .card-header-icon.activity {
-            background: #EDE9FE;
-            color: #7C3AED;
+            background: var(--yellow-light);
+            color: var(--blue);
+            border: 1px solid var(--border);
         }
 
         .card-header-title h3 {
@@ -710,7 +708,7 @@
         .form-control:focus {
             background: #FFFFFF;
             border-color: var(--blue);
-            box-shadow: 0 0 0 3px rgba(0, 87, 184, 0.12);
+            box-shadow: 0 0 0 3px rgba(180, 106, 114, 0.15);
         }
 
         .form-control:focus + .input-icon-left,
@@ -824,13 +822,13 @@
         .btn-primary {
             background: var(--blue);
             color: #FFFFFF;
-            box-shadow: 0 4px 12px rgba(0, 87, 184, 0.25);
+            box-shadow: 0 4px 12px rgba(180, 106, 114, 0.25);
         }
 
         .btn-primary:hover {
-            background: #004696;
+            background: var(--blue-dark);
             transform: translateY(-1px);
-            box-shadow: 0 6px 16px rgba(0, 87, 184, 0.32);
+            box-shadow: 0 6px 16px rgba(180, 106, 114, 0.32);
         }
 
         .btn-primary:active {
@@ -875,20 +873,20 @@
            SECURITY TIPS CARD
         ============================================================ */
         .security-tip-box {
-            background: #FFFBEB;
-            border: 1px solid #FDE68A;
+            background: var(--yellow-light);
+            border: 1px solid var(--yellow);
             border-radius: 12px;
             padding: 16px 20px;
             margin-bottom: 24px;
             display: flex;
             align-items: flex-start;
             gap: 14px;
-            color: #92400E;
+            color: var(--blue-dark);
         }
 
         .security-tip-icon {
             font-size: 22px;
-            color: #D97706;
+            color: var(--blue);
             flex-shrink: 0;
             margin-top: 1px;
         }
@@ -897,148 +895,13 @@
             font-size: 13.5px;
             font-weight: 700;
             margin-bottom: 4px;
+            color: var(--blue-dark);
         }
 
         .security-tip-text p {
             font-size: 12.5px;
             line-height: 1.5;
-            color: #B45309;
-        }
-
-        /* ============================================================
-           RECENT ACTIVITY LIST
-        ============================================================ */
-        .activity-timeline {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .activity-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 16px 18px;
-            background: #F8FAFC;
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            transition: all var(--transition);
-            gap: 16px;
-        }
-
-        .activity-item:hover {
-            background: #FFFFFF;
-            border-color: #CBD5E1;
-            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
-            transform: translateX(3px);
-        }
-
-        .activity-left {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            min-width: 0;
-        }
-
-        .activity-icon-badge {
-            width: 42px;
-            height: 42px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-            font-size: 20px;
-        }
-
-        .activity-icon-badge.masuk {
-            background: #D1FAE5;
-            color: #059669;
-        }
-
-        .activity-icon-badge.keluar {
-            background: #FEE2E2;
-            color: #DC2626;
-        }
-
-        .activity-icon-badge.penyesuaian {
-            background: #DBEAFE;
-            color: #2563EB;
-        }
-
-        .activity-details {
-            min-width: 0;
-        }
-
-        .activity-material-name {
-            font-size: 14px;
-            font-weight: 700;
-            color: var(--text-dark);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .activity-sub {
-            font-size: 12px;
-            color: var(--text-muted);
-            margin-top: 2px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .activity-right {
-            text-align: right;
-            flex-shrink: 0;
-        }
-
-        .activity-qty {
-            font-size: 14px;
-            font-weight: 800;
-        }
-
-        .activity-qty.masuk {
-            color: #059669;
-        }
-
-        .activity-qty.keluar {
-            color: #DC2626;
-        }
-
-        .activity-qty.penyesuaian {
-            color: #2563EB;
-        }
-
-        .activity-time {
-            font-size: 11px;
-            color: var(--text-muted);
-            margin-top: 2px;
-        }
-
-        .empty-activity {
-            text-align: center;
-            padding: 48px 20px;
-            color: var(--text-muted);
-        }
-
-        .empty-activity-icon {
-            font-size: 54px;
-            color: #CBD5E1;
-            margin-bottom: 12px;
-        }
-
-        .empty-activity h4 {
-            font-size: 16px;
-            font-weight: 700;
-            color: var(--text-dark);
-            margin-bottom: 4px;
-        }
-
-        .empty-activity p {
-            font-size: 13px;
-            max-width: 360px;
-            margin: 0 auto 18px;
+            color: var(--text-mid);
         }
 
         /* ============================================================
@@ -1158,7 +1021,7 @@
                     </button>
                     <div class="topbar-left">
                         <h1>Profil Pengguna</h1>
-                        <p>Kelola data akun, keamanan kata sandi, dan riwayat aktivitas</p>
+                        <p>Kelola data akun dan keamanan kata sandi</p>
                     </div>
                 </div>
 
@@ -1238,10 +1101,7 @@
                                         <span class="material-symbols-outlined">mail</span>
                                         {{ $user->email }}
                                     </span>
-                                    <span class="banner-meta-item">
-                                        <span class="material-symbols-outlined">calendar_month</span>
-                                        Bergabung {{ $user->created_at ? $user->created_at->translatedFormat('d M Y') : '-' }}
-                                    </span>
+                                
                                 </div>
                             </div>
                         </div>
@@ -1283,16 +1143,6 @@
                             aria-selected="{{ session('active_tab') === 'password' ? 'true' : 'false' }}">
                         <span class="material-symbols-outlined">lock_reset</span>
                         <span>Keamanan & Sandi</span>
-                    </button>
-                    <button type="button" 
-                            class="tab-btn" 
-                            id="tab-activity-btn" 
-                            onclick="switchProfileTab('activity')"
-                            role="tab" 
-                            aria-controls="pane-activity" 
-                            aria-selected="false">
-                        <span class="material-symbols-outlined">history</span>
-                        <span>Aktivitas Terakhir</span>
                     </button>
                 </div>
 
@@ -1530,105 +1380,6 @@
                     </div>
                 </div>
 
-                <!-- ============================================================
-                     5. TAB PANE 3: AKTIVITAS TERAKHIR
-                ============================================================ -->
-                <div class="tab-pane" id="pane-activity" role="tabpanel">
-                    <div class="card">
-                        <div class="card-header-clean">
-                            <div class="card-header-title">
-                                <div class="card-header-icon activity">
-                                    <span class="material-symbols-outlined">receipt_long</span>
-                                </div>
-                                <div>
-                                    <h3>Aktivitas Mutasi Stok Terakhir</h3>
-                                    <p>Catatan transaksi stok barang yang dilakukan oleh akun Anda</p>
-                                </div>
-                            </div>
-
-                            <a href="{{ route('stock-movements.index') }}" class="btn btn-secondary" style="font-size:12.5px;padding:8px 14px;" data-spa-link>
-                                <span class="material-symbols-outlined" style="font-size:17px;">history</span>
-                                <span>Lihat Semua Riwayat</span>
-                            </a>
-                        </div>
-
-                        @if (isset($recentMovements) && $recentMovements->count() > 0)
-                            <div class="activity-timeline">
-                                @foreach ($recentMovements as $mv)
-                                    @php
-                                        $act = strtolower($mv->activity);
-                                        $icon = 'tune';
-                                        $typeClass = 'penyesuaian';
-                                        $prefix = '';
-
-                                        if (str_contains($act, 'masuk') || str_contains($act, 'tambah')) {
-                                            $icon = 'arrow_downward';
-                                            $typeClass = 'masuk';
-                                            $prefix = '+';
-                                        } elseif (str_contains($act, 'keluar') || str_contains($act, 'kurang')) {
-                                            $icon = 'arrow_upward';
-                                            $typeClass = 'keluar';
-                                            $prefix = '-';
-                                        } elseif (str_contains($act, 'hapus')) {
-                                            $icon = 'delete';
-                                            $typeClass = 'keluar';
-                                            $prefix = '';
-                                        }
-
-                                        $materialDisplayName = $mv->material->name ?? ($mv->material_name ?? ($mv->material_id ? 'Material #' . $mv->material_id : 'Material Dihapus'));
-                                        $materialNumber = $mv->material->material_number ?? ($mv->material_number ?? null);
-                                    @endphp
-
-                                    <div class="activity-item">
-                                        <div class="activity-left">
-                                            <div class="activity-icon-badge {{ $typeClass }}">
-                                                <span class="material-symbols-outlined">{{ $icon }}</span>
-                                            </div>
-                                            <div class="activity-details">
-                                                <div class="activity-material-name" title="{{ $materialDisplayName }}">
-                                                    {{ $materialDisplayName }}
-                                                    @if ($materialNumber)
-                                                        <span style="font-size:12px;font-weight:500;color:var(--text-muted);margin-left:4px;">({{ $materialNumber }})</span>
-                                                    @endif
-                                                </div>
-                                                <div class="activity-sub">
-                                                    <span style="font-weight:700;text-transform:uppercase;">{{ $mv->activity }}</span>
-                                                    <span>•</span>
-                                                    <span>{{ $mv->description ?? '-' }}</span>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="activity-right">
-                                            <div class="activity-qty {{ $typeClass }}">
-                                                @if ((int) $mv->quantity_change > 0)
-                                                    +{{ number_format($mv->quantity_change) }}
-                                                @else
-                                                    {{ number_format($mv->quantity_change) }}
-                                                @endif
-                                                {{ $mv->material->unit ?? 'Item' }}
-                                            </div>
-                                            <div class="activity-time">
-                                                {{ $mv->created_at ? $mv->created_at->diffForHumans() : '-' }}
-                                            </div>
-                                        </div>
-                                    </div>
-                                @endforeach
-                            </div>
-                        @else
-                            <div class="empty-activity">
-                                <span class="material-symbols-outlined empty-activity-icon">inventory_2</span>
-                                <h4>Belum Ada Aktivitas</h4>
-                                <p>Anda belum melakukan transaksi mutasi atau penambahan stok material.</p>
-                                <a href="{{ route('materials.index') }}" class="btn btn-primary" data-spa-link>
-                                    <span class="material-symbols-outlined">inventory_2</span>
-                                    <span>Buka Data Material</span>
-                                </a>
-                            </div>
-                        @endif
-                    </div>
-                </div>
-
             </div>
 
             <!-- ============================================================
@@ -1637,7 +1388,7 @@
     <script>
         // Tab Switcher
         function switchProfileTab(tabName) {
-            const tabs = ['profile', 'password', 'activity'];
+            const tabs = ['profile', 'password'];
             tabs.forEach(t => {
                 const btn = document.getElementById('tab-' + t + '-btn');
                 const pane = document.getElementById('pane-' + t);

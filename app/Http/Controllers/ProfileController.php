@@ -15,13 +15,8 @@ class ProfileController extends Controller
         $user           = Auth::user();
         $totalMaterial  = $user->materials()->count();
         $totalAktivitas = $user->stockMovements()->count();
-        $recentMovements = $user->stockMovements()
-            ->with('material')
-            ->latest()
-            ->take(6)
-            ->get();
 
-        return view('profile.show', compact('user', 'totalMaterial', 'totalAktivitas', 'recentMovements'));
+        return view('profile.show', compact('user', 'totalMaterial', 'totalAktivitas'));
     }
 
     public function update(Request $request)
