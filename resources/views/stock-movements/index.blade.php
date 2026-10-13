@@ -1803,16 +1803,20 @@
                                             }
 
                                             /*
-                                             * USER
+                                             * USER / PENGGUNA
                                              */
 
-                                            $userName = $movement->user->name ?? 'Unknown';
-
-                                            $userEmail = $movement->user->email ?? '';
-
-                                            $displayUserName = $userEmail
-                                                ? strtoupper(strstr($userEmail, '@', true))
-                                                : strtoupper($userName);
+                                            if (!empty($movement->recipient)) {
+                                                $displayUserName = $movement->recipient;
+                                                $userRoleDisplay = 'Peminjam / Pengambil';
+                                            } else {
+                                                $userName = $movement->user->name ?? 'Unknown';
+                                                $userEmail = $movement->user->email ?? '';
+                                                $displayUserName = $userEmail
+                                                    ? strtoupper(strstr($userEmail, '@', true))
+                                                    : strtoupper($userName);
+                                                $userRoleDisplay = $movement->user->role ?? '-';
+                                            }
 
                                             /*
                                              * ACTIVITY
@@ -1894,7 +1898,7 @@
 
                                                 <div class="user-role">
 
-                                                    {{ $movement->user->role ?? '-' }}
+                                                    {{ $userRoleDisplay }}
 
                                                 </div>
 

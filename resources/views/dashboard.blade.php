@@ -1652,7 +1652,7 @@
                                         <div class="activity-row">
                                             <div style="min-width:0;flex:1;">
                                                 <div class="activity-desc">
-                                                    <strong>{{ $act->user->name ?? 'Pengguna' }}</strong>
+                                                    <strong>{{ !empty($act->recipient) ? $act->recipient : ($act->user->name ?? 'Pengguna') }}</strong>
                                                     {{ $verb }}
                                                     <strong style="color:var(--text-dark);">{{ $matName }}</strong>
                                                     @if ($qtyBadge)
@@ -1660,10 +1660,10 @@
                                                     @endif
                                                 </div>
 
-                                                @if (!empty($act->recipient))
-                                                    <div class="activity-meta-pill" title="Penerima / Unit Tujuan">
-                                                        <span class="material-symbols-outlined" style="font-size:12px;">person</span>
-                                                        Penerima: {{ $act->recipient }}
+                                                @if (!empty($act->recipient) && !empty($act->user) && ($act->recipient !== $act->user->name))
+                                                    <div class="activity-meta-pill" title="Petugas Sistem">
+                                                        <span class="material-symbols-outlined" style="font-size:12px;">admin_panel_settings</span>
+                                                        Petugas: {{ $act->user->name }}
                                                     </div>
                                                 @endif
 
