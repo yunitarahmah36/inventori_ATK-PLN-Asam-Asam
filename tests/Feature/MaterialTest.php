@@ -502,4 +502,36 @@ class MaterialTest extends TestCase
         $response->assertStatus(200);
         $response->assertHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
     }
+
+    public function test_materials_dropdown_does_not_have_inline_auto_submit_onchange(): void
+    {
+        $admin = $this->createUser('Admin');
+        $response = $this->actingAs($admin)->get('/materials');
+        $response->assertStatus(200);
+
+        // Pastikan tidak ada onchange inline yang langsung men-submit form saat opsi dropdown dipilih
+        $response->assertDontSee('onchange="document.getElementById(\'searchForm\').submit()"', false);
+        $response->assertSee('id="sortSelect"', false);
+        $response->assertSee('btn-search', false);
+    }
+
+    public function test_materials_filter_and_search_applies_correctly(): void
+    {
+        $admin = $this->createUser('Admin');
+
+        Material::create(['material_number' => 'MAT001', 'name' => 'Kertas A4 Sinar Dunia', 'unit' => 'Rim', 'quantity' => 50, 'created_at' => now()->subDays(3)]);
+        Material::create(['material_number' => 'MAT002', 'name' => 'Kertas F4 Sinar Dunia', 'unit' => 'Rim', 'quantity' => 10, 'created_at' => now()->subDays(2)]);
+        Material::create(['material_number' => 'MAT003', 'name' => 'Pulpen Standard Hitam', 'unit' => 'Pcs', 'quantity' => 5, 'created_at' => now()->subDays(1)]);
+
+        // Filter: search "Sinar Dunia" + sort "low_stock"
+        $response = $this->actingAs($admin)->get('/materials?search=Sinar+Dunia&sort=low_stock');
+        $response->assertStatus(200);
+
+        $materials = $response->viewData('materials');
+        $this->assertCount(2, $materials);
+        // Kertas F4 (qty 10, stok menipis) harus tampil sebelum Kertas A4 (qty 50)
+        $this->assertEquals('MAT002', $materials->first()->material_number);
+        $this->assertEquals('MAT001', $materials->last()->material_number);
+    }
 }
+

@@ -1234,15 +1234,30 @@
     });
 
     // --- SEAMLESS INSTANT SPA PAGE ENGINE (SIDEBAR DIAM AJA) ---
+    let _navRequestId = 0;
+    let _navAbortController = null;
+
     async function navigatePage(url, push = true) {
+        if (_navAbortController) {
+            try { _navAbortController.abort(); } catch (e) {}
+        }
+        _navAbortController = new AbortController();
+        const currentReqId = ++_navRequestId;
+
         window.YouTubeProgress.start();
 
         try {
             const response = await fetch(url, {
+                signal: _navAbortController.signal,
+                cache: 'no-cache',
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest'
                 }
             });
+
+            if (currentReqId !== _navRequestId) {
+                return;
+            }
 
             if (!response.ok) {
                 window.location.href = url;
@@ -1250,6 +1265,10 @@
             }
 
             const htmlText = await response.text();
+            if (currentReqId !== _navRequestId) {
+                return;
+            }
+
             const parser = new DOMParser();
             const newDoc = parser.parseFromString(htmlText, 'text/html');
 
@@ -1265,6 +1284,10 @@
             currentMain.style.opacity = '0.35';
 
             setTimeout(() => {
+                if (currentReqId !== _navRequestId) {
+                    return;
+                }
+
                 // 1. Ganti CSS Halaman secara instan
                 const newPageStyle = newDoc.getElementById('page-style');
                 let currentPageStyle = document.getElementById('page-style');
@@ -1367,9 +1390,14 @@
             }, 60);
 
         } catch (err) {
+            if (err.name === 'AbortError') {
+                return;
+            }
             window.location.href = url;
         }
     }
+
+    window.navigatePage = navigatePage;
 
     // Perbarui highlight warna aktif di sidebar
     function updateSidebarActiveMenu(targetUrlStr) {

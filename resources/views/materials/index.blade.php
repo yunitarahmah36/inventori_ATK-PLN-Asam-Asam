@@ -1495,7 +1495,7 @@ body {
                             <!-- Filter Pengurutan -->
                             <div class="sort-select-wrapper">
                                 <span class="material-symbols-outlined sort-icon">swap_vert</span>
-                                <select name="sort" id="sortSelect" onchange="document.getElementById('searchForm').submit()" title="Urutkan data material">
+                                <select name="sort" id="sortSelect" title="Urutkan data material">
                                     <option value="latest" {{ ($sort ?? 'latest') === 'latest' ? 'selected' : '' }}>Terbaru (Paling Atas)</option>
                                     <option value="low_stock" {{ ($sort ?? '') === 'low_stock' ? 'selected' : '' }}>Stok Menipis (Prioritas)</option>
                                     <option value="oldest" {{ ($sort ?? '') === 'oldest' ? 'selected' : '' }}>Terlama</option>
@@ -1508,8 +1508,8 @@ body {
 
                             <div class="search-buttons">
                                 <button type="submit" class="btn btn-search">
-                                    <span class="material-symbols-outlined">search</span>
-                                    <span>Cari</span>
+                                    <span class="material-symbols-outlined">filter_alt</span>
+                                    <span>Filter</span>
                                 </button>
 
                                 @if (!empty($search) || ($sort ?? 'latest') !== 'latest')
@@ -1866,6 +1866,56 @@ body {
 
             <script>
             (function () {
+                // Bersihkan event listener lama pada document jika halaman dimuat ulang via SPA
+                if (window._materialsPageController) {
+                    try {
+                        window._materialsPageController.abort();
+                    } catch (e) {}
+                }
+                window._materialsPageController = new AbortController();
+                const { signal } = window._materialsPageController;
+
+                // ======================================================
+                // 0. FILTER PENGURUTAN & PENCARIAN (TEMPORARY FILTER STATE)
+                // ======================================================
+                const searchForm  = document.getElementById('searchForm');
+                const sortSelect  = document.getElementById('sortSelect');
+                const searchInput = document.getElementById('searchInput');
+
+                // Simpan pilihan filter sebagai nilai sementara (jangan langsung jalankan filter)
+                let tempSort = sortSelect ? sortSelect.value : '{{ $sort ?? "latest" }}';
+
+                if (sortSelect) {
+                    sortSelect.addEventListener('change', function () {
+                        tempSort = this.value;
+                    }, { signal });
+                }
+
+                if (searchForm) {
+                    searchForm.addEventListener('submit', function () {
+                        // Terapkan pilihan filter pengurutan dan kata kunci terbaru saat form dikirim
+                        if (sortSelect) {
+                            sortSelect.value = tempSort;
+                        }
+                    }, { signal });
+                }
+
+                // Clear button untuk input pencarian (tetap dalam mekanisme SPA tanpa reload manual)
+                const btnClearSearch = document.getElementById('btnClearSearch');
+                if (btnClearSearch && searchInput) {
+                    btnClearSearch.addEventListener('click', function () {
+                        searchInput.value = '';
+                        searchInput.focus();
+                        if (searchForm) {
+                            if (typeof searchForm.requestSubmit === 'function') {
+                                searchForm.requestSubmit();
+                            } else {
+                                searchForm.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+                            }
+                        }
+                    }, { signal });
+                }
+
                 // ======================================================
                 // 1. HAPUS SATU (Single Delete)
                 // ======================================================
@@ -1893,12 +1943,12 @@ body {
                         confirmBtn.textContent = 'Ya, Hapus';
 
                         modal.classList.add('show');
-                    });
+                    }, { signal });
 
                     cancelBtn.addEventListener('click', function () {
                         modal.classList.remove('show');
                         pendingAction = null;
-                    });
+                    }, { signal });
 
                     confirmBtn.addEventListener('click', function () {
                         if (!pendingAction) return;
@@ -1911,21 +1961,21 @@ body {
 
                         hiddenForm.action = action;
                         hiddenForm.submit();
-                    });
+                    }, { signal });
 
                     modal.addEventListener('click', function (e) {
                         if (e.target === modal) {
                             modal.classList.remove('show');
                             pendingAction = null;
                         }
-                    });
+                    }, { signal });
 
                     document.addEventListener('keydown', function (e) {
                         if (e.key === 'Escape' && modal.classList.contains('show')) {
                             modal.classList.remove('show');
                             pendingAction = null;
                         }
-                    });
+                    }, { signal });
                 }
 
                 // ======================================================
@@ -1985,21 +2035,21 @@ body {
                             cb.checked = checkAll.checked;
                         });
                         updateToolbar();
-                    });
+                    }, { signal });
                 }
 
                 document.addEventListener('change', function (e) {
                     if (e.target.classList.contains('row-checkbox')) {
                         updateToolbar();
                     }
-                });
+                }, { signal });
 
                 if (bulkCancelBtn2) {
                     bulkCancelBtn2.addEventListener('click', function () {
                         document.querySelectorAll('.row-checkbox').forEach(cb => cb.checked = false);
                         if (checkAll) { checkAll.checked = false; checkAll.indeterminate = false; }
                         updateToolbar();
-                    });
+                    }, { signal });
                 }
 
                 // Klik "Hapus Terpilih" dari toolbar pilihan checkbox
@@ -2022,13 +2072,13 @@ body {
                         }
 
                         bulkModal.classList.add('show');
-                    });
+                    }, { signal });
                 }
 
                 if (bulkCancelBtn) {
                     bulkCancelBtn.addEventListener('click', function () {
                         bulkModal.classList.remove('show');
-                    });
+                    }, { signal });
                 }
 
                 if (bulkConfirmBtn && bulkForm) {
@@ -2055,32 +2105,20 @@ body {
                         });
 
                         bulkForm.submit();
-                    });
+                    }, { signal });
                 }
 
                 if (bulkModal) {
                     bulkModal.addEventListener('click', function (e) {
                         if (e.target === bulkModal) bulkModal.classList.remove('show');
-                    });
+                    }, { signal });
                 }
 
                 document.addEventListener('keydown', function (e) {
                     if (e.key === 'Escape' && bulkModal && bulkModal.classList.contains('show')) {
                         bulkModal.classList.remove('show');
                     }
-                });
-
-                // Clear button untuk input pencarian
-                const btnClearSearch = document.getElementById('btnClearSearch');
-                const searchInput    = document.getElementById('searchInput');
-                if (btnClearSearch && searchInput) {
-                    btnClearSearch.addEventListener('click', function () {
-                        searchInput.value = '';
-                        searchInput.focus();
-                        const searchForm = document.getElementById('searchForm');
-                        if (searchForm) searchForm.submit();
-                    });
-                }
+                }, { signal });
 
                 // ======================================================
                 // 3. ATUR BATAS MINIMUM STOK (Threshold Modal)
@@ -2119,7 +2157,7 @@ body {
                 }
 
                 if (msmInput) {
-                    msmInput.addEventListener('input', updatePreviewStatus);
+                    msmInput.addEventListener('input', updatePreviewStatus, { signal });
                 }
 
                 document.addEventListener('click', function (e) {
@@ -2149,31 +2187,31 @@ body {
                         minStockModal.classList.add('show');
                         setTimeout(() => { if (msmInput) msmInput.focus(); }, 100);
                     }
-                });
+                }, { signal });
 
                 if (minStockCancel) {
                     minStockCancel.addEventListener('click', function () {
                         if (minStockModal) minStockModal.classList.remove('show');
-                    });
+                    }, { signal });
                 }
 
                 if (minStockModal) {
                     minStockModal.addEventListener('click', function (e) {
                         if (e.target === minStockModal) minStockModal.classList.remove('show');
-                    });
+                    }, { signal });
                 }
 
                 document.addEventListener('keydown', function (e) {
                     if (e.key === 'Escape' && minStockModal && minStockModal.classList.contains('show')) {
                         minStockModal.classList.remove('show');
                     }
-                });
+                }, { signal });
 
                 if (minStockForm && minStockSubmit) {
                     minStockForm.addEventListener('submit', function () {
                         minStockSubmit.disabled  = true;
                         minStockSubmit.innerHTML = '<span class="material-symbols-outlined" style="font-size:18px;">hourglass_empty</span> Menyimpan...';
-                    });
+                    }, { signal });
                 }
 
             })();
@@ -2182,8 +2220,13 @@ body {
                 const url = new URL(window.location.href);
                 url.searchParams.set('per_page', val);
                 url.searchParams.delete('page');
-                window.location.href = url.toString();
+                if (typeof window.navigatePage === 'function') {
+                    window.navigatePage(url.toString(), true);
+                } else {
+                    window.location.href = url.toString();
+                }
             }
+            window.changePerPage = changePerPage;
 
             function openSidebar() {
                 const sidebar = document.getElementById('sidebar');
