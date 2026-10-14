@@ -1616,8 +1616,8 @@ body {
                             <div class="sort-select-wrapper">
                                 <span class="material-symbols-outlined sort-icon">swap_vert</span>
                                 <select name="sort" id="sortSelect" title="Urutkan data material">
-                                    <option value="latest" {{ ($sort ?? 'latest') === 'latest' ? 'selected' : '' }}>Terbaru (Paling Atas)</option>
-                                    <option value="low_stock" {{ ($sort ?? '') === 'low_stock' ? 'selected' : '' }}>Stok Menipis (Prioritas)</option>
+                                    <option value="latest" {{ ($sort ?? 'latest') === 'latest' ? 'selected' : '' }}>Terbaru </option>
+                                    <option value="low_stock" {{ ($sort ?? '') === 'low_stock' ? 'selected' : '' }}>Stok Menipis </option>
                                     <option value="oldest" {{ ($sort ?? '') === 'oldest' ? 'selected' : '' }}>Terlama</option>
                                     <option value="name_asc" {{ ($sort ?? '') === 'name_asc' ? 'selected' : '' }}>Nama Material (A - Z)</option>
                                     <option value="name_desc" {{ ($sort ?? '') === 'name_desc' ? 'selected' : '' }}>Nama Material (Z - A)</option>
