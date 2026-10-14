@@ -581,4 +581,19 @@ class StockOutTest extends TestCase
         $movement->refresh();
         $this->assertNull($movement->recipient);
     }
+
+    public function test_stock_out_page_renders_clickable_profile_button(): void
+    {
+        $user = $this->createUser('Admin');
+
+        $response = $this->actingAs($user)->get(route('materials.stock-out.index'));
+        $response->assertStatus(200);
+
+        // Pastikan tombol profil merupakan link interaktif ke route profile.show dengan atribut data-spa-link
+        $response->assertSee('href="' . route('profile.show') . '"', false);
+        $response->assertSee('class="topbar-user"', false);
+        $response->assertSee('title="Buka Profil Pengguna"', false);
+        $response->assertDontSee('<div class="topbar-user">', false);
+    }
 }
+

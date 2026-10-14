@@ -127,6 +127,12 @@
             border: 1px solid var(--border);
             text-decoration: none;
             color: inherit;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .topbar-user:hover {
+            background: #F1F5F9;
         }
 
         .topbar-avatar {
@@ -1161,16 +1167,16 @@
                 </div>
             </div>
 
-            <div class="topbar-user">
-                <div class="topbar-avatar">
-                    {{ strtoupper(substr(Auth::user()->name ?? 'U', 0, 1)) }}
-                </div>
+            <a href="{{ route('profile.show') }}" class="topbar-user" title="Buka Profil Pengguna" data-spa-link>
                 <div class="topbar-user-detail">
                     <div class="topbar-user-name">{{ Auth::user()->name ?? 'Pengguna' }}</div>
                     <div class="topbar-user-email">{{ Auth::user()->email ?? '' }}</div>
                     <span class="badge-role">{{ Auth::user()->role ?? 'User' }}</span>
                 </div>
-            </div>
+                <div class="topbar-avatar">
+                    {{ strtoupper(substr(Auth::user()->name ?? 'U', 0, 1)) }}
+                </div>
+            </a>
         </header>
 
         {{-- Page Content --}}

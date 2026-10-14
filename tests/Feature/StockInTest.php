@@ -876,6 +876,21 @@ class StockInTest extends TestCase
         $this->assertCount(5, $collectionDate);
         $this->assertEquals('MAT102', $collectionDate->get(4)[1]);
     }
+
+    public function test_stock_in_page_renders_clickable_profile_button(): void
+    {
+        $user = $this->createUser('Admin');
+
+        $response = $this->actingAs($user)->get(route('materials.stock-in.index'));
+        $response->assertStatus(200);
+
+        // Pastikan tombol profil merupakan link interaktif ke route profile.show dengan atribut data-spa-link
+        $response->assertSee('href="' . route('profile.show') . '"', false);
+        $response->assertSee('class="topbar-user"', false);
+        $response->assertSee('title="Buka Profil Pengguna"', false);
+        $response->assertDontSee('<div class="topbar-user">', false);
+    }
 }
+
 
 
