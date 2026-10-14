@@ -1447,7 +1447,7 @@
                                     Peringatan: Terdapat {{ $lowStockCount }} Jenis Material dengan Stok Menipis!
                                 </div>
                                 <div class="stock-alert-desc">
-                                    Material yang sudah lama masuk dan persediaannya menipis (≤ 15 unit) otomatis
+                                    Material yang sudah lama masuk dan persediaannya menipis otomatis
                                     diprioritaskan di posisi teratas daftar material agar segera dilakukan restock /
                                     pengadaan.
                                 </div>
