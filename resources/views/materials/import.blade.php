@@ -500,7 +500,7 @@
                 </button>
                 <div class="topbar-left">
                     <h1>Import Data Material</h1>
-                    <p>Pendaftaran master data material PT PLN Indonesia Power UBP Asam Asam</p>
+                    <p>Mengimport data material ATK PT PLN Indonesia Power UBP Asam Asam melalui file Excel.</p>
                 </div>
             </div>
 
@@ -521,7 +521,7 @@
 
             <a href="{{ route('materials.index') }}" class="btn-back">
                 <span class="material-symbols-outlined" style="font-size:18px;">arrow_back</span>
-                Kembali ke Data Material
+                Kembali ke Daftar Material
             </a>
 
             <!-- NOTIFIKASI UMUM -->
@@ -570,7 +570,7 @@
                         <span class="material-symbols-outlined" style="font-size:28px;color:var(--blue);">analytics</span>
                         <div>
                             <h2 style="font-size:18px;font-weight:800;color:var(--blue-dark);">Pratinjau Data Import Material</h2>
-                            <p style="font-size:13px;color:var(--text-muted);">Periksa ringkasan data sebelum mengonfirmasi penyimpanan ke data master material.</p>
+                            <p style="font-size:13px;color:var(--text-muted);">Periksa ringkasan data sebelum menyimpan material ke sistem.</p>
                         </div>
                     </div>
 
@@ -602,7 +602,7 @@
                             </div>
                             <div>
                                 <div class="stat-number" style="color:var(--red);">{{ $preview['conflict_count'] }}</div>
-                                <div class="stat-label">Konflik Data (Ditolak)</div>
+                                <div class="stat-label">Data Tidak Valid (Ditolak)</div>
                             </div>
                         </div>
                     </div>
@@ -672,7 +672,7 @@
                             <form action="{{ route('materials.import.cancel') }}" method="POST">
                                 @csrf
                                 <button type="submit" class="btn btn-outline">
-                                    Batal / Upload File Lain
+                                    Batal / Unggah File Lain
                                 </button>
                             </form>
 
@@ -711,11 +711,11 @@
                     </div>
 
                     <h2 style="font-size:20px;font-weight:800;color:var(--blue-dark);margin-bottom:8px;">
-                        Import Master Data Material via Excel
+                        Import Data Material melalui Excel
                     </h2>
 
                     <p style="font-size:13.5px;color:var(--text-muted);max-width:540px;margin:0 auto 24px;line-height:1.6;">
-                        Unggah file Excel untuk mendaftarkan data master material baru ke sistem. Sistem akan menampilkan pratinjau sebelum data disimpan.
+                        Unggah file Excel berisi data material. Periksa pratinjau data sebelum menyimpannya ke sistem.
                     </p>
 
                     <!-- FORM IMPORT -->
@@ -739,7 +739,7 @@
                             </span>
 
                             <p style="font-size:13.5px;color:var(--text-dark);margin-bottom:6px;font-weight:600;">
-                                Format Kolom Template Baru:
+                                Format Kolom Template:
                             </p>
 
                             <div style="display:inline-flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;justify-content:center;">
@@ -747,10 +747,6 @@
                                 <span style="background:#EFF6FF;color:var(--blue-dark);font-size:12px;font-weight:700;padding:4px 10px;border-radius:6px;border:1px solid #DBEAFE;">2. Nama Material</span>
                                 <span style="background:#EFF6FF;color:var(--blue-dark);font-size:12px;font-weight:700;padding:4px 10px;border-radius:6px;border:1px solid #DBEAFE;">3. Satuan</span>
                             </div>
-
-                            <p style="font-size:12px;color:var(--text-muted);margin-bottom:16px;">
-                                Tidak ada kolom stok atau tanggal masuk. Hanya data master identitas barang.
-                            </p>
 
                             <!-- FILE INPUT -->
                             <input type="file" id="file" name="file" accept=".xlsx" style="display:none;" onchange="showFileName(this)">
@@ -784,7 +780,7 @@
 
                             <a href="{{ route('materials.import.template') }}" class="btn btn-success">
                                 <span class="material-symbols-outlined" style="font-size:18px;">download</span>
-                                Download Template Baru (3 Kolom)
+                                Unduh Template Excel
                             </a>
 
                             <a href="{{ route('materials.index') }}" class="btn btn-outline">

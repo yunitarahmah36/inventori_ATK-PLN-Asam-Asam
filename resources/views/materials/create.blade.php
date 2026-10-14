@@ -416,7 +416,7 @@
                     </button>
                     <div class="topbar-left">
                         <h1>Tambah Material</h1>
-                        <p>Pendaftaran data master material PT PLN Indonesia Power UBP Asam Asam</p>
+                        <p>Menambahkan data material baru ke dalam daftar material ATK PT PLN Indonesia Power UBP Asam Asam.</p>
                     </div>
                 </div>
 
@@ -436,13 +436,13 @@
 
                 <a href="{{ route('materials.index') }}" class="btn-back">
                     <span class="material-symbols-outlined" style="font-size:18px;">arrow_back</span>
-                    Kembali ke Data Material
+                    Kembali ke Daftar Material
                 </a>
 
                 <div class="form-card">
                     <div class="form-card-header">
-                        <h2>Form Pendaftaran Data Material</h2>
-                        <p>Lengkapi informasi identitas material di bawah ini. Semua kolom wajib diisi.</p>
+                        <h2>Form Tambah Material</h2>
+                        <p>Lengkapi informasi material berikut. Semua kolom wajib diisi.</p>
                     </div>
 
                     @if ($errors->any())
@@ -474,7 +474,7 @@
                                     <span class="invalid-feedback">{{ $message }}</span>
                                 @enderror
                                 <span class="form-helper">
-                                    Kode unik material yang belum pernah digunakan oleh barang lain.
+                                    Masukkan nomor material yang unik dan belum terdaftar.
                                 </span>
                             </div>
 
@@ -491,7 +491,7 @@
                                     <span class="invalid-feedback">{{ $message }}</span>
                                 @enderror
                                 <span class="form-helper">
-                                    Nama lengkap barang atau material (wajib unik dan belum pernah didaftarkan sebelumnya).
+                                   Masukkan nama material yang belum terdaftar.
                                 </span>
                             </div>
 
@@ -523,7 +523,7 @@
                                     <span class="invalid-feedback">{{ $message }}</span>
                                 @enderror
                                 <span class="form-helper">
-                                    Satuan takaran material (misal: Pcs, Unit, Rim, Meter, Roll).
+                                    Masukkan satuan material sesuai penggunaannya.
                                 </span>
                             </div>
 

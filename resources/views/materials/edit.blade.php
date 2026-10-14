@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport"
         content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Edit Material - Sistem Informasi Inventori Material PT PLN Indonesia Power UBP Asam Asam</title>
+    <title>Edit Material - Memperbarui data material dalam daftar material ATK PT PLN Indonesia Power UBP Asam Asam.</title>
     <link rel="icon" type="image/png" href="{{ asset('images/pln_bulat.png') }}">
 
     <!-- Google Fonts: Inter -->
@@ -436,13 +436,13 @@
 
                 <a href="{{ route('materials.index') }}" class="btn-back">
                     <span class="material-symbols-outlined" style="font-size:18px;">arrow_back</span>
-                    Kembali ke Data Material
+                    Kembali ke Daftar Material
                 </a>
 
                 <div class="form-card">
                     <div class="form-card-header">
-                        <h2>Edit Data Material</h2>
-                        <p>Perbarui identitas data master material <strong>{{ $material->name }}</strong>
+                        <h2>Form Edit Material</h2>
+                        <p>Perbarui identitas dat material <strong>{{ $material->name }}</strong>
                             ({{ $material->material_number }}).</p>
                     </div>
 
@@ -486,7 +486,7 @@
                                     </span>
                                 </div>
                                 <span class="form-helper" style="color: #64748B;">
-                                    No. Material adalah kode identitas unik permanen yang tidak dapat diubah setelah didaftarkan.
+                                   Nomor material adalah kode identitas unik permanen yang tidak dapat diubah setelah didaftarkan.
                                 </span>
                             </div>
 
@@ -502,7 +502,7 @@
                                     <span class="invalid-feedback">{{ $message }}</span>
                                 @enderror
                                 <span class="form-helper">
-                                    Nama lengkap barang atau material (wajib unik dan tidak boleh sama dengan material lain).
+                                  Perbarui nama material sesuai kebutuhan.
                                 </span>
                             </div>
 
@@ -532,7 +532,7 @@
                                     <span class="invalid-feedback">{{ $message }}</span>
                                 @enderror
                                 <span class="form-helper">
-                                    Satuan takaran material (misal: Pcs, Unit, Rim, Meter, Roll).
+                                   Masukkan satuan material sesuai penggunaannya.
                                 </span>
                             </div>
 

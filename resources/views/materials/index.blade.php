@@ -1378,8 +1378,8 @@ body {
                         <span class="material-symbols-outlined">menu</span>
                     </button>
                     <div class="topbar-left">
-                        <h1>Data Material</h1>
-                        <p>Pendaftaran dan pengelolaan data master material PT PLN Indonesia Power UBP Asam Asam</p>
+                        <h1>Daftar Material</h1>
+                        <p>Menampilkan daftar material ATK PT PLN Indonesia Power UBP Asam Asam beserta nomor, nama, dan satuannya</p>
                     </div>
                 </div>
 
@@ -1447,8 +1447,8 @@ body {
                 <!-- Header Card dengan Tombol Aksi Utama -->
                 <div class="header-card">
                     <div class="header-card-title">
-                        <h2>Data Master Material</h2>
-                        <p>Kelola identitas material (No. Material, Nama Material, dan Satuan)</p>
+                        <h2>Daftar Material</h2>
+                        <p>Kelola data material ATK sebagai acuan pencatatan persediaan.</p>
                     </div>
 
                     <div class="header-actions">
@@ -1535,7 +1535,7 @@ body {
                             @else
                                 <div class="search-meta-info">
                                     <span class="material-symbols-outlined">inventory_2</span>
-                                    <span>Total <strong>{{ $materials->total() }}</strong> Master Material terdaftar</span>
+                                    <span>Total <strong>{{ $materials->total() }}</strong> material terdaftar</span>
                                     @if (($sort ?? 'latest') !== 'latest')
                                         <span style="color:var(--text-muted);font-size:12px;">• Urutan: 
                                             @if ($sort === 'oldest') Terlama
@@ -1580,7 +1580,7 @@ body {
                                         <th style="width: 150px;">No. Material</th>
                                         <th>Nama Material</th>
                                         <th style="width: 110px;">Satuan</th>
-                                        <th style="width: 140px; text-align: center;">Batas Minimum</th>
+                                        <th style="width: 140px; text-align: center;">Batas Minimum Stok</th>
                                         <th style="width: 140px; text-align: center;">Status Stok</th>
                                         <th style="width: 150px; text-align: center;">Aksi</th>
                                     </tr>
