@@ -213,6 +213,86 @@ class LandingPageTest extends TestCase
         $responseBaru->assertSee('id="formSection" style=""', false);
     }
 
+    public function test_material_catalog_renders_ambil_buttons_and_supports_sequential_withdrawals(): void
+    {
+        $this->createTestUser();
+
+        $matA = Material::create([
+            'material_number' => 'MAT-SEQ-A',
+            'name'            => 'Bolpoin Gel Hitam',
+            'quantity'        => 20,
+            'unit'            => 'Pcs',
+        ]);
+
+        $matB = Material::create([
+            'material_number' => 'MAT-SEQ-B',
+            'name'            => 'Buku Catatan Ekspedisi',
+            'quantity'        => 10,
+            'unit'            => 'Buku',
+        ]);
+
+        // 1. Cek tombol Ambil di katalog
+        $response = $this->get('/');
+        $response->assertStatus(200);
+        $response->assertSee('btn-select-item');
+        $response->assertSee('data-id="' . $matA->id . '"', false);
+        $response->assertSee('data-id="' . $matB->id . '"', false);
+        $response->assertSee('id="itemRowTemplate"', false);
+        $response->assertSee('id="itemsContainer"', false);
+
+        // 2. Transaksi pertama: ambil material A
+        $responseA = $this->post('/pengambilan-barang', [
+            'nama_pengambil' => 'Andi Wijaya',
+            'divisi'         => 'Operasi',
+            'material_id'    => $matA->id,
+            'quantity'       => 2,
+        ]);
+
+        $responseA->assertRedirect(route('landing') . '#form-pengambilan');
+        $responseA->assertSessionHas('success_pengambilan');
+        $matA->refresh();
+        $this->assertEquals(18, $matA->quantity);
+
+        // 3. Tampilkan halaman dengan resi transaksi pertama
+        $receiptA = session('receipt_data');
+        $responseAfterA = $this->withSession([
+            'success_pengambilan' => session('success_pengambilan'),
+            'receipt_data'        => $receiptA,
+        ])->get('/');
+
+        $responseAfterA->assertStatus(200);
+        $responseAfterA->assertSee('BUKTI RESI PENGAMBILAN BARANG');
+        $responseAfterA->assertSee('id="receiptSection"', false);
+        $responseAfterA->assertSee('id="formSection" style="display: none;"', false);
+        $responseAfterA->assertSee('data-id="' . $matB->id . '"', false);
+
+        // 4. Transaksi kedua: ambil material B berikutnya
+        $responseB = $this->post('/pengambilan-barang', [
+            'nama_pengambil' => 'Siti Aminah',
+            'divisi'         => 'K3 & Lingkungan (K3L)',
+            'material_id'    => $matB->id,
+            'quantity'       => 3,
+        ]);
+
+        $responseB->assertRedirect(route('landing') . '#form-pengambilan');
+        $responseB->assertSessionHas('success_pengambilan');
+        $matB->refresh();
+        $this->assertEquals(7, $matB->quantity);
+
+        // Verifikasi pergerakan stok untuk kedua transaksi berdiri sendiri secara valid
+        $this->assertDatabaseHas('stock_movements', [
+            'material_id'     => $matA->id,
+            'quantity_change' => -2,
+            'recipient'       => 'Andi Wijaya (Operasi)',
+        ]);
+
+        $this->assertDatabaseHas('stock_movements', [
+            'material_id'     => $matB->id,
+            'quantity_change' => -3,
+            'recipient'       => 'Siti Aminah (K3 & Lingkungan (K3L))',
+        ]);
+    }
+
     public function test_dashboard_still_requires_authentication(): void
     {
         $response = $this->get('/dashboard');
@@ -220,3 +300,4 @@ class LandingPageTest extends TestCase
         $response->assertRedirect('/login');
     }
 }
+

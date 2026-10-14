@@ -2212,22 +2212,19 @@
                     const id = this.getAttribute('data-id');
                     if (!id) return;
 
-                    // Jika sedang menampilkan resi, sembunyikan resi dan tampilkan form baru dengan barang terpilih
-                    if (receiptSection && receiptSection.style.display !== 'none') {
+                    // Periksa apakah resi sedang aktif ditampilkan
+                    const isReceiptActive = receiptSection && receiptSection.style.display !== 'none';
+
+                    if (isReceiptActive) {
                         receiptSection.style.display = 'none';
                         if (formSection) formSection.style.display = 'block';
                         if (form) form.reset();
                         if (itemsContainer) {
                             itemsContainer.innerHTML = '';
-                            const newRow = createNewItemRow(id);
                         }
-                        const formElem = document.getElementById('form-pengambilan');
-                        if (formElem) formElem.scrollIntoView({ behavior: 'smooth' });
-                        const namaInput = document.getElementById('nama_pengambil');
-                        if (namaInput && !namaInput.value.trim()) {
-                            namaInput.focus();
-                        }
-                        return;
+                    } else {
+                        // Pastikan formSection tetap tampil jika sebelumnya tersembunyi
+                        if (formSection) formSection.style.display = 'block';
                     }
 
                     let targetRow = null;
@@ -2255,15 +2252,15 @@
                         }
                     }
 
-                    // Jika semua baris sudah terisi dan material belum ada, buat baris baru
+                    // Jika semua baris sudah terisi dan material belum ada (atau form baru direset), buat baris baru
                     if (!targetRow) {
                         targetRow = createNewItemRow(id);
                     }
 
                     // Scroll ke form
-                    const formSection = document.getElementById('form-pengambilan');
-                    if (formSection) {
-                        formSection.scrollIntoView({ behavior: 'smooth' });
+                    const formAnchor = document.getElementById('form-pengambilan');
+                    if (formAnchor) {
+                        formAnchor.scrollIntoView({ behavior: 'smooth' });
                     }
 
                     // Beri efek highlight pada baris yang dipilih
@@ -2272,13 +2269,13 @@
                         void targetRow.offsetWidth; // trigger reflow
                         targetRow.classList.add('highlighted');
 
-                        // Focus ke nama pengambil atau ke quantity baris ini
+                        // Focus ke nama pengambil jika kosong, atau ke quantity baris ini
                         const namaInput = document.getElementById('nama_pengambil');
                         if (namaInput && !namaInput.value.trim()) {
-                            namaInput.focus();
+                            setTimeout(() => namaInput.focus(), 250);
                         } else {
                             const qtyInput = targetRow.querySelector('.item-qty-input');
-                            if (qtyInput) qtyInput.focus();
+                            if (qtyInput) setTimeout(() => qtyInput.focus(), 250);
                         }
                     }
                 });
