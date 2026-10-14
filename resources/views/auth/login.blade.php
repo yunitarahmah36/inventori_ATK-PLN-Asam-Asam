@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Sistem Informasi Inventori Material</title>
+    <title>Login - SISTEM INFORMASI PERSEDIAAN ATK</title>
     <link rel="icon" type="image/png" href="{{ asset('images/pln_bulat.png') }}">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
@@ -243,7 +243,7 @@
         </div>
 
         <!-- Judul -->
-        <h2>Inventori Material</h2>
+        <h2>Sistem Persediaan ATK</h2>
         <p class="subtitle">Silakan masuk ke akun Anda</p>
 
         <!-- Error Handling Laravel -->

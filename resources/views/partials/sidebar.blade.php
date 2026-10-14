@@ -22,7 +22,7 @@
                 loading="eager"
             >
             <div class="sidebar-logo-text">
-                <h1>INVENTORI MATERIAL</h1>
+                <h1>SISTEM PERSEDIAAN ATK</h1>
                 <p>PT PLN Indonesia Power UBP Asam Asam</p>
             </div>
         </a>
@@ -335,7 +335,7 @@
 
     .sidebar-logo-text h1 {
         margin: 0;
-        font-size: 15px;
+        font-size: 13px;
         font-weight: 800;
         color: #3D2227;
         line-height: 1.2;

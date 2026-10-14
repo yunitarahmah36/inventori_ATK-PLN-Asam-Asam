@@ -1186,9 +1186,9 @@
                             <label for="status">Filter Status:</label>
                             <select id="status" name="status">
                                 <option value="" {{ empty($filterStatus) ? 'selected' : '' }}>Semua Material</option>
-                                <option value="safe" {{ $filterStatus === 'safe' ? 'selected' : '' }}>Stok Aman (> 15)</option>
-                                <option value="low" {{ $filterStatus === 'low' ? 'selected' : '' }}>Stok Menipis (≤ 15)</option>
-                                <option value="out" {{ $filterStatus === 'out' ? 'selected' : '' }}>Stok Habis (0)</option>
+                                <option value="safe" {{ $filterStatus === 'safe' ? 'selected' : '' }}>Stok Aman </option>
+                                <option value="low" {{ $filterStatus === 'low' ? 'selected' : '' }}>Stok Menipis </option>
+                                <option value="out" {{ $filterStatus === 'out' ? 'selected' : '' }}>Stok Habis </option>
                             </select>
                         </div>
 

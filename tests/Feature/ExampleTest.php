@@ -16,7 +16,23 @@ class ExampleTest extends TestCase
         $response = $this->get('/');
 
         $response->assertStatus(200);
-        $response->assertSee('INVENTORI MATERIAL');
+        $response->assertSee('SISTEM PERSEDIAAN ATK');
         $response->assertSee('Catat Pengambilan');
+    }
+
+    public function test_logout_redirects_to_landing_page(): void
+    {
+        $user = \App\Models\User::create([
+            'name'     => 'Petugas',
+            'username' => 'petugas',
+            'email'    => 'petugas@pln.co.id',
+            'password' => \Illuminate\Support\Facades\Hash::make('password'),
+            'role'     => 'Admin',
+        ]);
+
+        $response = $this->actingAs($user)->post('/logout');
+
+        $response->assertRedirect(route('landing'));
+        $this->assertGuest();
     }
 }
