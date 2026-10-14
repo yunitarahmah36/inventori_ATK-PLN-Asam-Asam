@@ -1254,7 +1254,7 @@
             <a href="{{ route('landing') }}" class="brand-link">
                 <img src="{{ asset('images/logo-pln.png') }}" alt="PLN Logo" class="brand-logo">
                 <div class="brand-text">
-                    <h1>INVENTORI MATERIAL</h1>
+                    <h1>SISTEM PERSEDIAAN ATK</h1>
                     <p>PT PLN INDONESIA POWER UBP ASAM ASAM</p>
                 </div>
             </a>
@@ -1398,7 +1398,7 @@
                             <span class="material-symbols-outlined">verified</span>
                         </div>
                         <div class="stat-number">24 Jam</div>
-                        <div class="stat-label">Layanan Mandiri Real-Time</div>
+                        <div class="stat-label">Akses Layanan</div>
                     </div>
                 </div>
             </div>
@@ -1837,7 +1837,7 @@
     <section class="section-catalog" id="katalog">
         <div class="container">
             <div class="section-header">
-                <div class="section-tag">Katalog Real-Time</div>
+                <div class="section-tag">KATALOG MATERIAL</div>
                 <h2 class="section-title">Daftar Material Siap Digunakan</h2>
                 <p class="section-desc">Pantau ketersediaan stok fisik barang sebelum melakukan pencatatan pengambilan.</p>
             </div>
