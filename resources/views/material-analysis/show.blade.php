@@ -1296,30 +1296,44 @@
             }
         }
 
-        @media (max-width: 768px) {
+        @media (max-width: 992px) {
             .main {
                 margin-left: 0 !important;
             }
 
             .btn-hamburger {
-                display: flex;
+                display: flex !important;
             }
 
             .topbar {
-                padding: 0 16px;
+                padding: 0 18px;
+            }
+
+            .topbar-user-detail .topbar-user-email {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .topbar-left p {
+                display: none;
             }
 
             .topbar-user-detail {
                 display: none;
             }
 
+            .topbar-left h1 {
+                font-size: 17px;
+            }
+
             .page-content {
-                padding: 16px 16px 60px;
+                padding: 14px 12px 60px;
             }
 
             .hero-detail-card {
                 flex-direction: column;
-                padding: 20px;
+                padding: 18px;
             }
 
             .hero-right-badge {
@@ -1351,16 +1365,17 @@
             }
 
             .table-card-header {
-                padding: 16px;
+                padding: 14px;
                 flex-direction: column;
                 align-items: stretch;
-                gap: 14px;
+                gap: 12px;
             }
 
             .table-card-actions {
                 width: 100%;
                 justify-content: space-between;
                 gap: 10px;
+                flex-wrap: wrap;
             }
 
             .per-page-form {
@@ -1378,6 +1393,7 @@
             .table-footer {
                 flex-direction: column;
                 align-items: stretch;
+                gap: 12px;
             }
 
             .table-footer-left {
@@ -1391,6 +1407,48 @@
 
             .pagination-btn {
                 flex: 1;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .topbar {
+                padding: 0 12px;
+            }
+
+            .topbar-left h1 {
+                font-size: 16px;
+            }
+
+            .hero-detail-card {
+                padding: 14px;
+            }
+
+            .nav-back-bar {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .table-card-actions {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 8px;
+            }
+
+            .per-page-form {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .btn-export-pdf {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .table-footer-left {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
             }
         }
     </style>

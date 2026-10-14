@@ -232,6 +232,32 @@
             border-radius: 50%;
             pointer-events: none;
         }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 14px;
+            }
+            .login-card {
+                padding: 30px 20px;
+                border-radius: 12px;
+            }
+            h2 {
+                font-size: 20px;
+            }
+            .subtitle {
+                font-size: 12px;
+                margin-bottom: 24px;
+            }
+            .form-actions {
+                flex-direction: row;
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+            .btn-submit {
+                padding: 12px;
+                font-size: 14px;
+            }
+        }
     </style>
 </head>
 <body>

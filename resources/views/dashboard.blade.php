@@ -1171,7 +1171,11 @@
            RESPONSIVE BREAKPOINTS
         ============================================================ */
 
-        /* Tablet */
+        /* ============================================================
+           RESPONSIVE BREAKPOINTS (PC, LAPTOP, TABLET & HP)
+        ============================================================ */
+
+        /* Tablet & Small Laptop (Max 1024px) */
         @media (max-width: 1024px) {
             .stats-grid {
                 grid-template-columns: repeat(2, 1fr);
@@ -1182,10 +1186,14 @@
             }
         }
 
-        /* Mobile */
-        @media (max-width: 768px) {
+        /* Mobile & Tablet Drawer (Max 992px) */
+        @media (max-width: 992px) {
             .main {
                 margin-left: 0;
+            }
+
+            .btn-hamburger {
+                display: flex;
             }
 
             .topbar {
@@ -1193,26 +1201,33 @@
             }
 
             .topbar-left h1 {
-                font-size: 17px;
+                font-size: 18px;
             }
 
-            .btn-hamburger {
-                display: flex;
-            }
-
-            .topbar-user-detail {
+            .topbar-user-detail .topbar-user-email {
                 display: none;
             }
 
             .page-content {
-                padding: 16px 16px 80px;
+                padding: 18px 16px 80px;
+            }
+        }
+
+        /* Mobile (Max 768px) */
+        @media (max-width: 768px) {
+            .topbar-user-detail {
+                display: none;
+            }
+
+            .topbar-left p {
+                display: none;
             }
 
             .welcome-card {
                 flex-direction: column;
                 align-items: flex-start;
                 gap: 14px;
-                padding: 18px 18px;
+                padding: 18px 16px;
             }
 
             .welcome-card h2 {
@@ -1229,9 +1244,9 @@
             }
 
             .action-btn {
-                padding: 14px 8px;
-                min-height: 70px;
-                font-size: 11.5px;
+                padding: 12px 6px;
+                min-height: 68px;
+                font-size: 11px;
             }
 
             .stats-grid {
@@ -1240,7 +1255,7 @@
             }
 
             .stat-card-value {
-                font-size: 22px;
+                font-size: 20px;
             }
 
             .stock-alert-banner {
@@ -1253,9 +1268,28 @@
                 width: 100%;
                 justify-content: center;
             }
+
+            .material-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+
+            .material-item-right {
+                width: 100%;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                border-top: 1px dashed var(--border);
+                padding-top: 6px;
+            }
         }
 
-        @media (max-width: 400px) {
+        @media (max-width: 480px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
             .quick-actions {
                 grid-template-columns: repeat(3, 1fr);
                 gap: 6px;
@@ -1264,6 +1298,7 @@
             .action-btn {
                 min-height: 64px;
                 padding: 10px 4px;
+                font-size: 10px;
             }
         }
     </style>

@@ -262,8 +262,8 @@
         transition: none;
     }
 
-    /* PENTING: Kunci posisi di Desktop agar tidak pernah bergerak/ngesot saat load */
-    @media (min-width: 769px) {
+    /* PENTING: Kunci posisi di Desktop & Laptop (>992px) agar tidak bergerak/ngesot saat load */
+    @media (min-width: 993px) {
         .sidebar {
             position: fixed !important;
             top: 0 !important;
@@ -276,6 +276,9 @@
         .main {
             margin-left: var(--sidebar-w) !important;
             transition: none !important;
+        }
+        .btn-hamburger {
+            display: none !important;
         }
     }
 
@@ -818,8 +821,8 @@
         transition: opacity 0.08s ease-in-out;
     }
 
-    /* Responsif Mobile (Max 768px) */
-    @media (max-width: 768px) {
+    /* Responsif Mobile & Tablet (Max 992px) */
+    @media (max-width: 992px) {
         .layout {
             display: block;
             width: 100%;
@@ -844,6 +847,26 @@
 
         .sidebar-close-btn {
             display: flex;
+        }
+
+        .btn-hamburger {
+            display: flex !important;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .sidebar {
+            width: 85vw !important;
+        }
+        .logout-modal-box {
+            padding: 24px 18px 20px;
+        }
+        .logout-modal-actions {
+            flex-direction: column-reverse;
+        }
+        .logout-modal-cancel,
+        .logout-modal-confirm {
+            width: 100%;
         }
     }
 

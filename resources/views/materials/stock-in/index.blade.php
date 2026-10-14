@@ -981,31 +981,111 @@
             margin-bottom: 6px;
         }
 
-        @media (max-width: 768px) {
+        @media (max-width: 992px) {
             .main {
                 margin-left: 0;
             }
             .btn-hamburger {
-                display: flex;
+                display: flex !important;
             }
             .topbar {
-                padding: 0 16px;
+                padding: 0 18px;
+            }
+            .topbar-user-detail .topbar-user-email {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .topbar-left p {
+                display: none;
             }
             .topbar-user-detail {
                 display: none;
             }
             .page-content {
-                padding: 16px 14px 60px;
+                padding: 14px 12px 60px;
             }
             .header-card {
                 flex-direction: column;
-                align-items: flex-start;
+                align-items: stretch;
+                gap: 14px;
             }
             .header-actions {
                 width: 100%;
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 8px;
             }
             .header-actions .btn {
+                width: 100%;
+                justify-content: center;
+                padding: 8px 10px;
+                font-size: 12px;
+            }
+            .kpi-grid {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+            .filter-card {
+                padding: 14px;
+            }
+            .filter-form {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 10px;
+            }
+            .search-box {
+                min-width: 100%;
+                width: 100%;
+            }
+            .date-input-group {
+                width: 100%;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 10px;
+            }
+            .date-input-group label {
+                min-width: 50px;
+            }
+            .date-input-group input[type="date"] {
                 flex: 1;
+                width: 100%;
+            }
+            .filter-form .btn {
+                width: 100%;
+                justify-content: center;
+            }
+            .modal-box-custom {
+                padding: 22px 18px;
+                max-width: 95vw;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .topbar {
+                padding: 0 12px;
+            }
+            .topbar-left h1 {
+                font-size: 16px;
+            }
+            .header-actions {
+                grid-template-columns: 1fr;
+            }
+            .modal-box-custom {
+                padding: 18px 14px;
+                border-radius: 12px;
+            }
+            .modal-header-custom h3 {
+                font-size: 16px;
+            }
+            .modal-actions-custom {
+                flex-direction: column-reverse;
+                gap: 8px;
+            }
+            .modal-actions-custom .btn {
+                width: 100%;
                 justify-content: center;
             }
         }

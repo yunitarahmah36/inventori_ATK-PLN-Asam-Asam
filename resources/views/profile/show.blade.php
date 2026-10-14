@@ -907,7 +907,23 @@
         /* ============================================================
            RESPONSIVE STYLES
         ============================================================ */
-        @media (max-width: 900px) {
+        @media (max-width: 992px) {
+            .main {
+                margin-left: 0 !important;
+            }
+
+            .btn-hamburger {
+                display: flex !important;
+            }
+
+            .topbar {
+                padding: 0 18px;
+            }
+
+            .topbar-user-detail .topbar-user-email {
+                display: none;
+            }
+
             .form-grid {
                 grid-template-columns: 1fr;
             }
@@ -933,28 +949,20 @@
         }
 
         @media (max-width: 768px) {
-            .main {
-                margin-left: 0 !important;
-            }
-
-            .topbar {
-                padding: 0 16px;
-            }
-
-            .btn-hamburger {
-                display: flex;
-            }
-
-            .topbar-user {
-                padding: 4px 8px;
-            }
-
-            .topbar-user-email {
+            .topbar-left p {
                 display: none;
             }
 
+            .topbar-user-detail {
+                display: none;
+            }
+
+            .topbar-left h1 {
+                font-size: 17px;
+            }
+
             .page-content {
-                padding: 18px 16px 80px;
+                padding: 14px 12px 60px;
             }
 
             .card {
@@ -978,6 +986,8 @@
 
             .tabs-header {
                 padding: 4px;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
             }
 
             .tab-btn {
@@ -988,10 +998,41 @@
 
             .form-actions {
                 flex-direction: column-reverse;
+                gap: 10px;
             }
 
             .form-actions .btn {
                 width: 100%;
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .topbar {
+                padding: 0 12px;
+            }
+
+            .topbar-left h1 {
+                font-size: 16px;
+            }
+
+            .profile-banner {
+                padding: 18px 14px;
+            }
+
+            .banner-stats {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .card {
+                padding: 18px 14px;
+            }
+
+            .tab-btn {
+                min-width: 110px;
+                padding: 8px 10px;
+                font-size: 12px;
             }
         }
     </style>

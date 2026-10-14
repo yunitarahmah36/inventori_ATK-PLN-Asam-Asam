@@ -371,9 +371,13 @@
             background: #F9FAFB;
         }
 
-        @media (max-width: 768px) {
+        /* ============================================================
+           RESPONSIVE BREAKPOINTS (PC, LAPTOP, TABLET & HP)
+        ============================================================ */
+
+        @media (max-width: 992px) {
             .main {
-                margin-left: 0;
+                margin-left: 0 !important;
             }
 
             .btn-hamburger {
@@ -384,17 +388,55 @@
                 padding: 0 16px;
             }
 
+            .topbar-user-detail .topbar-user-email {
+                display: none;
+            }
+
             .page-content {
                 padding: 16px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .topbar-left h1 {
+                font-size: 17px;
+            }
+
+            .topbar-left p {
+                display: none;
+            }
+
+            .topbar-user-detail {
+                display: none;
+            }
+
+            .form-card {
+                padding: 22px 18px;
             }
 
             .form-actions {
                 flex-direction: column-reverse;
+                gap: 10px;
             }
 
             .form-actions .btn {
                 width: 100%;
                 justify-content: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .page-content {
+                padding: 12px;
+            }
+
+            .form-card {
+                padding: 18px 14px;
+                border-radius: 10px;
+            }
+
+            .btn-back {
+                font-size: 12.5px;
             }
         }
     </style>

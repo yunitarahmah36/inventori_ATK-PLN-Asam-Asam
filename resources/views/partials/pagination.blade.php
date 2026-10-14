@@ -64,6 +64,28 @@
             border-color: #F2E0E4 !important;
             color: #9C7981 !important;
         }
+
+        @media (max-width: 576px) {
+            .pagination-list {
+                gap: 4px !important;
+                justify-content: center !important;
+            }
+            .pagination-list .page-link {
+                min-width: 32px !important;
+                height: 32px !important;
+                padding: 0 6px !important;
+                font-size: 12px !important;
+            }
+            .pagination-list .page-prev .page-text,
+            .pagination-list .page-next .page-text {
+                display: none !important;
+            }
+            .pagination-list .page-prev,
+            .pagination-list .page-next {
+                padding: 0 4px !important;
+                min-width: 32px !important;
+            }
+        }
     </style>
     <nav class="pagination-nav" role="navigation" aria-label="Navigasi Halaman">
         <ul class="pagination-list">

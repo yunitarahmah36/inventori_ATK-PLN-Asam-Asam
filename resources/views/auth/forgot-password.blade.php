@@ -277,17 +277,30 @@
             color: #7E5B62;
             font-weight: 600;
         }
-            font-weight: 500;
-        }
 
         /* Responsif */
         @media (max-width: 480px) {
+            body {
+                padding: 14px;
+            }
+
             .login-card {
-                padding: 30px 22px;
+                padding: 30px 20px;
+                border-radius: 12px;
             }
 
             h2 {
                 font-size: 20px;
+            }
+
+            .subtitle {
+                font-size: 12px;
+                margin-bottom: 24px;
+            }
+
+            .btn-submit {
+                padding: 12px;
+                font-size: 14px;
             }
         }
     </style>

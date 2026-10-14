@@ -1327,9 +1327,14 @@ body {
             background: #B91C1C;
         }
 
-        @media (max-width: 768px) {
+        /* ============================================================
+           RESPONSIVE BREAKPOINTS (PC, LAPTOP, TABLET & HP)
+        ============================================================ */
+
+        /* Tablet & iPad (Max 992px) */
+        @media (max-width: 992px) {
             .main {
-                margin-left: 0;
+                margin-left: 0 !important;
             }
 
             .btn-hamburger {
@@ -1340,22 +1345,137 @@ body {
                 padding: 0 16px;
             }
 
+            .topbar-user-detail .topbar-user-email {
+                display: none;
+            }
+
             .page-content {
                 padding: 16px;
+            }
+
+            .search-input-group {
+                flex-wrap: wrap;
+            }
+
+            .search-input-wrapper {
+                min-width: 200px;
+                flex: 1;
+            }
+
+            .sort-select-wrapper {
+                flex: 1;
+                min-width: 180px;
+            }
+
+            .sort-select-wrapper select {
+                width: 100%;
+            }
+        }
+
+        /* Mobile (Max 768px) */
+        @media (max-width: 768px) {
+            .topbar-left h1 {
+                font-size: 17px;
+            }
+
+            .topbar-left p {
+                display: none;
+            }
+
+            .topbar-user-detail {
+                display: none;
             }
 
             .header-card {
                 flex-direction: column;
                 align-items: flex-start;
+                gap: 14px;
             }
 
             .header-actions {
                 width: 100%;
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
             }
 
             .header-actions .btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .search-input-group {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 10px;
+            }
+
+            .search-input-wrapper,
+            .sort-select-wrapper,
+            .search-buttons {
+                width: 100%;
+            }
+
+            .search-buttons {
+                display: flex;
+                gap: 8px;
+            }
+
+            .btn-search,
+            .btn-reset {
                 flex: 1;
                 justify-content: center;
+            }
+
+            .table-card-header {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 12px;
+                padding: 14px 16px;
+            }
+
+            .table-card-actions {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .delete-modal-box,
+            .min-stock-modal-box {
+                max-width: 94%;
+                padding: 22px 18px;
+            }
+
+            .delete-modal-actions {
+                flex-direction: column-reverse;
+                gap: 8px;
+            }
+
+            .delete-modal-cancel,
+            .delete-modal-confirm {
+                width: 100%;
+                text-align: center;
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .page-content {
+                padding: 12px;
+            }
+
+            .table-card {
+                border-radius: 10px;
+            }
+
+            .table-card-actions {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 10px;
+            }
+
+            .table-card-actions .per-page-form {
+                width: 100%;
+                justify-content: space-between;
             }
         }
     </style>

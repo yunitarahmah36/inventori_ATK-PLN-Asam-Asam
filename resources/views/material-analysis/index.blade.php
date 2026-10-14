@@ -1071,25 +1071,39 @@
             }
         }
 
-        @media (max-width: 768px) {
+        @media (max-width: 992px) {
             .main {
                 margin-left: 0 !important;
             }
 
             .btn-hamburger {
-                display: flex;
+                display: flex !important;
             }
 
             .topbar {
-                padding: 0 16px;
+                padding: 0 18px;
+            }
+
+            .topbar-user-detail .topbar-user-email {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .topbar-left p {
+                display: none;
             }
 
             .topbar-user-detail {
                 display: none;
             }
 
+            .topbar-left h1 {
+                font-size: 17px;
+            }
+
             .page-content {
-                padding: 16px 16px 60px;
+                padding: 14px 12px 60px;
             }
 
             .welcome-card {
@@ -1123,6 +1137,61 @@
             .filter-actions .btn-filter,
             .filter-actions .btn-reset {
                 flex: 1;
+                justify-content: center;
+            }
+
+            .section-header {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 10px;
+            }
+
+            .per-page-form {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .pagination-container {
+                flex-direction: column;
+                align-items: stretch;
+                text-align: center;
+                gap: 10px;
+            }
+
+            .pagination-simple {
+                justify-content: center;
+                width: 100%;
+            }
+
+            .pagination-simple .btn-page {
+                flex: 1;
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .topbar {
+                padding: 0 12px;
+            }
+
+            .topbar-left h1 {
+                font-size: 16px;
+            }
+
+            .page-header h2 {
+                font-size: 19px;
+            }
+
+            .stock-hero-box {
+                padding: 10px 12px;
+            }
+
+            .stock-hero-number {
+                font-size: 20px;
+            }
+
+            .welcome-card {
+                padding: 16px 14px;
             }
         }
     </style>

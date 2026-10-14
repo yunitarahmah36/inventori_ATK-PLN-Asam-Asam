@@ -1209,199 +1209,166 @@
     }
 }
 
-        /* =========================================================
-           RESPONSIVE 768px
-        ========================================================= */
-
-        @media (max-width: 768px) {
-
-            .main {
-
-                margin-left: 0;
-            }
-
-            .btn-hamburger {
-
-                display: flex;
-
-                align-items: center;
-
-                justify-content: center;
-            }
-
-            .topbar {
-                padding: 0 16px;
-            }
-
-            .topbar-left h1 {
-                font-size: 17px;
-            }
-
-            .page-content {
-
-                padding:
-                    16px 16px 40px;
-            }
-
-            .topbar-user-detail {
-
-                display: none;
-            }
-
-            .page-header h2 {
-
-                font-size: 21px;
-            }
-
-            .filter-form {
-
-                grid-template-columns: 1fr;
-            }
-
-            .filter-actions {
-
-                grid-column: auto;
-
-                width: 100%;
-
-                justify-content: stretch;
-            }
-
-            .filter-actions .btn-filter,
-            .filter-actions .btn-reset {
-
-                flex: 1;
-            }
-
-
-            /* TABLE HEADER MOBILE */
-
-            .table-card-header {
-
-                padding: 16px;
-
-                flex-direction: column;
-
-                align-items: stretch;
-
-                gap: 14px;
-            }
-
-            .table-card-title h2 {
-
-                font-size: 18px;
-            }
-
-            .table-card-title p {
-
-                font-size: 11px;
-            }
-
-            .table-card-actions {
-
-                width: 100%;
-
-                justify-content: space-between;
-
-                gap: 10px;
-            }
-
-            .per-page-form {
-
-                flex: 1;
-            }
-
-            .per-page-form select {
-
-                width: 70px;
-            }
-
-            .btn-export-pdf {
-
-                flex-shrink: 0;
-            }
-
-
-            /* FOOTER */
-
-            .table-footer {
-
-                flex-direction: column;
-
-                align-items: stretch;
-            }
-
-            .table-footer-left {
-
-                justify-content: space-between;
-            }
-
-            .simple-pagination {
-
-                width: 100%;
-
-                justify-content: space-between;
-            }
-
-            .pagination-btn {
-
-                flex: 1;
-            }
-
-        }
-
-
-        /* =========================================================
-           RESPONSIVE 480px
-        ========================================================= */
-
-        @media (max-width: 480px) {
-
-            .page-header h2 {
-
-                font-size: 19px;
-            }
-
-            .page-header p {
-
-                font-size: 11px;
-            }
-
-            .filter-card {
-
-                padding: 14px;
-            }
-
-            .table-card-actions {
-
-                align-items: stretch;
-            }
-
-            .per-page-form {
-
-                justify-content: flex-start;
-            }
-
-            .btn-export-pdf {
-
-                padding: 0 12px;
-            }
-
-            .btn-export-pdf {
-
-                font-size: 11px;
-            }
-
-            .table-footer-left {
-
-                flex-direction: column;
-
-                align-items: flex-start;
-
-                gap: 10px;
-            }
-
-        }
+@media (max-width: 992px) {
+    .main {
+        margin-left: 0;
+    }
+
+    .btn-hamburger {
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .topbar {
+        padding: 0 18px;
+    }
+
+    .topbar-user-detail .topbar-user-email {
+        display: none;
+    }
+
+    .page-content {
+        padding: 18px 16px 40px;
+    }
+}
+
+@media (max-width: 768px) {
+    .topbar-left p {
+        display: none;
+    }
+
+    .topbar-user-detail {
+        display: none;
+    }
+
+    .topbar-left h1 {
+        font-size: 16px;
+    }
+
+    .page-content {
+        padding: 14px 12px 40px;
+    }
+
+    .page-header h2 {
+        font-size: 20px;
+    }
+
+    .filter-form {
+        grid-template-columns: 1fr;
+    }
+
+    .filter-actions {
+        grid-column: auto;
+        width: 100%;
+        display: flex;
+        gap: 8px;
+    }
+
+    .filter-actions .btn-filter,
+    .filter-actions .btn-reset {
+        flex: 1;
+        justify-content: center;
+    }
+
+    /* TABLE HEADER MOBILE */
+    .table-card-header {
+        padding: 14px;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+    }
+
+    .table-card-title h2 {
+        font-size: 17px;
+    }
+
+    .table-card-title p {
+        font-size: 11px;
+    }
+
+    .table-card-actions {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .per-page-form {
+        flex: 1;
+    }
+
+    .per-page-form select {
+        width: 70px;
+    }
+
+    .btn-export-pdf {
+        flex-shrink: 0;
+    }
+
+    /* FOOTER */
+    .table-footer {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+    }
+
+    .table-footer-left {
+        justify-content: space-between;
+    }
+
+    .simple-pagination {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .pagination-btn {
+        flex: 1;
+    }
+}
+
+@media (max-width: 480px) {
+    .topbar {
+        padding: 0 12px;
+    }
+
+    .page-header h2 {
+        font-size: 18px;
+    }
+
+    .page-header p {
+        font-size: 11px;
+    }
+
+    .filter-card {
+        padding: 14px;
+    }
+
+    .table-card-actions {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+    }
+
+    .per-page-form {
+        justify-content: space-between;
+        width: 100%;
+    }
+
+    .btn-export-pdf {
+        width: 100%;
+        justify-content: center;
+        font-size: 12px;
+    }
+
+    .table-footer-left {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+}
     </style>
 
 </head>
