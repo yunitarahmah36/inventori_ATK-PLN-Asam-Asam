@@ -412,7 +412,7 @@
                     </div>
 
                     <div class="subtitle">
-                        Sistem Informasi Inventori Material PT PLN Indonesia Power UBP Asam Asam
+                        Sistem Informasi Persediaan ATK PT PLN Indonesia Power UBP Asam Asam
                     </div>
 
                 </td>
@@ -434,6 +434,126 @@
     {{-- =========================
          SUMMARY
     ========================= --}}
+
+    @php
+        $appliedFilters = [];
+
+        // 1. Filter Tanggal (hanya jika memang diisi di filter/request)
+        $hasStart = request()->filled('start_date');
+        $hasEnd = request()->filled('end_date');
+
+        if ($hasStart && $hasEnd) {
+            $startDateObj = \Carbon\Carbon::parse(request('start_date'))->locale('id');
+            $endDateObj = \Carbon\Carbon::parse(request('end_date'))->locale('id');
+            if ($startDateObj->gt($endDateObj)) {
+                [$startDateObj, $endDateObj] = [$endDateObj, $startDateObj];
+            }
+
+            if ($startDateObj->isSameDay($endDateObj)) {
+                $dateFormatted = $startDateObj->translatedFormat('j F Y');
+            } elseif ($startDateObj->isSameMonth($endDateObj) && $startDateObj->isSameYear($endDateObj)) {
+                $dateFormatted = $startDateObj->translatedFormat('j') . '–' . $endDateObj->translatedFormat('j F Y');
+            } elseif ($startDateObj->isSameYear($endDateObj)) {
+                $dateFormatted = $startDateObj->translatedFormat('j F') . ' – ' . $endDateObj->translatedFormat('j F Y');
+            } else {
+                $dateFormatted = $startDateObj->translatedFormat('j F Y') . ' – ' . $endDateObj->translatedFormat('j F Y');
+            }
+
+            $appliedFilters['date'] = [
+                'type' => 'date',
+                'label' => 'Periode',
+                'value' => $dateFormatted,
+            ];
+        } elseif ($hasStart) {
+            $startDateObj = \Carbon\Carbon::parse(request('start_date'))->locale('id');
+            $appliedFilters['date'] = [
+                'type' => 'date',
+                'label' => 'Periode',
+                'value' => 'Mulai ' . $startDateObj->translatedFormat('j F Y'),
+            ];
+        } elseif ($hasEnd) {
+            $endDateObj = \Carbon\Carbon::parse(request('end_date'))->locale('id');
+            $appliedFilters['date'] = [
+                'type' => 'date',
+                'label' => 'Periode',
+                'value' => 'Sampai ' . $endDateObj->translatedFormat('j F Y'),
+            ];
+        }
+
+        // 2. Filter Jenis Transaksi / Aktivitas
+        if (request()->filled('activity')) {
+            $appliedFilters['activity'] = [
+                'type' => 'activity',
+                'label' => 'Transaksi',
+                'value' => request('activity'),
+            ];
+        }
+
+        // 3. Filter Nama Material
+        $filterMaterialName = null;
+        if (request()->filled('material_name')) {
+            $filterMaterialName = request('material_name');
+        } elseif (request()->filled('material_id')) {
+            $mat = \App\Models\Material::find(request('material_id'));
+            $filterMaterialName = $mat ? $mat->name : 'ID #' . request('material_id');
+        } elseif (request()->filled('material')) {
+            $matParam = request('material');
+            $mat = is_numeric($matParam) ? \App\Models\Material::find($matParam) : null;
+            $filterMaterialName = $mat ? $mat->name : $matParam;
+        }
+
+        // Cek jika parameter search persis cocok dengan nomor material atau nama material
+        if (!$filterMaterialName && request()->filled('search')) {
+            $searchVal = trim(request('search'));
+            $matchedMaterial = \App\Models\Material::where('material_number', $searchVal)
+                ->orWhere('name', $searchVal)
+                ->first();
+            if ($matchedMaterial) {
+                $filterMaterialName = $matchedMaterial->name;
+            }
+        }
+
+        if ($filterMaterialName) {
+            $appliedFilters['material'] = [
+                'type' => 'material',
+                'label' => 'Material',
+                'value' => $filterMaterialName,
+            ];
+        }
+
+        // 4. Filter Pencarian Bebas (jika belum dipakai sebagai filter material persis)
+        if (request()->filled('search') && !$filterMaterialName) {
+            $appliedFilters['search'] = [
+                'type' => 'search',
+                'label' => 'Pencarian',
+                'value' => '"' . request('search') . '"',
+            ];
+        }
+
+        // Menentukan label kartu header & representasi tampilannya
+        $filterCount = count($appliedFilters);
+
+        if ($filterCount === 0) {
+            $cardHeaderLabel = 'FILTER LAPORAN';
+            $isSingleFilter = true;
+            $singleFilterValue = 'Semua Data';
+        } elseif ($filterCount === 1) {
+            $firstFilter = reset($appliedFilters);
+            $cardHeaderLabel = match ($firstFilter['type']) {
+                'date' => 'PERIODE LAPORAN',
+                'activity' => 'JENIS TRANSAKSI',
+                'material' => 'FILTER MATERIAL',
+                'search' => 'FILTER PENCARIAN',
+                default => 'FILTER LAPORAN',
+            };
+            $isSingleFilter = true;
+            $singleFilterValue = $firstFilter['value'];
+        } else {
+            $cardHeaderLabel = 'FILTER LAPORAN';
+            $isSingleFilter = false;
+            $singleFilterValue = null;
+        }
+    @endphp
 
     <div class="summary">
 
@@ -487,11 +607,22 @@
                     <div class="summary-box">
 
                         <div class="summary-label">
-                            SISTEM
+                            {{ $cardHeaderLabel }}
                         </div>
 
                         <div class="summary-date">
-                            Inventori Material PLN
+                            @if ($isSingleFilter)
+                                <span style="font-weight: bold; color: #3D2227; font-size: 8.5px;">
+                                    {{ $singleFilterValue }}
+                                </span>
+                            @else
+                                @foreach ($appliedFilters as $filterItem)
+                                    <div style="line-height: 1.35; margin-bottom: 2px;">
+                                        <span style="color: #7E5B62;">{{ $filterItem['label'] }}:</span>
+                                        <strong style="color: #3D2227;">{{ $filterItem['value'] }}</strong>
+                                    </div>
+                                @endforeach
+                            @endif
                         </div>
 
                     </div>
@@ -817,7 +948,7 @@
 
                 <td>
                     Dokumen dibuat secara otomatis oleh
-                    Sistem Informasi Inventori Material PT PLN Indonesia Power UBP Asam Asam.
+                    Sistem Informasi Persediaan ATK PT PLN Indonesia Power UBP Asam Asam.
                 </td>
 
                 <td class="footer-right">

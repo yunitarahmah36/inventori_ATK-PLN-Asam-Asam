@@ -94,6 +94,33 @@ class StockMovementController extends Controller
         }
 
         // ==============================
+        // FILTER MATERIAL
+        // ==============================
+
+        if ($request->filled('material_id')) {
+            $query->where('material_id', $request->material_id);
+        } elseif ($request->filled('material_name')) {
+            $matName = $request->material_name;
+            $query->where(function ($q) use ($matName) {
+                $q->where('material_name', 'like', '%' . $matName . '%')
+                  ->orWhereHas('material', function ($mq) use ($matName) {
+                      $mq->where('name', 'like', '%' . $matName . '%');
+                  });
+            });
+        } elseif ($request->filled('material')) {
+            $mat = $request->material;
+            $query->where(function ($q) use ($mat) {
+                $q->where('material_id', $mat)
+                  ->orWhere('material_name', 'like', '%' . $mat . '%')
+                  ->orWhere('material_number', 'like', '%' . $mat . '%')
+                  ->orWhereHas('material', function ($mq) use ($mat) {
+                      $mq->where('name', 'like', '%' . $mat . '%')
+                         ->orWhere('material_number', 'like', '%' . $mat . '%');
+                  });
+            });
+        }
+
+        // ==============================
         // FILTER TANGGAL MULAI
         // ==============================
 
@@ -251,6 +278,33 @@ class StockMovementController extends Controller
                 'activity',
                 $request->activity
             );
+        }
+
+        // ==============================
+        // FILTER MATERIAL
+        // ==============================
+
+        if ($request->filled('material_id')) {
+            $query->where('material_id', $request->material_id);
+        } elseif ($request->filled('material_name')) {
+            $matName = $request->material_name;
+            $query->where(function ($q) use ($matName) {
+                $q->where('material_name', 'like', '%' . $matName . '%')
+                  ->orWhereHas('material', function ($mq) use ($matName) {
+                      $mq->where('name', 'like', '%' . $matName . '%');
+                  });
+            });
+        } elseif ($request->filled('material')) {
+            $mat = $request->material;
+            $query->where(function ($q) use ($mat) {
+                $q->where('material_id', $mat)
+                  ->orWhere('material_name', 'like', '%' . $mat . '%')
+                  ->orWhere('material_number', 'like', '%' . $mat . '%')
+                  ->orWhereHas('material', function ($mq) use ($mat) {
+                      $mq->where('name', 'like', '%' . $mat . '%')
+                         ->orWhere('material_number', 'like', '%' . $mat . '%');
+                  });
+            });
         }
 
         // ==============================
