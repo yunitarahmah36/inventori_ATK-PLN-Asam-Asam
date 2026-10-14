@@ -1499,15 +1499,7 @@
                     </div>
                 </div>
 
-                <div class="callout-info">
-                    <strong>Ketentuan Import Stok Masuk:</strong>
-                    <ul>
-                        <li>Setiap baris divalidasi berdasarkan <strong>No. Material dan Nama Material sekaligus</strong>.</li>
-                        <li>Keduanya <strong>wajib cocok</strong> dengan satu data material yang sama di master Data Material.</li>
-                        <li>Mendukung baris material yang <strong>bercampur dan berulang</strong>.</li>
-                        <li>Sistem memvalidasi seluruh baris sebelum menyimpan. Jika ada kesalahan, proses dibatalkan tanpa mengubah stok.</li>
-                    </ul>
-                </div>
+                
 
                 <!-- ALERT VALIDASI JIKA FILE BELUM DIPILIH -->
                 <div id="importFileAlert" class="alert alert-error" style="display:none;margin-bottom:16px;padding:12px 14px;border-radius:10px;">

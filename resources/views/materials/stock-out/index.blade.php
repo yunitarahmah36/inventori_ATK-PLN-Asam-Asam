@@ -1824,15 +1824,7 @@
                     </div>
                 </div>
 
-                <div class="callout-info">
-                    <strong>Ketentuan Import Stok Keluar:</strong>
-                    <ul>
-                        <li>Kolom file Excel harus memuat: <strong>Tanggal, No. Material, Nama Pengambil, Bagian/Divisi, Jumlah Keluar</strong>, dan <strong>Keterangan</strong> (opsional).</li>
-                        <li><strong>No. Material</strong> harus sudah terdaftar di master data. Sistem tidak akan membuat data material baru.</li>
-                        <li><strong>Jumlah Keluar</strong> harus bilangan bulat positif dan tidak boleh melebihi stok yang tersedia.</li>
-                        <li>Sistem akan menampilkan <strong>pratinjau data valid dan data bermasalah</strong> sebelum transaksi disimpan.</li>
-                    </ul>
-                </div>
+            
 
                 <!-- ALERT VALIDASI JIKA FILE BELUM DIPILIH -->
                 <div id="importFileAlert" class="alert alert-error" style="display:none;margin-bottom:16px;padding:12px 14px;border-radius:10px;">
