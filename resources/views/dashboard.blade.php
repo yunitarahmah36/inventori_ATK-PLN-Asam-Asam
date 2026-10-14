@@ -233,21 +233,21 @@
            PAGE CONTENT
         ============================================================ */
         .page-content {
-    flex: 1;
-    width: 100%;
-    max-width: none;
-    padding: 24px 28px 100px;
-    box-sizing: border-box;
-}
+            flex: 1;
+            width: 100%;
+            max-width: none;
+            padding: 24px 28px 100px;
+            box-sizing: border-box;
+        }
 
-.welcome-card,
-.quick-actions,
-.stock-alert-banner,
-.stats-grid,
-.sections-row {
-    width: 100%;
-    max-width: none;
-}
+        .welcome-card,
+        .quick-actions,
+        .stock-alert-banner,
+        .stats-grid,
+        .sections-row {
+            width: 100%;
+            max-width: none;
+        }
 
 
         /* ============================================================
@@ -1333,7 +1333,7 @@
                     </button>
                     <div class="topbar-left">
                         <h1>Dashboard</h1>
-                        <p>Sistem Informasi Inventori Material PT PLN Indonesia Power UBP Asam Asam</p>
+                        <p>Sistem Informasi Persediaan ATK PT PLN Indonesia Power UBP Asam Asam</p>
                     </div>
                 </div>
 
@@ -1391,7 +1391,8 @@
 
                         <h2>Selamat Datang Kembali, {{ Auth::user()->name }}</h2>
 
-                        <p>Sistem Informasi Inventori Material PT PLN Indonesia Power UBP Asam Asam</p>
+                        <p>Sistem Informasi Persediaan ATK Mendukung Pengelolaan Stok dan Pencatatan Material PT
+                            PLN Indonesia Power UBP Asam Asam</p>
 
                     </div>
 
@@ -1446,11 +1447,14 @@
                                     Peringatan: Terdapat {{ $lowStockCount }} Jenis Material dengan Stok Menipis!
                                 </div>
                                 <div class="stock-alert-desc">
-                                    Material yang sudah lama masuk dan persediaannya menipis (≤ 15 unit) otomatis diprioritaskan di posisi teratas daftar material agar segera dilakukan restock / pengadaan.
+                                    Material yang sudah lama masuk dan persediaannya menipis (≤ 15 unit) otomatis
+                                    diprioritaskan di posisi teratas daftar material agar segera dilakukan restock /
+                                    pengadaan.
                                 </div>
                             </div>
                         </div>
-                        <a href="{{ route('material-analysis.index', ['status' => 'low']) }}" class="stock-alert-btn" data-spa-link>
+                        <a href="{{ route('material-analysis.index', ['status' => 'low']) }}" class="stock-alert-btn"
+                            data-spa-link>
                             Lihat Stok Menipis
                             <span class="material-symbols-outlined">arrow_forward</span>
                         </a>
@@ -1540,7 +1544,9 @@
                                 <span class="material-symbols-outlined">assignment_turned_in</span>
                                 Daftar Material
                                 @if ($lowStockCount > 0)
-                                    <a href="{{ route('material-analysis.index', ['status' => 'low']) }}" class="badge-header-warning" title="Lihat semua material dengan stok menipis" data-spa-link>
+                                    <a href="{{ route('material-analysis.index', ['status' => 'low']) }}"
+                                        class="badge-header-warning" title="Lihat semua material dengan stok menipis"
+                                        data-spa-link>
                                         <span class="material-symbols-outlined" style="font-size:13px;">warning</span>
                                         {{ $lowStockCount }} Menipis
                                     </a>
@@ -1560,30 +1566,36 @@
                                         $isCritical = $mat->quantity <= 5;
                                         $isLow = $mat->quantity <= $minStock;
                                     @endphp
-                                    <div class="material-item {{ $isCritical ? 'is-critical-stock' : ($isLow ? 'is-low-stock' : '') }}">
+                                    <div
+                                        class="material-item {{ $isCritical ? 'is-critical-stock' : ($isLow ? 'is-low-stock' : '') }}">
                                         <div class="material-item-left">
                                             <div class="material-item-top">
                                                 <span class="material-badge-no {{ $isLow ? 'low-stock' : '' }}">
                                                     {{ $mat->material_number }}
                                                 </span>
-                                                <span class="material-name" title="{{ $mat->name }}">{{ $mat->name }}</span>
+                                                <span class="material-name"
+                                                    title="{{ $mat->name }}">{{ $mat->name }}</span>
                                             </div>
                                             @if ($isLow)
                                                 <div class="material-low-label {{ $isCritical ? 'critical' : '' }}">
-                                                    <span class="material-symbols-outlined">{{ $isCritical ? 'error' : 'warning' }}</span>
+                                                    <span
+                                                        class="material-symbols-outlined">{{ $isCritical ? 'error' : 'warning' }}</span>
                                                     <span>{{ $isCritical ? 'Stok Kritis' : 'Stok Menipis' }}</span>
                                                     <span class="material-date-ago">
-                                                        • Masuk: {{ $mat->entry_date ? $mat->entry_date->translatedFormat('j M Y') : '-' }}
+                                                        • Masuk:
+                                                        {{ $mat->entry_date ? $mat->entry_date->translatedFormat('j M Y') : '-' }}
                                                     </span>
                                                 </div>
                                             @else
                                                 <div class="material-date">
-                                                    Masuk: {{ $mat->entry_date ? $mat->entry_date->translatedFormat('j M Y') : '-' }}
+                                                    Masuk:
+                                                    {{ $mat->entry_date ? $mat->entry_date->translatedFormat('j M Y') : '-' }}
                                                 </div>
                                             @endif
                                         </div>
                                         <div class="material-item-right">
-                                            <div class="material-qty {{ $isLow ? 'low' : '' }}" style="{{ $isCritical ? 'color:#B91C1C;' : '' }}">
+                                            <div class="material-qty {{ $isLow ? 'low' : '' }}"
+                                                style="{{ $isCritical ? 'color:#B91C1C;' : '' }}">
                                                 {{ number_format($mat->quantity, 0, ',', '.') }} {{ $mat->unit }}
                                             </div>
                                             @if ($isCritical)
@@ -1611,7 +1623,8 @@
                                 <span class="material-symbols-outlined">schedule</span>
                                 Aktivitas Terbaru
                             </div>
-                            <a href="{{ route('stock-movements.index') }}" class="btn-lihat-semua" title="Buka Riwayat Stok Lengkap">
+                            <a href="{{ route('stock-movements.index') }}" class="btn-lihat-semua"
+                                title="Buka Riwayat Stok Lengkap">
                                 Lihat Semua
                                 <span class="material-symbols-outlined">arrow_forward</span>
                             </a>
@@ -1627,57 +1640,62 @@
 
                                         // Klasifikasi CRUD: Daftar Material, Stok Masuk, dan Stok Keluar
                                         if ($actType === 'keluar' || ($change < 0 && $actType !== 'hapus')) {
-                                            $badgeText  = 'Stok Keluar';
+                                            $badgeText = 'Stok Keluar';
                                             $badgeClass = 'badge-keluar';
-                                            $dotClass   = 'dot-keluar';
-                                            $verb       = 'mencatat stok keluar';
-                                            $qtyBadge   = number_format($change, 0, ',', '.') . ($unit ? " {$unit}" : '');
-                                            $qtyClass   = 'activity-qty-neg';
+                                            $dotClass = 'dot-keluar';
+                                            $verb = 'mencatat stok keluar';
+                                            $qtyBadge = number_format($change, 0, ',', '.') . ($unit ? " {$unit}" : '');
+                                            $qtyClass = 'activity-qty-neg';
                                         } elseif (($actType === 'tambah' || $actType === 'masuk') && $change > 0) {
-                                            $badgeText  = 'Stok Masuk';
+                                            $badgeText = 'Stok Masuk';
                                             $badgeClass = 'badge-masuk';
-                                            $dotClass   = 'dot-masuk';
-                                            $verb       = 'menambahkan stok masuk untuk';
-                                            $qtyBadge   = '+' . number_format($change, 0, ',', '.') . ($unit ? " {$unit}" : '');
-                                            $qtyClass   = 'activity-qty-pos';
+                                            $dotClass = 'dot-masuk';
+                                            $verb = 'menambahkan stok masuk untuk';
+                                            $qtyBadge =
+                                                '+' . number_format($change, 0, ',', '.') . ($unit ? " {$unit}" : '');
+                                            $qtyClass = 'activity-qty-pos';
                                         } elseif ($actType === 'tambah') {
-                                            $badgeText  = 'Tambah Material';
+                                            $badgeText = 'Tambah Material';
                                             $badgeClass = 'badge-tambah';
-                                            $dotClass   = 'dot-tambah';
-                                            $verb       = 'mendaftarkan material baru';
-                                            $qtyBadge   = null;
-                                            $qtyClass   = '';
+                                            $dotClass = 'dot-tambah';
+                                            $verb = 'mendaftarkan material baru';
+                                            $qtyBadge = null;
+                                            $qtyClass = '';
                                         } elseif ($actType === 'edit') {
-                                            $badgeText  = 'Edit Material';
+                                            $badgeText = 'Edit Material';
                                             $badgeClass = 'badge-edit';
-                                            $dotClass   = 'dot-edit';
-                                            $verb       = 'memperbarui data master';
-                                            $qtyBadge   = null;
-                                            $qtyClass   = '';
+                                            $dotClass = 'dot-edit';
+                                            $verb = 'memperbarui data master';
+                                            $qtyBadge = null;
+                                            $qtyClass = '';
                                         } elseif ($actType === 'hapus') {
-                                            $badgeText  = 'Hapus Material';
+                                            $badgeText = 'Hapus Material';
                                             $badgeClass = 'badge-hapus';
-                                            $dotClass   = 'dot-hapus';
-                                            $verb       = 'menghapus material';
-                                            $qtyBadge   = null;
-                                            $qtyClass   = '';
+                                            $dotClass = 'dot-hapus';
+                                            $verb = 'menghapus material';
+                                            $qtyBadge = null;
+                                            $qtyClass = '';
                                         } elseif ($actType === 'import') {
-                                            $badgeText  = 'Import Material';
+                                            $badgeText = 'Import Material';
                                             $badgeClass = 'badge-import';
-                                            $dotClass   = 'dot-import';
-                                            $verb       = 'mengimpor master data';
-                                            $qtyBadge   = null;
-                                            $qtyClass   = '';
+                                            $dotClass = 'dot-import';
+                                            $verb = 'mengimpor master data';
+                                            $qtyBadge = null;
+                                            $qtyClass = '';
                                         } else {
-                                            $badgeText  = ucfirst($act->activity ?: 'Aktivitas');
+                                            $badgeText = ucfirst($act->activity ?: 'Aktivitas');
                                             $badgeClass = 'badge-other';
-                                            $dotClass   = 'dot-default';
-                                            $verb       = 'memperbarui';
-                                            $qtyBadge   = $change != 0 ? ($change > 0 ? "+{$change}" : "{$change}") . ($unit ? " {$unit}" : '') : null;
-                                            $qtyClass   = $change > 0 ? 'activity-qty-pos' : 'activity-qty-neg';
+                                            $dotClass = 'dot-default';
+                                            $verb = 'memperbarui';
+                                            $qtyBadge =
+                                                $change != 0
+                                                    ? ($change > 0 ? "+{$change}" : "{$change}") .
+                                                        ($unit ? " {$unit}" : '')
+                                                    : null;
+                                            $qtyClass = $change > 0 ? 'activity-qty-pos' : 'activity-qty-neg';
                                         }
 
-                                        $displayDate = $act->created_at ?? $act->updated_at ?? now();
+                                        $displayDate = $act->created_at ?? ($act->updated_at ?? now());
                                         $matName = $act->material->name ?? ($act->material_name ?? 'Material');
                                     @endphp
                                     <div class="activity-item">
@@ -1687,17 +1705,20 @@
                                         <div class="activity-row">
                                             <div style="min-width:0;flex:1;">
                                                 <div class="activity-desc">
-                                                    <strong>{{ !empty($act->recipient) ? $act->recipient : ($act->user->name ?? 'Pengguna') }}</strong>
+                                                    <strong>{{ !empty($act->recipient) ? $act->recipient : $act->user->name ?? 'Pengguna' }}</strong>
                                                     {{ $verb }}
-                                                    <strong style="color:var(--text-dark);">{{ $matName }}</strong>
+                                                    <strong
+                                                        style="color:var(--text-dark);">{{ $matName }}</strong>
                                                     @if ($qtyBadge)
-                                                        <span class="activity-qty-badge {{ $qtyClass }}">{{ $qtyBadge }}</span>
+                                                        <span
+                                                            class="activity-qty-badge {{ $qtyClass }}">{{ $qtyBadge }}</span>
                                                     @endif
                                                 </div>
 
-                                                @if (!empty($act->recipient) && !empty($act->user) && ($act->recipient !== $act->user->name))
+                                                @if (!empty($act->recipient) && !empty($act->user) && $act->recipient !== $act->user->name)
                                                     <div class="activity-meta-pill" title="Petugas Sistem">
-                                                        <span class="material-symbols-outlined" style="font-size:12px;">admin_panel_settings</span>
+                                                        <span class="material-symbols-outlined"
+                                                            style="font-size:12px;">admin_panel_settings</span>
                                                         Petugas: {{ $act->user->name }}
                                                     </div>
                                                 @endif
@@ -1709,13 +1730,17 @@
                                                 @endif
 
                                                 <div class="activity-time">
-                                                    <span class="material-symbols-outlined" style="font-size:13px;vertical-align:middle;">schedule</span>
+                                                    <span class="material-symbols-outlined"
+                                                        style="font-size:13px;vertical-align:middle;">schedule</span>
                                                     {{ $displayDate->diffForHumans() }}
-                                                    <span style="opacity:0.75;">• {{ $displayDate->format('d/m/Y H:i') }} WITA</span>
+                                                    <span style="opacity:0.75;">•
+                                                        {{ $displayDate->format('d/m/Y H:i') }} WITA</span>
                                                 </div>
                                             </div>
-                                            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0;">
-                                                <span class="activity-badge {{ $badgeClass }}">{{ $badgeText }}</span>
+                                            <div
+                                                style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0;">
+                                                <span
+                                                    class="activity-badge {{ $badgeClass }}">{{ $badgeText }}</span>
                                             </div>
                                         </div>
                                     </div>
