@@ -10,28 +10,40 @@ class UserSeeder extends Seeder
 {
     public function run(): void
     {
-        User::create([
-            'name' => 'Admin',
-            'username' => 'Admin',
-            'email' => 'admin@pln.com',
-            'password' => Hash::make('admin123'),
-            'role' => 'Admin',
-        ]);
+        $users = [
+            [
+                'name' => 'Admin',
+                'username' => 'Admin',
+                'email' => 'admin.inventoripln@gmail.com',
+                'password' => 'admin#31095',
+                'role' => 'Admin',
+            ],
+            [
+                'name' => 'Keuangan',
+                'username' => 'Keuangan',
+                'email' => 'finance.inventori@gmail.com',
+                'password' => 'keuangan#31095',
+                'role' => 'Keuangan',
+            ],
+            [
+                'name' => 'Umum',
+                'username' => 'Umum',
+                'email' => 'general.inventoripln@gmail.com',
+                'password' => 'general#31095',
+                'role' => 'Umum',
+            ],
+        ];
 
-        User::create([
-            'name' => 'Keuangan',
-            'username' => 'Keuangan',
-            'email' => 'keuangan@pln.com',
-            'password' => Hash::make('keuangan123'),
-            'role' => 'Keuangan',
-        ]);
-
-        User::create([
-            'name' => 'Umum',
-            'username' => 'Umum',
-            'email' => 'umum@pln.com',
-            'password' => Hash::make('umum123'),
-            'role' => 'Umum',
-        ]);
+        foreach ($users as $user) {
+            User::updateOrCreate(
+                ['username' => $user['username']],
+                [
+                    'name' => $user['name'],
+                    'email' => $user['email'],
+                    'password' => Hash::make($user['password']),
+                    'role' => $user['role'],
+                ]
+            );
+        }
     }
 }
