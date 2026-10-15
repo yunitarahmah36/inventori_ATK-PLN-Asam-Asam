@@ -115,4 +115,18 @@ return [
         'name' => env('MAIL_FROM_NAME', env('APP_NAME', 'Laravel')),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Penerima Otomatis Bukti Resi Pengambilan Barang
+    |--------------------------------------------------------------------------
+    |
+    | Alamat email admin yang menerima notifikasi bukti resi pengambilan barang.
+    |
+    */
+
+    'recipients_pengambilan' => array_values(array_filter(array_map('trim', explode(',', env(
+        'MAIL_RECEIPT_RECIPIENTS',
+        'finance.inventori@gmail.com,admin.inventoripln@gmail.com,general.inventoripln@gmail.com'
+    ))))),
+
 ];

@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\PengambilanBarangReceiptMail;
 use App\Models\Material;
 use App\Models\StockMovement;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\ValidationException;
 
 class LandingController extends Controller
@@ -160,21 +163,65 @@ class LandingController extends Controller
                     'unit'            => count($processedItems) === 1 ? $firstItem['unit'] : 'Item',
                     'qty_out'         => count($processedItems) === 1 ? $firstItem['qty_out'] : array_sum(array_column($processedItems, 'qty_out')),
                     'remaining_stock' => count($processedItems) === 1 ? $firstItem['remaining_stock'] : '-',
+                    'nama_pengambil'  => trim($validated['nama_pengambil']),
+                    'divisi'          => trim($validated['divisi']),
                     'recipient'       => $recipientFormatted,
+                    'description'     => trim($validated['description'] ?? ''),
                     'date'            => now()->translatedFormat('d F Y, H:i') . ' WITA',
                     'items'           => $processedItems,
                 ];
             });
+
+            // =========================================================================
+            // PENGIRIMAN OTOMATIS BUKTI RESI MELALUI EMAIL KE 3 ALAMAT ADMIN:
+            // 1. Admin Keuangan : finance.inventori@gmail.com
+            // 2. Admin Inventori: admin.inventoripln@gmail.com
+            // 3. General        : general.inventoripln@gmail.com
+            // Dilakukan setelah database commit & stok berhasil diperbarui.
+            // =========================================================================
+            $recipients = config('mail.recipients_pengambilan');
+            if (empty($recipients)) {
+                $recipients = [
+                    'finance.inventori@gmail.com',
+                    'admin.inventoripln@gmail.com',
+                    'general.inventoripln@gmail.com',
+                ];
+            }
+
+            $emailErrors = [];
+            $sentRecipients = [];
+
+            foreach ($recipients as $recipientEmail) {
+                try {
+                    Mail::to($recipientEmail)->send(new PengambilanBarangReceiptMail($result));
+                    $sentRecipients[] = $recipientEmail;
+                } catch (\Throwable $mailEx) {
+                    Log::error("Gagal mengirim email resi pengambilan barang ke [{$recipientEmail}]: " . $mailEx->getMessage(), [
+                        'recipient' => $recipientEmail,
+                        'receipt'   => $result,
+                        'exception' => $mailEx,
+                    ]);
+                    $emailErrors[] = $recipientEmail;
+                }
+            }
 
             $itemsCount = count($result['items']);
             $successMsg = $itemsCount === 1
                 ? "Pengambilan barang \"{$result['items'][0]['material_name']}\" sebanyak {$result['items'][0]['qty_out']} {$result['items'][0]['unit']} berhasil disimpan!"
                 : "Pengambilan {$itemsCount} jenis barang berhasil disimpan!";
 
-            return redirect()
+            $redirect = redirect()
                 ->to(route('landing') . '#form-pengambilan')
                 ->with('success_pengambilan', $successMsg)
                 ->with('receipt_data', $result);
+
+            if (!empty($emailErrors)) {
+                $redirect->with('email_warning', 'Pengambilan barang berhasil dicatat & stok telah diperbarui. Namun terjadi kendala pada pengiriman email ke: ' . implode(', ', $emailErrors) . '. Detail error telah dicatat ke log sistem.');
+            } else {
+                $redirect->with('email_sent', 'Bukti resi telah dikirimkan secara otomatis ke alamat email: ' . implode(', ', $sentRecipients) . '.');
+            }
+
+            return $redirect;
 
         } catch (ValidationException $ve) {
             throw $ve;

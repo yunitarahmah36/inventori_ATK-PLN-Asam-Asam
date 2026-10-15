@@ -1449,74 +1449,116 @@
                             </div>
 
                             @if (session('receipt_data'))
-                                @php $receipt = session('receipt_data'); @endphp
+                                @php
+                                    $receipt = session('receipt_data');
+                                    $namaPengambil = $receipt['nama_pengambil'] ?? (str_contains($receipt['recipient'] ?? '', '(') ? trim(explode('(', $receipt['recipient'])[0]) : ($receipt['recipient'] ?? '-'));
+                                    $bagianPengambil = $receipt['divisi'] ?? ($receipt['bagian'] ?? (preg_match('/\((.*?)\)/', $receipt['recipient'] ?? '', $m) ? $m[1] : '-'));
+                                    $items = !empty($receipt['items']) && is_array($receipt['items']) ? $receipt['items'] : [];
+                                @endphp
+
+
+                                
+
+                                @if (session('email_warning'))
+                                    <div class="alert" style="background: #FFFBEB; border: 1px solid #FDE68A; color: #92400E; display: flex; align-items: flex-start; gap: 12px; padding: 14px 16px; border-radius: var(--radius-md); margin-bottom: 18px;">
+                                        <span class="material-symbols-outlined" style="font-size: 24px; color: #D97706; flex-shrink: 0;">mail_lock</span>
+                                        <div style="font-size: 13px; line-height: 1.5;">
+                                            <strong style="color: #78350F; font-size: 13.5px;">Catatan Pengiriman Email</strong>
+                                            <p style="margin: 2px 0 0 0; color: #92400E;">{{ session('email_warning') }}</p>
+                                        </div>
+                                    </div>
+                                @endif
+
                                 <div class="receipt-card">
                                     <div class="receipt-title">
-                                        <span class="material-symbols-outlined" style="font-size: 18px;">receipt_long</span>
-                                        BUKTI RESI PENGAMBILAN BARANG
+                                        <div style="display: flex; align-items: center; gap: 8px;">
+                                            <span class="material-symbols-outlined" style="font-size: 20px; color: var(--rosewood);">receipt_long</span>
+                                            <span>BUKTI RESI PENGAMBILAN BARANG</span>
+                                        </div>
+                                        <span style="font-size: 11px; font-weight: 600; color: var(--rosewood); background: #FFF0F3; border: 1px solid #F7C8D3; padding: 2px 8px; border-radius: var(--radius-pill);">
+                                            ASLI &bull; PLN IP UBP ASAM ASAM
+                                        </span>
                                     </div>
+
                                     <div class="receipt-grid">
                                         <div><span class="receipt-item-label">Waktu Pencatatan:</span></div>
                                         <div><span class="receipt-item-val">{{ $receipt['date'] }}</span></div>
 
                                         <div><span class="receipt-item-label">Nama Pengambil:</span></div>
-                                        <div><span class="receipt-item-val">{{ $receipt['recipient'] }}</span></div>
+                                        <div><span class="receipt-item-val">{{ $namaPengambil }}</span></div>
 
-                                        @if (!empty($receipt['items']) && is_array($receipt['items']))
-                                            <div style="grid-column: span 2; margin-top: 10px; border-top: 1px dashed var(--border-soft); padding-top: 10px;">
-                                                <span class="receipt-item-label" style="font-weight: 700; color: var(--rosewood-dark); display: block; margin-bottom: 8px;">
-                                                    Daftar Material yang Diambil ({{ count($receipt['items']) }} Item):
-                                                </span>
-                                                <div style="overflow-x: auto;">
-                                                    <table style="width: 100%; border-collapse: collapse; font-size: 12.5px;">
-                                                        <thead>
-                                                            <tr style="border-bottom: 1px solid var(--border-soft); color: var(--text-muted); text-align: left;">
-                                                                <th style="padding: 6px 4px;">Material</th>
-                                                                <th style="padding: 6px 4px; text-align: center;">Jumlah Diambil</th>
-                                                                <th style="padding: 6px 4px; text-align: right;">Sisa Stok Terkini</th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                            @foreach ($receipt['items'] as $item)
+                                        <div><span class="receipt-item-label">Bagian:</span></div>
+                                        <div><span class="receipt-item-val">{{ $bagianPengambil }}</span></div>
+
+                                        @if (!empty($receipt['description']))
+                                            <div><span class="receipt-item-label">Keperluan / Keterangan:</span></div>
+                                            <div><span class="receipt-item-val" style="font-weight: 500; color: var(--text-secondary);">{{ $receipt['description'] }}</span></div>
+                                        @endif
+
+                                        <div style="grid-column: span 2; margin-top: 10px; border-top: 1px dashed var(--border-soft); padding-top: 12px;">
+                                            <span class="receipt-item-label" style="font-weight: 700; color: var(--rosewood-dark); display: block; margin-bottom: 8px;">
+                                                Daftar Material yang Diambil ({{ count($items) > 0 ? count($items) : 1 }} Jenis Barang):
+                                            </span>
+                                            <div style="overflow-x: auto;">
+                                                <table style="width: 100%; border-collapse: collapse; font-size: 12.5px;">
+                                                    <thead>
+                                                        <tr style="border-bottom: 1px solid var(--border-soft); color: var(--text-muted); text-align: left; background-color: rgba(180, 106, 114, 0.04);">
+                                                            <th style="padding: 8px; border-radius: 4px 0 0 4px;">Kode / No. Material</th>
+                                                            <th style="padding: 8px;">Nama Material</th>
+                                                            <th style="padding: 8px; text-align: center;">Jumlah Pengambilan</th>
+                                                            <th style="padding: 8px; text-align: right; border-radius: 0 4px 4px 0;">Sisa Stok Terkini</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @if (count($items) > 0)
+                                                            @foreach ($items as $item)
                                                                 <tr style="border-bottom: 1px dashed var(--border-soft);">
-                                                                    <td style="padding: 8px 4px; font-weight: 600;">
+                                                                    <td style="padding: 10px 8px; font-family: monospace; font-weight: 600; color: var(--text-secondary);">
+                                                                        {{ !empty($item['material_number']) && $item['material_number'] !== '-' ? $item['material_number'] : '-' }}
+                                                                    </td>
+                                                                    <td style="padding: 10px 8px; font-weight: 600; color: var(--rosewood-dark);">
                                                                         {{ $item['material_name'] }}
-                                                                        @if (!empty($item['material_number']))
-                                                                            <span style="font-size: 11px; color: var(--text-muted); display: block;">No: {{ $item['material_number'] }}</span>
-                                                                        @endif
                                                                     </td>
-                                                                    <td style="padding: 8px 4px; text-align: center; font-weight: 700; color: #B46A72;">
-                                                                        {{ $item['qty_out'] }} {{ $item['unit'] }}
+                                                                    <td style="padding: 10px 8px; text-align: center;">
+                                                                        <span style="font-weight: 700; color: #B46A72; background: #FFF0F3; border: 1px solid #F7C8D3; padding: 2px 8px; border-radius: 6px; display: inline-block;">
+                                                                            {{ $item['qty_out'] }} {{ $item['unit'] }}
+                                                                        </span>
                                                                     </td>
-                                                                    <td style="padding: 8px 4px; text-align: right; font-weight: 600; color: var(--text-secondary);">
+                                                                    <td style="padding: 10px 8px; text-align: right; font-weight: 600; color: var(--text-secondary);">
                                                                         {{ $item['remaining_stock'] }} {{ $item['unit'] }}
                                                                     </td>
                                                                 </tr>
                                                             @endforeach
-                                                        </tbody>
-                                                    </table>
-                                                </div>
+                                                        @else
+                                                            <tr style="border-bottom: 1px dashed var(--border-soft);">
+                                                                <td style="padding: 10px 8px; font-family: monospace; font-weight: 600; color: var(--text-secondary);">
+                                                                    {{ !empty($receipt['material_number']) && $receipt['material_number'] !== '-' ? $receipt['material_number'] : '-' }}
+                                                                </td>
+                                                                <td style="padding: 10px 8px; font-weight: 600; color: var(--rosewood-dark);">
+                                                                    {{ $receipt['material_name'] ?? '-' }}
+                                                                </td>
+                                                                <td style="padding: 10px 8px; text-align: center;">
+                                                                    <span style="font-weight: 700; color: #B46A72; background: #FFF0F3; border: 1px solid #F7C8D3; padding: 2px 8px; border-radius: 6px; display: inline-block;">
+                                                                        {{ $receipt['qty_out'] ?? 0 }} {{ $receipt['unit'] ?? 'Unit' }}
+                                                                    </span>
+                                                                </td>
+                                                                <td style="padding: 10px 8px; text-align: right; font-weight: 600; color: var(--text-secondary);">
+                                                                    {{ $receipt['remaining_stock'] ?? 0 }} {{ $receipt['unit'] ?? 'Unit' }}
+                                                                </td>
+                                                            </tr>
+                                                        @endif
+                                                    </tbody>
+                                                </table>
                                             </div>
-                                        @else
-                                            <div><span class="receipt-item-label">Nama Material:</span></div>
-                                            <div><span class="receipt-item-val">{{ $receipt['material_name'] }}</span></div>
-
-                                            <div><span class="receipt-item-label">No. Material:</span></div>
-                                            <div><span class="receipt-item-val">{{ $receipt['material_number'] ?? '-' }}</span></div>
-
-                                            <div><span class="receipt-item-label">Jumlah Diambil:</span></div>
-                                            <div><span class="receipt-item-val" style="color: #B46A72;">{{ $receipt['qty_out'] }} {{ $receipt['unit'] }}</span></div>
-
-                                            <div><span class="receipt-item-label">Sisa Stok Terkini:</span></div>
-                                            <div><span class="receipt-item-val">{{ $receipt['remaining_stock'] }} {{ $receipt['unit'] }}</span></div>
-                                        @endif
+                                        </div>
                                     </div>
                                 </div>
 
-                                <!-- Tombol untuk Catat Pengambilan Baru -->
-                                <div style="margin-top: 20px; display: flex; justify-content: flex-end;">
+                                <!-- Tombol Aksi: Cetak Resi & Catat Pengambilan Baru -->
+                                <div style="margin-top: 20px; display: flex; justify-content: flex-end; gap: 12px; flex-wrap: wrap;">
+                                   
                                     <a href="{{ route('landing') }}?baru=1#form-pengambilan" id="btnCatatPengambilanBaru" class="btn btn-primary" style="display: inline-flex; align-items: center; gap: 8px;">
-                                        <span class="material-symbols-outlined">add_circle</span>
+                                        <span class="material-symbols-outlined" style="font-size: 18px;">add_circle</span>
                                         Catat Pengambilan Baru
                                     </a>
                                 </div>
