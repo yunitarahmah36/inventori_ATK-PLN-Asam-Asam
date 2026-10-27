@@ -880,7 +880,6 @@ body {
                 </button>
                 <div class="topbar-left">
                     <h1>Data Buku &amp; Ketersediaan Stok</h1>
-                    <p>Sistem Informasi Inventori Material PT PLN Indonesia Power UBP Asam Asam</p>
                 </div>
             </div>
 

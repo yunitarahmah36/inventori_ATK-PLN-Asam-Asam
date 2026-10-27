@@ -865,7 +865,6 @@ body {
                 </button>
                 <div class="topbar-left">
                     <h1>Transaksi Peminjaman &amp; Pengembalian Buku</h1>
-                    <p>Sistem Informasi Inventori Material PT PLN Indonesia Power UBP Asam Asam</p>
                 </div>
             </div>
 
