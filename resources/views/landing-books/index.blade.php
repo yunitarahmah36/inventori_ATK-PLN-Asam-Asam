@@ -1504,7 +1504,7 @@
             <div class="section-header">
                 <h2 class="section-title">Form Pengajuan Peminjaman Buku</h2>
                 <p class="section-desc">
-                    Isi identitas peminjam dan pilih judul buku yang ingin dipinjam. Stok buku akan berkurang otomatis setelah peminjaman berhasil diajukan.
+                    Isi data peminjam dan pilih buku favoritmu untuk mulai meminjam.
                 </p>
             </div>
 
@@ -1516,7 +1516,7 @@
                         </div>
                         <div>
                             <h3>Formulir Peminjaman Buku</h3>
-                            <p>Layanan mandiri peminjaman koleksi buku perpustakaan</p>
+                            <p>Layanan peminjaman untuk koleksi buku yang tersedia.</p>
                         </div>
                     </div>
                     <span style="display:inline-flex; align-items:center; gap:4px; font-size:11.5px; font-weight:700; color:var(--green); background:var(--green-light); padding:3px 10px; border-radius:var(--radius-pill);">
@@ -1667,7 +1667,6 @@
                                 <label for="due_date">Tanggal Rencana Pengembalian <span class="req-star">*</span></label>
                                 <input type="date" id="due_date" name="due_date" class="form-control"
                                        value="{{ old('due_date', date('Y-m-d', strtotime('+7 days'))) }}" required>
-                                <span class="form-hint">Disarankan durasi peminjaman maksimal 7 - 14 hari kerja.</span>
                             </div>
 
                             <div class="form-group full-width">
@@ -1683,7 +1682,6 @@
                                         <span class="material-symbols-outlined" style="font-size:20px; color:var(--rosewood);">library_books</span>
                                         <span>Daftar Buku yang Ingin Dipinjam</span>
                                     </h4>
-                                    <span class="badge-multi-free">Bebas Banyak Judul</span>
                                 </div>
                                 <div class="book-selection-summary" id="bookSelectionSummaryBadge">
                                     Total: <strong id="totalSummaryTitles">1</strong> judul buku (<strong id="totalSummaryQty">1</strong> eksemplar)
