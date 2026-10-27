@@ -171,6 +171,44 @@
             color: var(--rosewood);
         }
 
+        .nav-link-book-featured {
+            background: #FFF0F3 !important;
+            color: var(--rosewood) !important;
+            border: 1px solid var(--blush-petal) !important;
+            padding: 6px 14px !important;
+            border-radius: 9999px !important;
+            font-weight: 700 !important;
+            box-shadow: 0 2px 6px rgba(180, 106, 114, 0.08);
+            transition: var(--transition);
+        }
+
+        .nav-link-book-featured:hover {
+            background: var(--rosewood) !important;
+            color: #ffffff !important;
+            border-color: var(--rosewood) !important;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(180, 106, 114, 0.22);
+        }
+
+        .mobile-link-book-featured {
+            background: #FFF0F3 !important;
+            border-color: var(--blush-petal) !important;
+            color: var(--rosewood) !important;
+            font-weight: 700 !important;
+        }
+
+        .badge-nav-book {
+            margin-left: auto;
+            font-size: 10px;
+            font-weight: 700;
+            background: var(--rosewood);
+            color: #ffffff;
+            padding: 2px 7px;
+            border-radius: 9999px;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+        }
+
         .nav-actions {
             display: flex;
             align-items: center;
@@ -1265,6 +1303,12 @@
                 <li><a href="#form-pengambilan" class="nav-link"><span class="material-symbols-outlined" style="font-size: 18px;">output</span> Catat Pengambilan</a></li>
                 <li><a href="#katalog" class="nav-link"><span class="material-symbols-outlined" style="font-size: 18px;">inventory_2</span> Cek Stok</a></li>
                 <li><a href="#alur" class="nav-link"><span class="material-symbols-outlined" style="font-size: 18px;">help_outline</span> Alur Prosedur</a></li>
+                <li>
+                    <a href="{{ route('public.books.index') }}" class="nav-link nav-link-book-featured" title="Layanan Peminjaman Buku Perpustakaan">
+                        <span class="material-symbols-outlined" style="font-size: 18px;">menu_book</span>
+                        <span>Peminjaman Buku</span>
+                    </a>
+                </li>
             </ul>
 
             <div class="nav-actions">
@@ -1316,6 +1360,13 @@
                     <a href="#alur" class="mobile-link">
                         <span class="material-symbols-outlined" style="font-size: 20px; color: var(--rosewood);">help_outline</span>
                         Alur & Prosedur Pengambilan
+                    </a>
+                </li>
+                <li class="mobile-nav-item">
+                    <a href="{{ route('public.books.index') }}" class="mobile-link mobile-link-book-featured">
+                        <span class="material-symbols-outlined" style="font-size: 20px; color: var(--rosewood);">menu_book</span>
+                        <span>Peminjaman Buku</span>
+                        <span class="badge-nav-book">Buku</span>
                     </a>
                 </li>
             </ul>

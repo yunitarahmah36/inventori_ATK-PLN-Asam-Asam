@@ -58,6 +58,7 @@
             <span>Dashboard</span>
         </a>
 
+        @if(Auth::user()->role !== 'Pengelola Buku')
         <!-- Data Material (Parent Menu with Submenu) -->
         <div class="nav-group {{ (request()->routeIs('materials.*') || request()->is('materials*')) ? 'open' : '' }}" id="navGroupMaterials">
             <button type="button" 
@@ -113,8 +114,41 @@
             <span class="material-symbols-outlined">analytics</span>
             <span>Analisis Material</span>
         </a>
+        @endif
 
-        <div class="nav-section-title" style="margin-top:10px;">Akun</div>
+        @if(in_array(Auth::user()->role, ['Admin', 'Pengelola Buku']))
+        <div class="nav-section-title" style="margin-top:14px;">Manajemen Buku</div>
+
+        <!-- Data Buku & Stok -->
+        <a href="{{ route('books.index') }}" 
+           class="nav-item {{ request()->routeIs('books.*') ? 'active' : '' }}" 
+           data-spa-link>
+            <span class="material-symbols-outlined">menu_book</span>
+            <span>Data Buku &amp; Stok</span>
+        </a>
+
+        <!-- Transaksi Peminjaman & Pengembalian Buku -->
+        <a href="{{ route('book-loans.index') }}" 
+           class="nav-item {{ request()->routeIs('book-loans.*') ? 'active' : '' }}" 
+           data-spa-link>
+            <span class="material-symbols-outlined">assignment</span>
+            <span>Peminjaman &amp; Pengembalian</span>
+        </a>
+        @endif
+
+        @if(Auth::user()->role === 'Admin')
+        <div class="nav-section-title" style="margin-top:14px;">Administrasi Sistem</div>
+
+        <!-- Manajemen Pengguna -->
+        <a href="{{ route('users.index') }}" 
+           class="nav-item {{ request()->routeIs('users.*') ? 'active' : '' }}" 
+           data-spa-link>
+            <span class="material-symbols-outlined">manage_accounts</span>
+            <span>Manajemen User</span>
+        </a>
+        @endif
+
+        <div class="nav-section-title" style="margin-top:14px;">Akun</div>
 
         <!-- Profile -->
         <a href="{{ route('profile.show') }}" 
@@ -1256,18 +1290,59 @@
         window.YouTubeProgress.done();
     });
 
+    // --- SIDEBAR DRAWER (Mobile & Tablet) ---
+    function openSidebar() {
+        const s = document.getElementById('sidebar');
+        const d = document.getElementById('drawerBackdrop');
+        if (s) s.classList.add('open');
+        if (d) d.classList.add('open');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeSidebar() {
+        const s = document.getElementById('sidebar');
+        const d = document.getElementById('drawerBackdrop');
+        if (s) s.classList.remove('open');
+        if (d) d.classList.remove('open');
+        document.body.style.overflow = '';
+    }
+
+    function toggleSubmenu(e, id) {
+        if (e && e.preventDefault) e.preventDefault();
+        const menu = document.getElementById(id);
+        const arrow = document.getElementById('arrow-' + id.replace('submenu-', ''));
+        if (!menu) return;
+        const isOpen = menu.style.display === 'block';
+        menu.style.display = isOpen ? 'none' : 'block';
+        if (arrow) arrow.textContent = isOpen ? 'expand_more' : 'expand_less';
+    }
+
+    window.openSidebar = openSidebar;
+    window.closeSidebar = closeSidebar;
+    window.toggleSubmenu = toggleSubmenu;
+
+    window.addEventListener('resize', function () {
+        if (window.innerWidth > 992) {
+            closeSidebar();
+        }
+    });
+
     // --- SEAMLESS INSTANT SPA PAGE ENGINE (SIDEBAR DIAM AJA) ---
     let _navRequestId = 0;
     let _navAbortController = null;
 
-    async function navigatePage(url, push = true) {
+    async function navigatePage(url, push = true, options = {}) {
         if (_navAbortController) {
             try { _navAbortController.abort(); } catch (e) {}
         }
         _navAbortController = new AbortController();
         const currentReqId = ++_navRequestId;
 
-        window.YouTubeProgress.start();
+        const isLive = Boolean(options && options.isLiveSearch);
+
+        if (!isLive) {
+            window.YouTubeProgress.start();
+        }
 
         try {
             const response = await fetch(url, {
@@ -1295,28 +1370,43 @@
             const parser = new DOMParser();
             const newDoc = parser.parseFromString(htmlText, 'text/html');
 
-            const newMain = newDoc.querySelector('main.main');
-            const currentMain = document.querySelector('main.main');
+            const newMain = newDoc.querySelector('main.main') || newDoc.querySelector('main');
+            const currentMain = document.querySelector('main.main') || document.querySelector('main');
 
             if (!newMain || !currentMain) {
                 window.location.href = url;
                 return;
             }
 
-            // Transisi halus pada area konten (sidebar tetap diam 100%)
-            currentMain.style.opacity = '0.35';
+            // Tangkap elemen aktif sebelum penggantian DOM untuk restore focus & cursor
+            const activeEl = document.activeElement;
+            const isTyping = activeEl && (activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA' || activeEl.tagName === 'SELECT');
+            const preserve = (options && options.preserveState) ? options.preserveState : (isTyping ? {
+                name: activeEl.getAttribute('name'),
+                id: activeEl.id,
+                value: activeEl.value,
+                selectionStart: activeEl.selectionStart,
+                selectionEnd: activeEl.selectionEnd
+            } : null);
 
-            setTimeout(() => {
+            // Nilai teks dan posisi kursor langsung dari input yang aktif saat ini
+            const liveVal = isTyping ? activeEl.value : (preserve ? preserve.value : null);
+            const liveStart = (isTyping && typeof activeEl.selectionStart === 'number') ? activeEl.selectionStart : (preserve ? preserve.selectionStart : null);
+            const liveEnd = (isTyping && typeof activeEl.selectionEnd === 'number') ? activeEl.selectionEnd : (preserve ? preserve.selectionEnd : null);
+
+            const applyContentUpdate = () => {
                 if (currentReqId !== _navRequestId) {
                     return;
                 }
 
-                // 1. Ganti CSS Halaman secara instan
+                // 1. Ganti CSS Halaman secara instan jika berbeda
                 const newPageStyle = newDoc.getElementById('page-style');
                 let currentPageStyle = document.getElementById('page-style');
                 if (newPageStyle) {
                     if (currentPageStyle) {
-                        currentPageStyle.textContent = newPageStyle.textContent;
+                        if (currentPageStyle.textContent !== newPageStyle.textContent) {
+                            currentPageStyle.textContent = newPageStyle.textContent;
+                        }
                     } else {
                         const st = document.createElement('style');
                         st.id = 'page-style';
@@ -1335,6 +1425,16 @@
                     }
                 });
 
+                // Sinkronkan class layout wrapper dan main
+                const newLayout = newDoc.querySelector('.layout');
+                const currentLayout = document.querySelector('.layout');
+                if (newLayout && currentLayout && newLayout.className) {
+                    currentLayout.className = newLayout.className;
+                }
+                if (newMain.className) {
+                    currentMain.className = newMain.className;
+                }
+
                 // 2. Ganti konten main
                 currentMain.innerHTML = newMain.innerHTML;
 
@@ -1350,52 +1450,75 @@
                 // 3. Jalankan ulang script halaman baru
                 currentMain.querySelectorAll('script').forEach(oldScript => {
                     const newScript = document.createElement('script');
-
-                    // Salin semua atribut script
                     Array.from(oldScript.attributes).forEach(attribute => {
-                        newScript.setAttribute(
-                            attribute.name,
-                            attribute.value
-                        );
+                        newScript.setAttribute(attribute.name, attribute.value);
                     });
-
-                    // Salin isi JavaScript
                     newScript.textContent = oldScript.textContent;
-
-                    // Replace script lama dengan script baru
                     oldScript.replaceWith(newScript);
                 });
+
+                // Restore active input focus, value, dan posisi kursor secara presisi
+                if (preserve && (preserve.name || preserve.id || isLive)) {
+                    let restoreTarget = null;
+                    if (preserve.id) {
+                        restoreTarget = currentMain.querySelector('#' + preserve.id);
+                    }
+                    if (!restoreTarget && preserve.name) {
+                        restoreTarget = currentMain.querySelector(`input[name="${preserve.name}"], textarea[name="${preserve.name}"], select[name="${preserve.name}"]`);
+                    }
+                    if (!restoreTarget) {
+                        restoreTarget = currentMain.querySelector('.search-box input, input[name="search"], #searchInput, #search');
+                    }
+                    if (restoreTarget) {
+                        if (liveVal !== null && restoreTarget.value !== liveVal) {
+                            restoreTarget.value = liveVal;
+                        }
+                        restoreTarget.focus();
+                        if (typeof liveStart === 'number' && typeof liveEnd === 'number') {
+                            try {
+                                restoreTarget.setSelectionRange(liveStart, liveEnd);
+                            } catch (e) {}
+                        }
+                    }
+                }
 
                 // 4. Update judul tab browser
                 document.title = newDoc.title;
 
                 // 5. Update address bar URL
-                if (push) {
-                    history.pushState(
-                        { url: url },
-                        newDoc.title,
-                        url
-                    );
+                if (isLive) {
+                    history.replaceState({ url: url }, newDoc.title, url);
+                } else if (push) {
+                    history.pushState({ url: url }, newDoc.title, url);
                 }
 
                 // 6. Update menu aktif di sidebar
                 updateSidebarActiveMenu(url);
 
-                // 7. Scroll ke paling atas
-                window.scrollTo({ top: 0, behavior: 'instant' });
+                if (!isLive) {
+                    // 7. Scroll ke paling atas hanya jika navigasi halaman penuh
+                    window.scrollTo({ top: 0, behavior: 'instant' });
 
-                // 8. Tampilkan kembali konten dengan mulus
-                currentMain.style.opacity = '1';
+                    // 8. Tampilkan kembali konten dengan mulus
+                    currentMain.style.opacity = '1';
 
-                // 9. Selesaikan loading bar YouTube
-                window.YouTubeProgress.done();
+                    // 9. Selesaikan loading bar YouTube
+                    window.YouTubeProgress.done();
 
-                // 10. Jika di HP, tutup menu drawer
-                if (window.innerWidth <= 768) {
-                    window.closeSidebar();
+                    // 10. Jika di HP/tablet, tutup menu drawer
+                    if (window.innerWidth <= 992) {
+                        closeSidebar();
+                    }
+                } else {
+                    currentMain.style.opacity = '1';
                 }
 
-                // 11. Jalankan kembali initTimelineChart() dan initAnalysisCharts() setelah konten halaman selesai dimuat
+                // 11. Trigger resize & layout recalculation untuk elemen responsif, chart, table
+                requestAnimationFrame(() => {
+                    window.dispatchEvent(new Event('resize'));
+                });
+
+                // 12. Jalankan kembali callback chart jika ada
                 if (typeof window.initTimelineChart === 'function') {
                     try {
                         window.initTimelineChart();
@@ -1410,7 +1533,14 @@
                         console.error('Error executing initAnalysisCharts:', e);
                     }
                 }
-            }, 60);
+            };
+
+            if (isLive) {
+                applyContentUpdate();
+            } else {
+                currentMain.style.opacity = '0.35';
+                setTimeout(applyContentUpdate, 60);
+            }
 
         } catch (err) {
             if (err.name === 'AbortError') {
@@ -1443,6 +1573,12 @@
                     } else if (itemUrl.pathname === '/material-analysis' && path.startsWith('/material-analysis')) {
                         isActive = true;
                     } else if (itemUrl.pathname === '/profile' && path.startsWith('/profile')) {
+                        isActive = true;
+                    } else if (itemUrl.pathname === '/books' && path.startsWith('/books')) {
+                        isActive = true;
+                    } else if (itemUrl.pathname === '/book-loans' && path.startsWith('/book-loans')) {
+                        isActive = true;
+                    } else if (itemUrl.pathname === '/users' && path.startsWith('/users')) {
                         isActive = true;
                     }
 
@@ -1511,7 +1647,17 @@
             // File export download jangan di-swap
             if (url.pathname.includes('/export')) return false;
             // Hanya rute internal aplikasi
-            const validPrefixes = ['/dashboard', '/materials', '/stock-history', '/stock-movements', '/material-analysis', '/profile'];
+            const validPrefixes = [
+                '/dashboard',
+                '/materials',
+                '/stock-history',
+                '/stock-movements',
+                '/material-analysis',
+                '/books',
+                '/book-loans',
+                '/users',
+                '/profile'
+            ];
             return validPrefixes.some(prefix => url.pathname.startsWith(prefix));
         } catch (e) {
             return false;
@@ -1546,17 +1692,112 @@
         navigatePage(url.toString(), true);
     };
 
+    // --- REAL-TIME LIVE SEARCH & FILTER WITH DEBOUNCE ---
+    let _liveSearchTimer = null;
+
+    function handleLiveSearch(targetEl, immediate = false) {
+        if (!targetEl) return;
+        const form = targetEl.closest('form');
+        if (!form || form.method.toLowerCase() !== 'get') return;
+
+        clearTimeout(_liveSearchTimer);
+
+        const executeSearch = () => {
+            const action = form.action || window.location.href;
+            const formData = new FormData(form);
+            const searchParams = new URLSearchParams();
+
+            for (const [key, val] of formData.entries()) {
+                if (key === 'page') continue; // Reset ke halaman 1 saat pencarian/filter berubah
+                if (val !== '') {
+                    searchParams.append(key, val);
+                }
+            }
+
+            const targetUrl = new URL(action, window.location.origin);
+            targetUrl.search = searchParams.toString();
+
+            const preserveState = {
+                name: (typeof targetEl.getAttribute === 'function') ? targetEl.getAttribute('name') : null,
+                id: targetEl.id || null,
+                value: (typeof targetEl.value !== 'undefined') ? targetEl.value : null,
+                selectionStart: (typeof targetEl.selectionStart === 'number') ? targetEl.selectionStart : null,
+                selectionEnd: (typeof targetEl.selectionEnd === 'number') ? targetEl.selectionEnd : null
+            };
+
+            navigatePage(targetUrl.toString(), true, {
+                isLiveSearch: true,
+                preserveState: preserveState
+            });
+        };
+
+        if (immediate) {
+            executeSearch();
+        } else {
+            _liveSearchTimer = setTimeout(executeSearch, 300);
+        }
+    }
+    window.handleLiveSearch = handleLiveSearch;
+
+    // Real-time typing listener dengan debounce 300ms
+    document.addEventListener('input', function (e) {
+        const input = e.target;
+        if (!input || input.type === 'hidden' || input.type === 'password' || input.type === 'file') return;
+
+        const form = input.closest('form');
+        if (!form || form.method.toLowerCase() !== 'get') return;
+
+        const isSearchField = input.name === 'search' ||
+                              input.type === 'search' ||
+                              input.id === 'search' ||
+                              input.id === 'searchInput' ||
+                              input.id === 'bookSearchInput' ||
+                              input.id === 'loanSearchInput' ||
+                              input.id === 'userSearchInput' ||
+                              input.closest('.search-box') ||
+                              input.closest('.search-input') ||
+                              input.closest('.search-input-wrapper');
+
+        if (isSearchField) {
+            handleLiveSearch(input, false);
+        }
+    });
+
+    // Real-time filter perubahan dropdown / tanggal / checkbox langsung tanpa reload
+    document.addEventListener('change', function (e) {
+        const el = e.target;
+        if (!el) return;
+
+        const form = el.closest('form');
+        if (!form || form.method.toLowerCase() !== 'get') return;
+
+        if (el.matches('select, input[type="date"], input[type="radio"], input[type="checkbox"]')) {
+            handleLiveSearch(el, true);
+        }
+    });
+
+    // Tangkap klik tombol reset / clear search
+    document.addEventListener('click', function (e) {
+        const clearBtn = e.target.closest('#btnClearSearch, .btn-clear-search');
+        if (clearBtn) {
+            const form = clearBtn.closest('form');
+            const input = form ? form.querySelector('input[name="search"], #searchInput, input[type="text"]') : null;
+            if (input) {
+                input.value = '';
+                handleLiveSearch(input, true);
+            }
+        }
+    });
+
     // Form submission
     document.addEventListener('submit', function (e) {
         const form = e.target;
         if (form.method.toLowerCase() === 'get') {
             e.preventDefault();
-            const action = form.action || window.location.href;
-            const formData = new FormData(form);
-            const searchParams = new URLSearchParams(formData);
-            const targetUrl = new URL(action, window.location.origin);
-            targetUrl.search = searchParams.toString();
-            navigatePage(targetUrl.toString(), true);
+            clearTimeout(_liveSearchTimer);
+            const activeInput = form.querySelector('input[name="search"], input[type="text"], input[type="search"]') || form;
+            handleLiveSearch(activeInput, true);
+            return;
         } else {
     // DELETE form → proses tanpa hard reload
     const methodInput = form.querySelector('input[name="_method"]');

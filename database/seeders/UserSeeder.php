@@ -32,6 +32,13 @@ class UserSeeder extends Seeder
                 'password' => 'general#31095',
                 'role' => 'Umum',
             ],
+            [
+                'name' => 'Pengelola Buku',
+                'username' => 'PengelolaBuku',
+                'email' => 'buku.inventoripln@gmail.com',
+                'password' => 'buku#31095',
+                'role' => 'Pengelola Buku',
+            ],
         ];
 
         foreach ($users as $user) {

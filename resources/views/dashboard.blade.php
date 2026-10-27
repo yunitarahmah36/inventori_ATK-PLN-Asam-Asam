@@ -1402,8 +1402,181 @@
                 </div>
 
 
+                @if(Auth::user()->role === 'Pengelola Buku')
                 <!-- ==================================================
-                     2. AKSI CEPAT
+                     DASHBOARD KHUSUS PENGELOLA BUKU
+                ================================================== -->
+                <p class="section-label">Aksi Cepat Pengelolaan Buku</p>
+                <div class="quick-actions" style="margin-bottom:22px;">
+                    <a href="{{ route('book-loans.index') }}" class="action-btn action-btn-primary">
+                        <div class="action-icon">
+                            <span class="material-symbols-outlined">note_add</span>
+                        </div>
+                        + Catat Pinjam
+                    </a>
+                    <a href="{{ route('books.index') }}" class="action-btn action-btn-yellow">
+                        <div class="action-icon">
+                            <span class="material-symbols-outlined">menu_book</span>
+                        </div>
+                        Katalog Buku
+                    </a>
+                    <a href="{{ route('book-loans.index', ['status' => 'Dikembalikan']) }}" class="action-btn action-btn-white">
+                        <div class="action-icon">
+                            <span class="material-symbols-outlined">assignment_turned_in</span>
+                        </div>
+                        Pengembalian
+                    </a>
+                </div>
+
+                <p class="section-label">Ringkasan Buku & Transaksi Peminjaman</p>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-card-bar yellow"></div>
+                        <div class="stat-card-header">
+                            <span class="stat-card-label">Judul Buku</span>
+                            <div class="stat-card-icon stat-icon-blue">
+                                <span class="material-symbols-outlined">library_books</span>
+                            </div>
+                        </div>
+                        <div class="stat-card-value">{{ $bookStats['total_titles'] }}</div>
+                        <div class="stat-card-sub">Judul buku terdaftar</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-card-bar blue"></div>
+                        <div class="stat-card-header">
+                            <span class="stat-card-label">Total Stok</span>
+                            <div class="stat-card-icon stat-icon-yellow">
+                                <span class="material-symbols-outlined">auto_stories</span>
+                            </div>
+                        </div>
+                        <div class="stat-card-value">{{ number_format($bookStats['total_stock'], 0, ',', '.') }}</div>
+                        <div class="stat-card-sub">Total seluruh eksemplar</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-card-bar teal"></div>
+                        <div class="stat-card-header">
+                            <span class="stat-card-label">Stok Tersedia</span>
+                            <div class="stat-card-icon stat-icon-teal">
+                                <span class="material-symbols-outlined">check_circle</span>
+                            </div>
+                        </div>
+                        <div class="stat-card-value" style="color:#059669;">{{ number_format($bookStats['available_stock'], 0, ',', '.') }}</div>
+                        <div class="stat-card-sub">Siap untuk dipinjam</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-card-bar orange"></div>
+                        <div class="stat-card-header">
+                            <span class="stat-card-label">Sedang Dipinjam</span>
+                            <div class="stat-card-icon stat-icon-orange">
+                                <span class="material-symbols-outlined">pending_actions</span>
+                            </div>
+                        </div>
+                        <div class="stat-card-value" style="color:#1D4ED8;">{{ $bookStats['active_loans'] }}</div>
+                        <div class="stat-card-sub">Transaksi aktif</div>
+                    </div>
+                </div>
+
+                <div class="sections-row">
+                    <!-- Transaksi Peminjaman Terbaru -->
+                    <div class="section-card" style="flex: 1.2;">
+                        <div class="section-card-header">
+                            <div class="section-card-title">
+                                <span class="material-symbols-outlined">assignment</span>
+                                Peminjaman Buku Terbaru
+                            </div>
+                            <a href="{{ route('book-loans.index') }}" class="btn-lihat-semua">
+                                Lihat Semua
+                                <span class="material-symbols-outlined">arrow_forward</span>
+                            </a>
+                        </div>
+
+                        @if ($latestBookLoans->count() > 0)
+                            <div style="overflow-x:auto;">
+                                <table style="width:100%; border-collapse:collapse; font-size:13px; text-align:left;">
+                                    <thead>
+                                        <tr style="border-bottom:1px solid var(--border); color:var(--text-muted); font-size:11.5px; text-transform:uppercase;">
+                                            <th style="padding:10px 12px;">Tanggal Pinjam</th>
+                                            <th style="padding:10px 12px;">Peminjam</th>
+                                            <th style="padding:10px 12px;">Buku</th>
+                                            <th style="padding:10px 12px;">Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach ($latestBookLoans as $lbl)
+                                            <tr style="border-bottom:1px solid var(--border);">
+                                                <td style="padding:12px;">
+                                                    <div style="font-weight:600; color:var(--text-dark);">{{ \Carbon\Carbon::parse($lbl->loan_date)->format('d M Y') }}</div>
+                                                    <div style="font-size:11px; color:var(--text-muted);">{{ $lbl->quantity ?? 1 }} Eksemplar</div>
+                                                </td>
+                                                <td style="padding:12px;">
+                                                    <div style="font-weight:600;">{{ $lbl->borrower_name }}</div>
+                                                    <div style="font-size:11px; color:var(--text-muted);">{{ $lbl->borrower_department ?: '-' }}</div>
+                                                </td>
+                                                <td style="padding:12px;">
+                                                    <div style="font-weight:600; color:var(--text-dark);">{{ $lbl->book->title ?? '-' }}</div>
+                                                    <div style="font-size:11px; color:var(--text-muted);">Jatuh Tempo: {{ \Carbon\Carbon::parse($lbl->due_date)->format('d M Y') }}</div>
+                                                </td>
+                                                <td style="padding:12px;">
+                                                    @if($lbl->status === 'Dikembalikan')
+                                                        <span style="display:inline-block; padding:2px 8px; border-radius:12px; font-size:11px; font-weight:700; background:#ECFDF5; color:#047857;">Dikembalikan</span>
+                                                    @elseif($lbl->status === 'Terlambat')
+                                                        <span style="display:inline-block; padding:2px 8px; border-radius:12px; font-size:11px; font-weight:700; background:#FEF2F2; color:#B91C1C;">Terlambat</span>
+                                                    @else
+                                                        <span style="display:inline-block; padding:2px 8px; border-radius:12px; font-size:11px; font-weight:700; background:#EFF6FF; color:#1D4ED8;">Dipinjam</span>
+                                                    @endif
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                        @else
+                            <div class="empty-state">
+                                <span class="material-symbols-outlined">assignment</span>
+                                Belum ada transaksi peminjaman buku.
+                            </div>
+                        @endif
+                    </div>
+
+                    <!-- Informasi & Status Perpustakaan -->
+                    <div class="section-card" style="flex: 0.8;">
+                        <div class="section-card-header">
+                            <div class="section-card-title">
+                                <span class="material-symbols-outlined">auto_stories</span>
+                                Status Perpustakaan
+                            </div>
+                            <a href="{{ route('books.index') }}" class="btn-lihat-semua">
+                                Kelola Buku
+                                <span class="material-symbols-outlined">arrow_forward</span>
+                            </a>
+                        </div>
+                        <div style="padding:18px 20px;">
+                            <div style="background:var(--blue-light); padding:14px; border-radius:10px; margin-bottom:14px; border:1px solid rgba(180, 106, 114, 0.15);">
+                                <div style="font-size:11px; font-weight:700; color:var(--blue-dark); text-transform:uppercase; letter-spacing:0.04em;">Kelola Koleksi Buku</div>
+                                <div style="font-size:13px; color:var(--text-dark); margin-top:4px; line-height:1.45;">
+                                    <strong>Pantau</strong> ketersediaan koleksi buku serta pastikan setiap transaksi peminjaman dan pengembalian tercatat dengan baik.
+                            </div>
+
+                            <div style="display:flex; flex-direction:column; gap:8px;">
+                                <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 14px; background:var(--bg); border-radius:8px;">
+                                    <span style="font-size:12.5px; font-weight:600;">Peminjaman Terlambat</span>
+                                    <span style="font-weight:700; color:#DC2626;">{{ $bookStats['overdue_loans'] }} Transaksi</span>
+                                </div>
+                                <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 14px; background:var(--bg); border-radius:8px;">
+                                    <span style="font-size:12.5px; font-weight:600;">Selesai Dikembalikan</span>
+                                    <span style="font-weight:700; color:#059669;">{{ $bookStats['returned_loans'] }} Transaksi</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                @else
+                <!-- ==================================================
+                     2. AKSI CEPAT (DASHBOARD MATERIAL ADMIN / KEUANGAN / UMUM)
                 ================================================== -->
                 <p class="section-label">Aksi Cepat</p>
                 <div class="quick-actions" style="margin-bottom:22px;">
@@ -1732,51 +1905,30 @@
                     </div>
 
                 </div>
+                @endif
 
             </div>
             <!-- /page-content -->
-
-        </main>
-        <!-- /main -->
-
-    </div>
-    <!-- /layout -->
 
     <!-- ============================================================
          JAVASCRIPT
     ============================================================ -->
     <script>
-        // --- Sidebar Drawer (Mobile) ---
-        function openSidebar() {
-            document.getElementById('sidebar').classList.add('open');
-            document.getElementById('drawerBackdrop').classList.add('open');
-            document.body.style.overflow = 'hidden';
-        }
-
-        function closeSidebar() {
-            document.getElementById('sidebar').classList.remove('open');
-            document.getElementById('drawerBackdrop').classList.remove('open');
-            document.body.style.overflow = '';
-        }
-
         // --- Submenu toggle ---
         function toggleSubmenu(e, id) {
-            e.preventDefault();
+            if (e && e.preventDefault) e.preventDefault();
             const menu = document.getElementById(id);
             const arrow = document.getElementById('arrow-' + id.replace('submenu-', ''));
+            if (!menu) return;
             const isOpen = menu.style.display === 'block';
             menu.style.display = isOpen ? 'none' : 'block';
             if (arrow) arrow.textContent = isOpen ? 'expand_more' : 'expand_less';
         }
-
-        // Tutup sidebar saat layar diperbesar ke desktop
-        window.addEventListener('resize', function() {
-            if (window.innerWidth > 768) {
-                closeSidebar();
-            }
-        });
     </script>
+    </main>
+    <!-- /main -->
 
+</div>
+<!-- /layout -->
 </body>
-
 </html>

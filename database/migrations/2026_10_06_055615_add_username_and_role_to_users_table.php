@@ -17,7 +17,8 @@ return new class extends Migration
             $table->enum('role', [
                 'Admin',
                 'Keuangan',
-                'Umum'
+                'Umum',
+                'Pengelola Buku'
             ])->default('Umum')->after('username');
         });
     }

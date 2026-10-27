@@ -50,6 +50,38 @@ class User extends Authenticatable
         ];
     }
 
+    public const ROLE_ADMIN = 'Admin';
+    public const ROLE_KEUANGAN = 'Keuangan';
+    public const ROLE_UMUM = 'Umum';
+    public const ROLE_PENGELOLA_BUKU = 'Pengelola Buku';
+
+    public const ROLES = [
+        self::ROLE_ADMIN => 'Admin',
+        self::ROLE_KEUANGAN => 'Keuangan',
+        self::ROLE_UMUM => 'Umum',
+        self::ROLE_PENGELOLA_BUKU => 'Pengelola Buku',
+    ];
+
+    public function isAdmin(): bool
+    {
+        return $this->role === self::ROLE_ADMIN;
+    }
+
+    public function isPengelolaBuku(): bool
+    {
+        return $this->role === self::ROLE_PENGELOLA_BUKU;
+    }
+
+    public function isKeuangan(): bool
+    {
+        return $this->role === self::ROLE_KEUANGAN;
+    }
+
+    public function isUmum(): bool
+    {
+        return $this->role === self::ROLE_UMUM;
+    }
+
     public function materials(): HasMany
     {
         return $this->hasMany(Material::class, 'created_by');
@@ -63,5 +95,15 @@ class User extends Authenticatable
     public function imports(): HasMany
     {
         return $this->hasMany(Import::class);
+    }
+
+    public function books(): HasMany
+    {
+        return $this->hasMany(Book::class, 'created_by');
+    }
+
+    public function handledBookLoans(): HasMany
+    {
+        return $this->hasMany(BookLoan::class, 'handled_by');
     }
 }

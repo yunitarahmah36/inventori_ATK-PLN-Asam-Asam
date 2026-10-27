@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\BookController;
+use App\Http\Controllers\BookLoanController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\MaterialAnalysisController;
 use App\Http\Controllers\MaterialController;
@@ -9,6 +11,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\StockInController;
 use App\Http\Controllers\StockMovementController;
 use App\Http\Controllers\StockOutController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -25,6 +28,18 @@ Route::get('/pengambilan-barang', [LandingController::class, 'pengambilanForm'])
 
 Route::post('/pengambilan-barang', [LandingController::class, 'storePengambilan'])
     ->name('pengambilan.store');
+
+// ==========================
+// PEMINJAMAN BUKU PUBLIK (LANDING PAGE)
+// ==========================
+Route::get('/peminjaman-buku', [\App\Http\Controllers\LandingBookController::class, 'index'])
+    ->name('public.books.index');
+
+Route::post('/peminjaman-buku', [\App\Http\Controllers\LandingBookController::class, 'storeLoan'])
+    ->name('public.books.store-loan');
+
+Route::post('/peminjaman-buku/kembalikan/{loan}', [\App\Http\Controllers\LandingBookController::class, 'returnLoan'])
+    ->name('public.books.return-loan');
 
 
 // ==========================
@@ -65,8 +80,9 @@ Route::middleware('auth')->group(function () {
 
 
     // ==========================
-    // DATA MATERIAL
+    // DATA MATERIAL & INVENTORI (ADMIN, KEUANGAN, UMUM)
     // ==========================
+    Route::middleware('role:Admin,Keuangan,Umum')->group(function () {
 
     Route::get('/materials/export', [MaterialController::class, 'export'])
         ->name('materials.export');
@@ -171,6 +187,39 @@ Route::get('/stock-history/export-pdf', [StockMovementController::class, 'export
 
     Route::get('/material-analysis/{key}', [MaterialAnalysisController::class, 'show'])
         ->name('material-analysis.show');
+
+    });
+
+
+    // ==========================
+    // MANAJEMEN USER (KHUSUS ADMIN)
+    // ==========================
+    Route::middleware('role:Admin')->group(function () {
+        Route::resource('users', UserController::class)->only(['index', 'store', 'update', 'destroy']);
+    });
+
+
+    // ==========================
+    // KELOLA BUKU & PEMINJAMAN (ADMIN & PENGELOLA BUKU)
+    // ==========================
+    Route::middleware('role:Admin,Pengelola Buku')->group(function () {
+        Route::resource('books', BookController::class)->only(['index', 'store', 'update', 'destroy']);
+
+        Route::get('/book-loans', [BookLoanController::class, 'index'])
+            ->name('book-loans.index');
+
+        Route::post('/book-loans', [BookLoanController::class, 'store'])
+            ->name('book-loans.store');
+
+        Route::put('/book-loans/{bookLoan}', [BookLoanController::class, 'update'])
+            ->name('book-loans.update');
+
+        Route::post('/book-loans/{bookLoan}/return', [BookLoanController::class, 'returnBook'])
+            ->name('book-loans.return');
+
+        Route::delete('/book-loans/{bookLoan}', [BookLoanController::class, 'destroy'])
+            ->name('book-loans.destroy');
+    });
 
 
     // ==========================

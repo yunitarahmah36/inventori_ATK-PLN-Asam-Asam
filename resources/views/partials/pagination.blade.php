@@ -65,7 +65,21 @@
             color: #9C7981 !important;
         }
 
-        @media (max-width: 576px) {
+        .pagination-icon {
+            font-size: 18px !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            line-height: 1 !important;
+            vertical-align: middle !important;
+            user-select: none !important;
+        }
+        .pagination-list .page-prev,
+        .pagination-list .page-next {
+            gap: 4px !important;
+        }
+
+        @media (max-width: 768px) {
             .pagination-list {
                 gap: 4px !important;
                 justify-content: center !important;
@@ -82,7 +96,7 @@
             }
             .pagination-list .page-prev,
             .pagination-list .page-next {
-                padding: 0 4px !important;
+                padding: 0 6px !important;
                 min-width: 32px !important;
             }
         }
